@@ -1,0 +1,37 @@
+{
+  "name": "swagger-core-api",
+  "version": "0.0.0",
+  "description": "An API for interacting with Swagger documents.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/gulp/bin/gulp.js"
+  },
+  "keywords": [
+    "swagger"
+  ],
+  "author": {
+    "name": "Jeremy Whitlock",
+    "email": "jwhitlock@apache.org",
+    "url": "https://github.com/whitlockjc"
+  },
+  "bugs": {
+    "url": "https://github.com/apigee-127/swagger-core-api/issues"
+  },
+  "homepage": "https://github.com/apigee-127/swagger-core-api",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/apigee-127/swagger-core-api.git"
+  },
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-eslint": "^0.8.0",
+    "gulp-istanbul": "^0.8.1",
+    "gulp-mocha": "^2.0.1"
+  }
+}
