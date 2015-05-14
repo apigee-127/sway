@@ -20,7 +20,6 @@
     no-multiple-empty-lines: 2
     no-nested-ternary: 2
     no-path-concat: 2
-    no-undefined: 2
     quotes: [2, "single", "avoid-escape"]
     radix: 2
     space-after-keywords: [2, "always"]
@@ -30,5 +29,5 @@
     space-in-parens: [2, "never"]
     spaced-line-comment: [2, "always"]
     strict: [2, "global"]
-    valid-jsdoc: [2, {"prefer": {"return": "returns"}}]
+    valid-jsdoc: [2, {"requireReturn": false, "prefer": {"return": "returns"}}]
     wrap-iife: 2

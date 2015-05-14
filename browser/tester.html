@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <title>Swagger API Test Page</title>
+  </head>
+  <body>
+    <p>Processing this Swagger Document: <a href="http://petstore.swagger.io/v2/swagger.yaml">http://petstore.swagger.io/v2/swagger.yaml</a></p>
+  </body>
+  <script src="swagger-core-api-standalone.js"></script>
+  <script>
+    SwaggerApi
+      .create({document: 'http://petstore.swagger.io/v2/swagger.yaml'})
+      .then(function (theApi) {
+        document.body.innerHTML += '<div>';
+        document.body.innerHTML += '<ul>';
+        document.body.innerHTML += '<li><strong>Swagger Version:&nbsp;' + theApi.version + '</strong></li>';
+        document.body.innerHTML += '<li><strong>Specification:&nbsp;<a href="' + theApi.documentation + '">' + theApi.documentation + '</a></li>';
+        document.body.innerHTML += '</ul>';
+        document.body.innerHTML += '</div>';
+      }, function (err) {
+        document.body.innerHTML += '<p><strong>Failed to Process</strong></p><span>' + err.message + '</span>';
+      });
+  </script>
+</html>

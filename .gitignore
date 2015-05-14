@@ -1,4 +1,8 @@
 **/node_modules/
 **/npm-debug.log
 
+bower_components/
 coverage/
+typings/
+.settings/
+.tern-project

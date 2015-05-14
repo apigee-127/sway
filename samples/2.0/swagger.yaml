@@ -1,0 +1,12 @@
+# This document is an example Swagger documented API that utilizes as much of the Swagger 2.0 specification as possible.
+# It is a living document and is not guaranteed to reflect a useful API (yet).
+---
+swagger: "2.0"
+info:
+  description: "Sample API that demonstrates as much Swagger as possible"
+  version: "1.0.0"
+  title: "Sample Swagger API"
+basePath: "/api"
+schemes:
+  - "http"
+paths: {}

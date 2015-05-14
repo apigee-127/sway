@@ -1,0 +1,35 @@
+{
+  "name": "swagger-core-api",
+  "main": "browser/swagger-core-api.js",
+  "version": "0.2.0",
+  "homepage": "https://github.com/apigee-127/swagger-core-api",
+  "authors": [
+    "Jeremy Whitlock <jwhitlock@apache.org>"
+  ],
+  "description": "An API for interacting with Swagger documents.",
+  "keywords": [
+    "swagger"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "browser/*-standalone*.js",
+    "gulpfile.js",
+    "index.js",
+    "package.json",
+    "lib",
+    "samples",
+    "test"
+  ],
+  "dependencies": {
+    "js-yaml": "~3.3.1",
+    "json-refs": "~0.2.0",
+    "lodash-compat": "~3.8.0",
+    "path-loader": "~0.0.2"
+  },
+  "devDependencies": {
+    "mocha": "^2.1.0"
+  }
+}
