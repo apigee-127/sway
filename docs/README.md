@@ -89,6 +89,28 @@ This is an optional error-first callback.
 
 This API **always** returns a `Promise`, even if you provide a callback.
 
+##### Example _(Promise)_
+
+```js
+SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
+  .then(function (api) {
+    console.log('Documentation URL: ', api.documentation);
+  }, function (err) {
+    console.error(err.stack);
+  });
+```
+
+##### Example _(Callback)_
+
+```js
+SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, api) {
+  if (err) {
+    console.error(err.stack);
+  } else {
+    console.log('Documentation URL: ', api.documentation);
+  });
+```
+
 [bower]: http://bower.io/
 [npm]: https://www.npmjs.org/
 [path-loader]: https://github.com/whitlockjc/path-loader
