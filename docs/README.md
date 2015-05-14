@@ -5,6 +5,11 @@ a Swagger document programmatically or you might want to load a Swagger document
 What you will find below is information on how to install swagger-core-api based on your environment.  You will also
 find detailed information about how to use the provided APIs.
 
+# Disclaimer
+
+This is an unreleased API and is subject to change without any warning.  Also, this document may be out of date at any
+time up until we publish the first release.
+
 ## Installation
 
 swagger-core-api is available for both Node.js and the browser.  Installation instructions for each environment are below.
