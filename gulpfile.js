@@ -25,12 +25,14 @@
 'use strict';
 
 var browserify = require('browserify');
+var concat = require("gulp-concat");
 var del = require('del');
 var eslint = require('gulp-eslint');
 var exposify = require('exposify');
 var fs = require('fs');
 var gulp = require('gulp');
 var istanbul = require('gulp-istanbul');
+var jsdoc2Md = require('gulp-jsdoc-to-markdown');
 var mocha = require('gulp-mocha');
 var mochaPhantomJS = require('gulp-mocha-phantomjs');
 var runSequence = require('run-sequence');
@@ -242,10 +244,20 @@ gulp.task('test-browser', ['browserify'], function () {
     });
 });
 
+gulp.task('docs', function () {
+  return gulp.src([
+    './index.js',
+    'lib/*.js'
+  ])
+    .pipe(concat('API.md'))
+    .pipe(jsdoc2Md())
+    .pipe(gulp.dest('docs'));
+});
+
 gulp.task('test', function (cb) {
   runSequence('test-node', 'test-browser', cb);
 });
 
 gulp.task('default', function (cb) {
-  runSequence('lint', 'test', cb);
+  runSequence('lint', 'test', 'docs', cb);
 });
