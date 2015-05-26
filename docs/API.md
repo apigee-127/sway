@@ -25,6 +25,8 @@
 ### new Operation(path, method, ptr, definition, parameters)
 The Swagger Operation object.
 
+<strong>Note:</strong> Do not use directly.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -47,6 +49,8 @@ Returns all parameters for the operation.
 ### new Parameter(ptr, definition)
 The Swagger Parameter object.
 
+<strong>Note:</strong> Do not use directly.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -65,6 +69,8 @@ The Swagger Parameter object.
 <a name="new_SwaggerApi_new"></a>
 ### new SwaggerApi(definition, version, documentation, operations, options)
 The Swagger API object.
+
+<strong>Note:</strong> Do not use directly.
 
 
 | Param | Type | Description |
@@ -116,7 +122,7 @@ Creates a SwaggerApi object from its Swagger definition(s).
 **Example**  
 ```js
 // Example using promises
-SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
+SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
   .then(function (api) {
     console.log('Documentation URL: ', api.documentation);
   }, function (err) {
@@ -126,7 +132,7 @@ SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
 **Example**  
 ```js
 // Example using callbacks
-SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, api) {
+SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, function (err, api) {
   if (err) {
     console.error(err.stack);
   } else {

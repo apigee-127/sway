@@ -50,7 +50,7 @@ var supportedVersions = {
  *
  * @example
  * // Example using promises
- * SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
+ * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
  *   .then(function (api) {
  *     console.log('Documentation URL: ', api.documentation);
  *   }, function (err) {
@@ -59,7 +59,7 @@ var supportedVersions = {
  *
  * @example
  * // Example using callbacks
- * SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, api) {
+ * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, function (err, api) {
  *   if (err) {
  *     console.error(err.stack);
  *   } else {
