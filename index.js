@@ -47,6 +47,24 @@ var supportedVersions = {
  * @param {function} [callback] - Node.js error-first callback
  *
  * @returns {Promise} A promise is always returned even if you provide a callback but it is not required to be used
+ *
+ * @example
+ * // Example using promises
+ * SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
+ *   .then(function (api) {
+ *     console.log('Documentation URL: ', api.documentation);
+ *   }, function (err) {
+ *     console.error(err.stack);
+ *   });
+ *
+ * @example
+ * // Example using callbacks
+ * SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, api) {
+ *   if (err) {
+ *     console.error(err.stack);
+ *   } else {
+ *     console.log('Documentation URL: ', api.documentation);
+ *   });
  */
 module.exports.create = function (options, callback) {
   var allTasks = Promise.resolve();

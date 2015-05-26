@@ -113,3 +113,23 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | options.definition | <code>object</code> &#124; <code>string</code> | The Swagger definition location or structure |
 | [callback] | <code>function</code> | Node.js error-first callback |
 
+**Example**  
+```js
+// Example using promises
+SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml')
+  .then(function (api) {
+    console.log('Documentation URL: ', api.documentation);
+  }, function (err) {
+    console.error(err.stack);
+  });
+```
+**Example**  
+```js
+// Example using callbacks
+SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, api) {
+  if (err) {
+    console.error(err.stack);
+  } else {
+    console.log('Documentation URL: ', api.documentation);
+  });
+```
