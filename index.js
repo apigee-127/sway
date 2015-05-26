@@ -39,11 +39,11 @@ var supportedVersions = {
 };
 
 /**
- * Creates a SwaggerApi object from its Swagger document(s).
+ * Creates a SwaggerApi object from its Swagger definition(s).
  *
- * @param {object} options - The options for loading the document(s)
+ * @param {object} options - The options for loading the definition(s)
  * @param {object} [options.loaderOptions] - The options to pass to path-loader
- * @param {object|string} options.document - The Swagger document location or structure
+ * @param {object|string} options.definition - The Swagger definition location or structure
  * @param {function} [callback] - Node.js error-first callback
  *
  * @returns {Promise} A promise is always returned even if you provide a callback but it is not required to be used
@@ -58,10 +58,10 @@ module.exports.create = function (options, callback) {
         throw new TypeError('options is required');
       } else if (!_.isPlainObject(options)) {
         throw new TypeError('options must be an object');
-      } else if (_.isUndefined(options.document)) {
-        throw new TypeError('options.document is required');
-      } else if (!_.isPlainObject(options.document) && !_.isString(options.document)) {
-        throw new TypeError('options.document must be either an object or a string');
+      } else if (_.isUndefined(options.definition)) {
+        throw new TypeError('options.definition is required');
+      } else if (!_.isPlainObject(options.definition) && !_.isString(options.definition)) {
+        throw new TypeError('options.definition must be either an object or a string');
       } else if (!_.isUndefined(options.loaderOptions) && !_.isPlainObject(options.loaderOptions)) {
         throw new TypeError('options.loaderOptions must be an object');
       } else if (!_.isUndefined(callback) && !_.isFunction(callback)) {
@@ -72,29 +72,32 @@ module.exports.create = function (options, callback) {
     });
   });
 
-  // Retrieve the document if it is a path/URL
+  // Make a copy of the input options so as not to alter them
+  options = _.cloneDeep(options);
+
+  // Retrieve the definition if it is a path/URL
   allTasks = allTasks
-    // Load the remote document or return options.document
+    // Load the remote definition or return options.definition
     .then(function () {
-      if (_.isString(options.document)) {
-        return pathLoader.load(options.document, options.loaderOptions || {}).then(YAML.safeLoad);
+      if (_.isString(options.definition)) {
+        return pathLoader.load(options.definition, options.loaderOptions || {}).then(YAML.safeLoad);
       } else {
-        return options.document;
+        return options.definition;
       }
     });
 
-  // Process the Swagger document (if possible)
+  // Process the Swagger definition (if possible)
   allTasks = allTasks
-    .then(function (apiDocument) {
-      var document = _.find(supportedVersions, function (pDocument) {
-        return pDocument.canProcess(apiDocument);
+    .then(function (apiDefinition) {
+      var definition = _.find(supportedVersions, function (pDefinition) {
+        return pDefinition.canProcess(apiDefinition);
       });
 
-      if (_.isUndefined(document)) {
+      if (_.isUndefined(definition)) {
         throw new TypeError('Unable to identify the Swagger version or the Swagger version is unsupported');
       }
 
-      return document.createSwaggerApi(apiDocument, options);
+      return definition.createSwaggerApi(apiDefinition, options);
     });
 
   // Use the callback if provided and it is a function

@@ -33,15 +33,15 @@ var swaggerApi = require('..');
 var invalidCreateScenarios = [
   [[], 'options is required'],
   [['wrongType'], 'options must be an object'],
-  [[{}], 'options.document is required'],
-  [[{document: {}, loaderOptions: 'wrongType'}], 'options.loaderOptions must be an object'],
-  [[{document: false}], 'options.document must be either an object or a string'],
-  [[{document: {}}], 'Unable to identify the Swagger version or the Swagger version is unsupported'],
-  [[{document: {}}, 'wrongType'], 'callback must be a function']
+  [[{}], 'options.definition is required'],
+  [[{definition: {}, loaderOptions: 'wrongType'}], 'options.loaderOptions must be an object'],
+  [[{definition: false}], 'options.definition must be either an object or a string'],
+  [[{definition: {}}], 'Unable to identify the Swagger version or the Swagger version is unsupported'],
+  [[{definition: {}}, 'wrongType'], 'callback must be a function']
 ];
 
-describe('swagger-core-api', function () {
-  describe('#create', function () {
+describe('swagger-core-api (General)', function () {
+  describe('swagger-core-api#create', function () {
     it('should always return a promise', function () {
       assert.ok(swaggerApi.create({}) instanceof Promise);
       assert.ok(swaggerApi.create({}, function () {}) instanceof Promise);

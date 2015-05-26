@@ -246,4 +246,6 @@ gulp.task('test', function (cb) {
   runSequence('test-node', 'test-browser', cb);
 });
 
-gulp.task('default', ['lint', 'test']);
+gulp.task('default', function (cb) {
+  runSequence('lint', 'test', cb);
+});

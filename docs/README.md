@@ -1,6 +1,6 @@
-swagger-core-api is an API around consuming [Swagger][swagger] documents.  The APIs provided attempt to solve common
-problems when working with Swagger documents, like loading a Swagger document.  _(For example: You might want to compose
-a Swagger document programmatically or you might want to load a Swagger document from the filesystem...or some URL.)_
+swagger-core-api is an API around consuming [Swagger][swagger] definitions.  The APIs provided attempt to solve common
+problems when working with Swagger definitions, like loading a Swagger definition.  _(For example: You might want to compose
+a Swagger definition programmatically or you might want to load a Swagger definition from the filesystem...or some URL.)_
 
 What you will find below is information on how to install swagger-core-api based on your environment.  You will also
 find detailed information about how to use the provided APIs.
@@ -43,21 +43,114 @@ npm install swagger-core-api --save
 
 The swagger-core-api exposes a few JavaScript objects and their documentation is below.
 
-### SwaggerApi
+### Operation
+
+This object represents a Swagger operation.
 
 #### properties
 
-##### document {object}
+This object has all of the properties set on the Swagger operation defintion as well as the properties provided below.
 
-This is the JavaScript object representing your Swagger document
+##### path {string}
+
+This is the Swagger operation path.
+
+##### method {string}
+
+This is the Swagger operation method.
+
+##### ptr {string}
+
+This is the [JSON Pointer][json-pointer] to the location in the Swagger definition document where the operation is
+defined.
+
+##### definition {object}
+
+This is the Swagger operation definition.  _(Note: The `parameters` and `security` properties are composites that
+represent the applied equivalent.  So for `parameters`, this includes path-level parameters and for `security`, this
+includes global security if available and there is no explicit security described.)_
+
+#### functions
+
+##### getParameters()
+
+##### Returns
+
+Returns a `Parameter[]` for the given operation.
+
+### Parameter
+
+This object represents a Swagger operation parameter.
+
+#### properties
+
+This object has all of the properties set on the Swagger operation parameter defintion as well as the properties
+provided below.
+
+##### ptr {string}
+
+This is the [JSON Pointer][json-pointer] to the location in the Swagger definition document where the operation
+parameter is defined.
+
+##### definition {object}
+
+This is the Swagger operation parameter definition.
+
+### SwaggerApi
+
+This object represents the Swagger definition document.
+
+#### properties
+
+This object has all of the properties set on the Swagger document defintion as well as the properties provided below.
+
+##### definition {object}
+
+This is the JavaScript object representing your Swagger definition
 
 ##### documentation {string}
 
 This is the URL to the Swagger Specification document for the Swagger version your SwaggerApi object corresponds to.
 
+##### options {object}
+
+This is the options object passed to `SwaggerApi.load`.
+
+##### version {string}
+
+This is the Swagger version for the provided Swagger definition document.
+
 #### functions
 
-**NONE YET***
+##### getOperations([path])
+
+###### Arguments
+
+####### path {string}
+
+This is the optional Swagger operation path to filter the operations by.
+
+###### Returns
+
+This API always returns an `Operation[]`.  If no `path` is provided, all operations are returned.  If a path is
+provided, all operations for the given `path` are returned.
+
+##### getOperation(path, method)
+
+###### Arguments
+
+####### path {string}
+
+This is the Swagger operation path
+
+####### method {string}
+
+This is the Swagger operation method
+
+###### Returns
+
+Returns the `Operation` for the provided `path` and `method` combination or `undefined` if no operation matches those
+criteria.
 
 ## API
 
@@ -80,10 +173,10 @@ This argument is required and its content are the options necessary for swagger-
 to work.  Below are the keys and their purpose:
 
 * `{object} [loaderOptions]`: This is the options that get passed to [path-loader][path-loader] when retrieving Swagger
-documents from the filesystem or a URL.  Right now it supports the `method` property _({string}, used to dictate which
+definitions from the filesystem or a URL.  Right now it supports the `method` property _({string}, used to dictate which
 HTTP method to use for remote http/https URLs)_ and the  `prepareRequest` property _({function}, used to prepare the
 HTTP request for remote http/https URLs for things like authentication/authorization)_.
-* `{object|string} document`: This is the path/URL to your Swagger document or the Swagger document in JavaScript object
+* `{object|string} definition`: This is the path/URL to your Swagger definition or the Swagger definition in JavaScript object
 form
 
 ##### callback {function}
@@ -117,6 +210,7 @@ SwaggerApi.create('http://petstore.swagger.io/v2/swagger.yaml', function (err, a
 ```
 
 [bower]: http://bower.io/
+[json-pointer]: https://tools.ietf.org/html/rfc6901
 [npm]: https://www.npmjs.org/
 [path-loader]: https://github.com/whitlockjc/path-loader
 [swagger]: http://swagger.io
