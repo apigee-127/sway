@@ -25,7 +25,7 @@
 'use strict';
 
 var browserify = require('browserify');
-var concat = require("gulp-concat");
+var concat = require('gulp-concat');
 var del = require('del');
 var eslint = require('gulp-eslint');
 var exposify = require('exposify');
