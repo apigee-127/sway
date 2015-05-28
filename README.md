@@ -2,12 +2,11 @@ An API for interacting with [Swagger][swagger] documents.
 
 ## Project Badges
 
-[![Join the chat at https://gitter.im/apigee-127/swagger-core-api](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apigee-127/swagger-core-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 * Build status: [![Build Status](https://travis-ci.org/apigee-127/swagger-core-api.svg)](https://travis-ci.org/apigee-127/swagger-core-api)
 * Dependencies: [![Dependencies](https://david-dm.org/apigee-127/swagger-core-api.svg)](https://david-dm.org/apigee-127/swagger-core-api)
 * Developer dependencies: [![Dev Dependencies](https://david-dm.org/apigee-127/swagger-core-api/dev-status.svg)](https://david-dm.org/apigee-127/swagger-core-api#info=devDependencies&view=table)
 * Downloads: [![NPM Downloads Per Month](http://img.shields.io/npm/dm/swagger-core-api.svg)](https://www.npmjs.org/package/swagger-core-api)
+* Gitter: [![Join the chat at https://gitter.im/apigee-127/swagger-core-api](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apigee-127/swagger-core-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 * License: [![License](http://img.shields.io/npm/l/swagger-core-api.svg)](https://github.com/apigee-127/swagger-core-api/blob/master/LICENSE)
 * Version: [![NPM Version](http://img.shields.io/npm/v/swagger-core-api.svg)](https://www.npmjs.org/package/swagger-core-api)
 
