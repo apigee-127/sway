@@ -12,12 +12,6 @@
 <dt><a href="#create">create(options, [callback])</a> ⇒ <code>Promise</code></dt>
 <dd><p>Creates a SwaggerApi object from its Swagger definition(s).</p>
 </dd>
-<dt><a href="#createJSONValidator">createJSONValidator(options)</a> ⇒ <code>object</code></dt>
-<dd><p>Helper method to create a JSON Validator.</p>
-</dd>
-<dt><a href="#validateAgainstSchema">validateAgainstSchema(validator, schemaOrName, value)</a></dt>
-<dd><p>Validates the provided value against the JSON Schema by name or value.</p>
-</dd>
 </dl>
 <a name="Operation"></a>
 ## Operation
@@ -174,32 +168,3 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, fu
     console.log('Documentation URL: ', api.documentation);
   });
 ```
-<a name="createJSONValidator"></a>
-## createJSONValidator(options) ⇒ <code>object</code>
-Helper method to create a JSON Validator.
-
-**Kind**: global function  
-**Returns**: <code>object</code> - The JSON Schema validator  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| options | <code>object</code> | The validator options |
-| [options.schemas] | <code>Array.&lt;obejct&gt;</code> | The JSON Schema(s) to use |
-| [options.formatValidators] | <code>object</code> | The custom format validators to use |
-
-<a name="validateAgainstSchema"></a>
-## validateAgainstSchema(validator, schemaOrName, value)
-Validates the provided value against the JSON Schema by name or value.
-
-**Kind**: global function  
-**Throws**:
-
-- <code>Error</code> If the JSON Schema validation fails
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| validator | <code>object</code> | The JSON Schema validator created via [#createJSONValidator](#createJSONValidator) |
-| schemaOrName | <code>object</code> &#124; <code>string</code> | The JSON Schema name or string |
-| value | <code>\*</code> | The value to validate |
-

@@ -24,17 +24,17 @@
 
 'use strict';
 
+var $ = require('gulp-load-plugins')({
+  rename: {
+    'gulp-jsdoc-to-markdown': 'jsdoc2MD',
+    'gulp-mocha-phantomjs': 'mochaPhantomJS'
+  }
+});
 var browserify = require('browserify');
-var concat = require('gulp-concat');
 var del = require('del');
-var eslint = require('gulp-eslint');
 var exposify = require('exposify');
 var fs = require('fs');
 var gulp = require('gulp');
-var istanbul = require('gulp-istanbul');
-var jsdoc2Md = require('gulp-jsdoc-to-markdown');
-var mocha = require('gulp-mocha');
-var mochaPhantomJS = require('gulp-mocha-phantomjs');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
 var testHelpers = require('./test/helpers');
@@ -49,7 +49,7 @@ if (typeof Promise === 'undefined') {
 function displayCoverageReport (display) {
   if (display) {
     gulp.src([])
-      .pipe(istanbul.writeReports());
+      .pipe($.istanbul.writeReports());
   }
 }
 
@@ -112,9 +112,9 @@ gulp.task('lint', function () {
     '!test/browser/**/*.js',
     'gulpfile.js'
   ])
-    .pipe(eslint())
-    .pipe(eslint.format('stylish'))
-    .pipe(eslint.failAfterError());
+    .pipe($.eslint())
+    .pipe($.eslint.format('stylish'))
+    .pipe($.eslint.failAfterError());
 });
 
 gulp.task('test-node', function () {
@@ -140,14 +140,14 @@ gulp.task('test-node', function () {
           'index.js',
           'lib/**/*.js'
         ])
-          .pipe(istanbul({includeUntested: true}))
-          .pipe(istanbul.hookRequire()) // Force `require` to return covered files
+          .pipe($.istanbul({includeUntested: true}))
+          .pipe($.istanbul.hookRequire()) // Force `require` to return covered files
           .on('finish', function () {
             gulp.src([
               'test/**/test-*.js',
               '!test/browser/test-*.js'
             ])
-              .pipe(mocha({reporter: 'spec'}))
+              .pipe($.mocha({reporter: 'spec'}))
               .on('error', function (err) {
                 cleanUp();
 
@@ -220,7 +220,7 @@ gulp.task('test-browser', ['browserify'], function () {
             basePath + 'test-bower.html',
             basePath + 'test-standalone.html'
           ])
-          .pipe(mochaPhantomJS({
+          .pipe($.mochaPhantomJS({
             phantomjs: {
               localToRemoteUrlAccessEnabled: true,
               webSecurityEnabled: false,
@@ -247,10 +247,10 @@ gulp.task('test-browser', ['browserify'], function () {
 gulp.task('docs', function () {
   return gulp.src([
     './index.js',
-    'lib/*.js'
+    'lib/types.js'
   ])
-    .pipe(concat('API.md'))
-    .pipe(jsdoc2Md())
+    .pipe($.concat('API.md'))
+    .pipe($.jsdoc2MD())
     .pipe(gulp.dest('docs'));
 });
 
