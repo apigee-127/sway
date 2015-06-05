@@ -18,12 +18,13 @@
 **Kind**: global class  
 
 * [Operation](#Operation)
-  * [new Operation(path, method, ptr, definition, parameters)](#new_Operation_new)
+  * [new Operation(api, path, method, ptr, definition)](#new_Operation_new)
   * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
+  * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
 
 <a name="new_Operation_new"></a>
-### new Operation(path, method, ptr, definition, parameters)
+### new Operation(api, path, method, ptr, definition)
 The Swagger Operation object.
 
 <strong>Note:</strong> Do not use directly.
@@ -31,11 +32,11 @@ The Swagger Operation object.
 
 | Param | Type | Description |
 | --- | --- | --- |
+| api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
 | path | <code>string</code> | The operation path |
 | method | <code>string</code> | The operation method |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | definition | <code>object</code> | The operation definition |
-| parameters | <code>[Array.&lt;Parameter&gt;](#Parameter)</code> | The Swagger parameter objects |
 
 <a name="Operation+getParameters"></a>
 ### operation.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
@@ -59,16 +60,33 @@ Returns the JSON Schema for the requested code or the default response if no cod
 | --- | --- | --- | --- |
 | [code] | <code>number</code> &#124; <code>string</code> | <code>default</code> | The response code |
 
+<a name="Operation+getResponseSample"></a>
+### operation.getResponseSample([code]) ⇒ <code>\*</code>
+Returns a sample value based on the requested code or the default response if no code is provided.
+
+**Kind**: instance method of <code>[Operation](#Operation)</code>  
+**Returns**: <code>\*</code> - The sample value for the response, which can be undefined if the response schema is not provided  
+**Throws**:
+
+- <code>Error</code> Thrown whenever the requested code does not exist (Throwing an error instead of returning undefined
+                is required due to undefined being a valid response schema indicating a void response)
+
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [code] | <code>number</code> &#124; <code>string</code> | <code>default</code> | The response code |
+
 <a name="Parameter"></a>
 ## Parameter
 **Kind**: global class  
 
 * [Parameter](#Parameter)
-  * [new Parameter(ptr, definition, schema)](#new_Parameter_new)
+  * [new Parameter(operation, ptr, definition, schema)](#new_Parameter_new)
   * [.getSchema()](#Parameter+getSchema) ⇒ <code>object</code>
+  * [.getSample()](#Parameter+getSample) ⇒ <code>\*</code>
 
 <a name="new_Parameter_new"></a>
-### new Parameter(ptr, definition, schema)
+### new Parameter(operation, ptr, definition, schema)
 The Swagger Parameter object.
 
 <strong>Note:</strong> Do not use directly.
@@ -76,6 +94,7 @@ The Swagger Parameter object.
 
 | Param | Type | Description |
 | --- | --- | --- |
+| operation | <code>[Operation](#Operation)</code> | The Swagger Operation object |
 | ptr | <code>string</code> | The JSON Pointer to the parameter |
 | definition | <code>object</code> | The parameter definition |
 | schema | <code>object</code> | The JSON Schema for the parameter |
@@ -86,17 +105,23 @@ Returns the computed JSON Schema for this parameter object.
 
 **Kind**: instance method of <code>[Parameter](#Parameter)</code>  
 **Returns**: <code>object</code> - The JSON Schema  
+<a name="Parameter+getSample"></a>
+### parameter.getSample() ⇒ <code>\*</code>
+Returns a sample value for the parameter based on its schema;
+
+**Kind**: instance method of <code>[Parameter](#Parameter)</code>  
+**Returns**: <code>\*</code> - The sample value  
 <a name="SwaggerApi"></a>
 ## SwaggerApi
 **Kind**: global class  
 
 * [SwaggerApi](#SwaggerApi)
-  * [new SwaggerApi(definition, version, documentation, operations, options)](#new_SwaggerApi_new)
+  * [new SwaggerApi(plugin, definition, options, [pluginProperties])](#new_SwaggerApi_new)
   * [.getOperation(path, method)](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
 
 <a name="new_SwaggerApi_new"></a>
-### new SwaggerApi(definition, version, documentation, operations, options)
+### new SwaggerApi(plugin, definition, options, [pluginProperties])
 The Swagger API object.
 
 <strong>Note:</strong> Do not use directly.
@@ -104,11 +129,10 @@ The Swagger API object.
 
 | Param | Type | Description |
 | --- | --- | --- |
+| plugin | <code>object</code> | The Swagger version plugin |
 | definition | <code>object</code> | The Swagger definition |
-| version | <code>string</code> | The Swagger definition version |
-| documentation | <code>string</code> | The Swagger Specification documentation URL |
-| operations | <code>[Array.&lt;Operation&gt;](#Operation)</code> | The Swagger operation objects |
 | options | <code>object</code> | The options passed to swaggerApi.create |
+| [pluginProperties] | <code>object</code> | The extra properties to set on the SwaggerApi object |
 
 <a name="SwaggerApi+getOperation"></a>
 ### swaggerApi.getOperation(path, method) ⇒ <code>[Operation](#Operation)</code>

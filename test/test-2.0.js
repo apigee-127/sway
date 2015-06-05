@@ -106,16 +106,16 @@ describe('swagger-core-api (Swagger 2.0)', function () {
     function validateCreateSwaggerApi (options) {
       return function (theApi) {
         assert.ok(theApi instanceof types.SwaggerApi);
-        assert.deepEqual(swaggerDoc, theApi.definition);
-        assert.equal(implementation.documentation, theApi.documentation);
-        assert.deepEqual(options, theApi.options);
-        assert.equal(implementation.version, theApi.version);
-        assert.deepEqual(resolvedRefs, theApi.references);
-        assert.deepEqual(resolvedSwaggerDoc, theApi.resolved);
+        assert.deepEqual(theApi.definition, swaggerDoc);
+        assert.equal(theApi.documentation, implementation.documentation);
+        assert.deepEqual(theApi.options, options);
+        assert.equal(theApi.version, implementation.version);
+        assert.deepEqual(theApi.references, resolvedRefs);
+        assert.deepEqual(theApi.resolved, resolvedSwaggerDoc);
 
         // Validate the merging of the Swagger definition properties and the SwaggerApi properties
         _.forEach(swaggerDoc, function (val, key) {
-          assert.deepEqual(val, theApi[key]);
+          assert.deepEqual(theApi[key], val);
         });
 
         // Validate the operations (Simple tests for now, deeper testing is below)
@@ -198,32 +198,32 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       var pathDef = swagger.resolved.paths[path];
       var operationDef = swagger.resolved.paths[path][method];
 
-      assert.equal(path, operation.path);
-      assert.equal(method, operation.method);
-      assert.equal('#/paths/~1pet~1{petId}/' + method, operation.ptr);
+      assert.equal(operation.path, path);
+      assert.equal(operation.method, method);
+      assert.equal(operation.ptr, '#/paths/~1pet~1{petId}/' + method);
 
       _.each(operation.definition, function (val, key) {
         if (key === 'parameters') {
-          assert.deepEqual([
+          assert.deepEqual(val, [
             pathDef.parameters[0],
             operationDef.parameters[0],
             operationDef.parameters[1]
-          ], val);
+          ]);
         } else if (key === 'security') {
-          assert.deepEqual([
+          assert.deepEqual(val, [
             {
               'petstore_auth': [
                 'read:pets',
                 'write:pets'
               ]
             }
-          ], val);
+          ]);
         } else {
-          assert.deepEqual(pathDef[method][key], val);
+          assert.deepEqual(val, pathDef[method][key]);
         }
       });
 
-      assert.equal(3, operation.parameterObjects.length);
+      assert.equal(operation.parameterObjects.length, 3);
 
       _.each(operation.parameterObjects, function (parameter) {
         assert.ok(parameter instanceof types.Parameter);
@@ -236,22 +236,22 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       var operation = swagger.getOperation(path, method);
       var pathDef = swagger.resolved.paths[path];
 
-      assert.equal(path, operation.path);
-      assert.equal(method, operation.method);
-      assert.equal('#/paths/~1pet~1{petId}~1uploadImage/post', operation.ptr);
+      assert.equal(operation.path, path);
+      assert.equal(operation.method, method);
+      assert.equal(operation.ptr, '#/paths/~1pet~1{petId}~1uploadImage/post');
 
       _.each(operation.definition, function (val, key) {
         if (key === 'security') {
-          assert.deepEqual([
+          assert.deepEqual(val, [
             {
               'petstore_auth': [
                 'read:pets',
                 'write:pets'
               ]
             }
-          ], val);
+          ]);
         } else {
-          assert.deepEqual(pathDef[method][key], val);
+          assert.deepEqual(val, pathDef[method][key]);
         }
       });
 
@@ -261,22 +261,22 @@ describe('swagger-core-api (Swagger 2.0)', function () {
     });
 
     it('should handle composite security', function () {
-      assert.deepEqual([
+      assert.deepEqual(swagger.getOperation('/pet/{petId}', 'get').security, [
         {
           'petstore_auth': [
             'read:pets',
             'write:pets'
           ]
         }
-      ], swagger.getOperation('/pet/{petId}', 'get').security);
+      ]);
     });
 
     it('should handle explicit parameters', function () {
-      assert.deepEqual([
+      assert.deepEqual(swagger.getOperation('/user/{username}', 'get').security, [
         {
           'api_key': []
         }
-      ], swagger.getOperation('/user/{username}', 'get').security);
+      ]);
     });
 
     // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
@@ -284,7 +284,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       it('should return the proper parameter objects', function () {
         var operation = swagger.getOperation('/pet/{petId}', 'post');
 
-        assert.deepEqual(operation.parameterObjects, operation.getParameters());
+        assert.deepEqual(operation.getParameters(), operation.parameterObjects);
       });
     });
 
@@ -295,20 +295,52 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
           shouldHadFailed();
         } catch (err) {
-          assert.equal('This operation does not have a defined \'fake\' response code', err.message);
+          assert.equal(err.message, 'This operation does not have a defined \'fake\' response code');
         }
       });
 
       it('should return default response when no code is provided', function () {
         var operation = swagger.getOperation('/user', 'post');
 
-        assert.deepEqual(operation.definition.responses.default.schema, operation.getResponseSchema());
+        assert.deepEqual(operation.getResponseSchema(), operation.definition.responses.default.schema);
       });
 
       it('should return the proper schema for the provided code', function () {
         var operation = swagger.getOperation('/pet/{petId}', 'get');
 
-        assert.deepEqual(operation.definition.responses['200'].schema, operation.getResponseSchema(200));
+        assert.deepEqual(operation.getResponseSchema(200), operation.definition.responses['200'].schema);
+      });
+    });
+
+    describe('#getResponseSample', function () {
+      it('should throw an Error for invalid response code', function () {
+        try {
+          swagger.getOperation('/pet/{petId}', 'get').getResponseSample('fake');
+
+          shouldHadFailed();
+        } catch (err) {
+          assert.equal(err.message, 'This operation does not have a defined \'fake\' response code');
+        }
+      });
+
+      it('should return sample for default response when no code is provided', function () {
+        assert.ok(_.isUndefined(swagger.getOperation('/user', 'post').getResponseSample()));
+      });
+
+      it('should return sample for the requested response code', function () {
+        var operation = swagger.getOperation('/pet/{petId}', 'get');
+
+        try {
+          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+                                        operation.getResponseSchema(200),
+                                        operation.getResponseSample(200));
+        } catch (err) {
+          shouldNotHadFailed();
+        }
+      });
+
+      it('should return undefined for void response', function () {
+        assert.ok(_.isUndefined(swagger.getOperation('/pet', 'post').getResponseSample(405)));
       });
     });
   });
@@ -330,28 +362,26 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           ptr += 'post/parameters/' + (index - 1);
         }
 
-        assert.equal(ptr, parameter.ptr);
-        assert.deepEqual(def, parameter.definition);
+        assert.equal(parameter.ptr, ptr);
+        assert.deepEqual(parameter.definition, def);
       });
     });
 
     describe('#getSchema', function () {
       it('should handle parameter with explicit schema definition (body parameter)', function () {
-        var validator = helpers.createJSONValidator({
-          formatValidators: implementation.customSchemaFormatValidators
-        });
+        var validator = implementation.getSchemaValidator();
         var schema = swagger.getOperation('/pet', 'post').getParameters()[0].getSchema();
 
         // Make sure the generated JSON Schema is identical to its referenced schema
-        assert.deepEqual(swagger.resolved.definitions.Pet, schema);
+        assert.deepEqual(schema, swagger.resolved.definitions.Pet);
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
           helpers.validateAgainstSchema(validator, schema, {});
         } catch (err) {
-          assert.equal('SCHEMA_VALIDATION_FAILED', err.code);
-          assert.equal('JSON Schema validation failed', err.message);
-          assert.deepEqual([
+          assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.equal(err.message, 'JSON Schema validation failed');
+          assert.deepEqual(err.errors, [
             {
               code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
               message: 'Missing required property: photoUrls',
@@ -362,8 +392,8 @@ describe('swagger-core-api (Swagger 2.0)', function () {
               message: 'Missing required property: name',
               path: []
             }
-          ], err.errors);
-          assert.deepEqual([], err.warnings);
+          ]);
+          assert.deepEqual(err.warnings, []);
         }
 
         // Make sure the generated JSON Schema validates a valid object properly
@@ -378,34 +408,32 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', function () {
-        var validator = helpers.createJSONValidator({
-          formatValidators: implementation.customSchemaFormatValidators
-        });
+        var validator = implementation.getSchemaValidator();
         var schema = swagger.getOperation('/pet/findByTags', 'get').getParameters()[0].getSchema();
 
         // Make sure the generated JSON Schema is as expected
-        assert.deepEqual({
+        assert.deepEqual(schema, {
           description: 'Tags to filter by',
           type: 'array',
           items: {
             type: 'string'
           }
-        }, schema);
+        });
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
           helpers.validateAgainstSchema(validator, schema, 1);
         } catch (err) {
-          assert.equal('SCHEMA_VALIDATION_FAILED', err.code);
-          assert.equal('JSON Schema validation failed', err.message);
-          assert.deepEqual([
+          assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.equal(err.message, 'JSON Schema validation failed');
+          assert.deepEqual(err.errors, [
             {
               code: 'INVALID_TYPE',
               description: 'Tags to filter by',
               message: 'Expected type array but found type integer',
               path: []
             }
-          ], err.errors);
+          ]);
           assert.deepEqual([], err.warnings);
         }
 
@@ -421,6 +449,32 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         }
       });
     });
+
+    describe('#getSample', function () {
+      it('should handle parameter with explicit schema definition (body parameter)', function () {
+        var parameter = swagger.getOperation('/pet', 'post').getParameters()[0];
+
+        try {
+          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+                                        parameter.getSchema(),
+                                        parameter.getSample());
+        } catch (err) {
+          shouldNotHadFailed();
+        }
+      });
+
+      it('should handle parameter with schema-like definition (non-body parameter)', function () {
+        var parameter = swagger.getOperation('/pet/findByTags', 'get').getParameters()[0];
+
+        try {
+          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+                                        parameter.getSchema(),
+                                        parameter.getSample());
+        } catch (err) {
+          shouldNotHadFailed();
+        }
+      });
+    });
   });
 
   describe('SwaggerApi', function () {
@@ -428,11 +482,11 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       it('should return return all operations', function () {
         var operations = swagger.getOperations();
 
-        assert.equal(_.reduce(swagger.definition.paths, function (count, path) {
+        assert.equal(operations.length, _.reduce(swagger.definition.paths, function (count, path) {
           count += getOperationCount(path);
 
           return count;
-        }, 0), operations.length);
+        }, 0));
 
         // Validate the operations
       });
@@ -441,11 +495,11 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         var operations = swagger.getOperations('/pet/{petId}');
 
         assert.ok(swagger.getOperations().length > operations.length);
-        assert.equal(getOperationCount(swagger.definition.paths['/pet/{petId}']), operations.length);
+        assert.equal(operations.length, getOperationCount(swagger.definition.paths['/pet/{petId}']));
       });
 
       it('should return return no operations for a missing path', function () {
-        assert.equal(0, swagger.getOperations('/some/fake/path').length);
+        assert.equal(swagger.getOperations('/some/fake/path').length, 0);
       });
     });
 

@@ -61,7 +61,7 @@ describe('swagger-core-api (General)', function () {
                   }, function (err) {
                     try {
                       assert.ok(err instanceof TypeError);
-                      assert.equal(scenario[1], err.message);
+                      assert.equal(err.message, scenario[1]);
 
                       resolve();
                     } catch (err) {
@@ -88,7 +88,7 @@ describe('swagger-core-api (General)', function () {
                 var args = scenario[0].concat(function (err) {
                   try {
                     assert.ok(err instanceof TypeError);
-                    assert.equal(scenario[1], err.message);
+                    assert.equal(err.message, scenario[1]);
 
                     resolve();
                   } catch (err) {

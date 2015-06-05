@@ -588,6 +588,7 @@ definitions:
       complete:
         type: "boolean"
         default: false
+    type: "object"
     xml:
       name: "Order"
   User:
@@ -611,6 +612,7 @@ definitions:
         type: "integer"
         format: "int32"
         description: "User Status"
+    type: "object"
     xml:
       name: "User"
   Category:
@@ -620,6 +622,7 @@ definitions:
         format: "int64"
       name:
         type: "string"
+    type: "object"
     xml:
       name: "Category"
   Tag:
@@ -629,6 +632,7 @@ definitions:
         format: "int64"
       name:
         type: "string"
+    type: "object"
     xml:
       name: "Tag"
   Pet:
@@ -665,6 +669,7 @@ definitions:
         - "available"
         - "pending"
         - "sold"
+    type: "object"
     xml:
       name: "Pet"
   ApiResponse:
@@ -676,6 +681,7 @@ definitions:
         type: "string"
       message:
         type: "string"
+    type: "object"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

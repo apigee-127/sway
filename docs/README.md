@@ -43,6 +43,31 @@ npm install swagger-core-api --save
 
 The swagger-core-api project's API documentation can be found here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/API.md
 
+## Dependencies
+
+Below is the list of projects being used by swagger-core-api and the purpose(s) they are used for:
+
+* [debug][debug]: Used for producing useful debugging information
+* [js-yaml][js-yaml]: Used for parsing YAML Swagger files
+* [json-refs][json-refs]: Used for dereferncing JSON References in Swagger files
+* [json-schema-faker][json-schema-faker]: Used for generating mock/sample values from JSON Schemas
+* [lodash-compat][lodash-compat]: Used for browser compatibility and miscellaneous utilities _(We use `lodash-compat`
+instead of `lodash` for compatibility with IE8 and IE9.  We will likely change this but the reasons behind it were the
+Swagger project itself has JavaScript libraries that support IE8+ and we wanted to support the same level of browsers
+they did just in case they wanted to use these libraries.)_
+* [native-promise-only][native-promise-only]: Used to shim in [Promises][promises] support
+* [path-loader][path-loader]: Used to load Swagger files from the local filesystem and remote URLs
+* [z-schema][z-schema]: Used for JSON Schema validation
+
 [bower]: http://bower.io/
+[debug]: https://www.npmjs.com/package/debug
+[js-yaml]: https://www.npmjs.com/package/js-yaml
+[json-refs]: https://www.npmjs.com/package/json-refs
+[json-schema-faker]: https://www.npmjs.com/package/json-schema-faker
+[lodash-compat]: https://www.npmjs.com/package/lodash-compat
+[native-promise-only]: https://www.npmjs.com/package/native-promise-only
+[path-loader]: https://www.npmjs.com/package/path-loader
+[promises]: https://www.promisejs.org/
 [npm]: https://www.npmjs.org/
 [swagger]: http://swagger.io
+[z-schema]: https://www.npmjs.com/package/z-schema
