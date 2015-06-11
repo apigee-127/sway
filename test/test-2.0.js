@@ -37,6 +37,9 @@ var YAML = require('js-yaml');
 var helpers = require('../lib/helpers');
 var implementation = require('../lib/versions/2.0');
 var swaggerDocPath = 'http://localhost:44444/swagger.yaml';
+var swaggerDocValidator = helpers.createJSONValidator({
+  formatValidators: require('../lib/versions/2.0/format-validators')
+});
 
 function getOperationCount (path) {
   var count = 0;
@@ -58,7 +61,9 @@ function shouldHadFailed () {
   fail('The code above should had thrown an error');
 }
 
-function shouldNotHadFailed () {
+function shouldNotHadFailed (err) {
+  console.error(err.stack);
+
   fail('The code above should not had thrown an error');
 }
 
@@ -331,11 +336,11 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         var operation = swagger.getOperation('/pet/{petId}', 'get');
 
         try {
-          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+          helpers.validateAgainstSchema(swaggerDocValidator,
                                         operation.getResponseSchema(200),
                                         operation.getResponseSample(200));
         } catch (err) {
-          shouldNotHadFailed();
+          shouldNotHadFailed(err);
         }
       });
 
@@ -369,7 +374,6 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
     describe('#getSchema', function () {
       it('should handle parameter with explicit schema definition (body parameter)', function () {
-        var validator = implementation.getSchemaValidator();
         var schema = swagger.getOperation('/pet', 'post').getParameters()[0].getSchema();
 
         // Make sure the generated JSON Schema is identical to its referenced schema
@@ -377,7 +381,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
-          helpers.validateAgainstSchema(validator, schema, {});
+          helpers.validateAgainstSchema(swaggerDocValidator, schema, {});
         } catch (err) {
           assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
           assert.equal(err.message, 'JSON Schema validation failed');
@@ -398,17 +402,16 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
         // Make sure the generated JSON Schema validates a valid object properly
         try {
-          helpers.validateAgainstSchema(validator, schema, {
+          helpers.validateAgainstSchema(swaggerDocValidator, schema, {
             photoUrls: [],
             name: 'Test Pet'
           });
         } catch (err) {
-          shouldNotHadFailed();
+          shouldNotHadFailed(err);
         }
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', function () {
-        var validator = implementation.getSchemaValidator();
         var schema = swagger.getOperation('/pet/findByTags', 'get').getParameters()[0].getSchema();
 
         // Make sure the generated JSON Schema is as expected
@@ -422,7 +425,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
-          helpers.validateAgainstSchema(validator, schema, 1);
+          helpers.validateAgainstSchema(swaggerDocValidator, schema, 1);
         } catch (err) {
           assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
           assert.equal(err.message, 'JSON Schema validation failed');
@@ -439,13 +442,13 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
         // Make sure the generated JSON Schema validates a valid object properly
         try {
-          helpers.validateAgainstSchema(validator, schema, [
+          helpers.validateAgainstSchema(swaggerDocValidator, schema, [
             'tag1',
             'tag2',
             'tag3'
           ]);
         } catch (err) {
-          shouldNotHadFailed();
+          shouldNotHadFailed(err);
         }
       });
     });
@@ -455,11 +458,11 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         var parameter = swagger.getOperation('/pet', 'post').getParameters()[0];
 
         try {
-          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+          helpers.validateAgainstSchema(swaggerDocValidator,
                                         parameter.getSchema(),
                                         parameter.getSample());
         } catch (err) {
-          shouldNotHadFailed();
+          shouldNotHadFailed(err);
         }
       });
 
@@ -467,17 +470,21 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         var parameter = swagger.getOperation('/pet/findByTags', 'get').getParameters()[0];
 
         try {
-          helpers.validateAgainstSchema(implementation.getSchemaValidator(),
+          helpers.validateAgainstSchema(swaggerDocValidator,
                                         parameter.getSchema(),
                                         parameter.getSample());
         } catch (err) {
-          shouldNotHadFailed();
+          shouldNotHadFailed(err);
         }
       });
     });
   });
 
   describe('SwaggerApi', function () {
+    beforeEach(function () {
+      swagger.customValidators = [];
+    });
+
     describe('#getOperations', function () {
       it('should return return all operations', function () {
         var operations = swagger.getOperations();
@@ -516,6 +523,97 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
       it('should return no operation for missing method', function () {
         assert.ok(_.isUndefined(swagger.getOperation('/pet/{petId}', 'head')));
+      });
+    });
+
+    describe('#registerValidator', function () {
+      it('should throw TypeError for invalid arguments', function () {
+        var scenarios = [
+          [[], 'validator is required'],
+          [['wrongType'], 'validator must be a function']
+        ];
+
+        _.forEach(scenarios, function (scenario) {
+          try {
+            swagger.registerValidator.apply(swagger, scenario[0]);
+
+            shouldHadFailed();
+          } catch (err) {
+            assert.equal(scenario[1], err.message);
+          }
+        });
+      });
+
+      it('should add validator to list of validators', function () {
+        var errorMessage = 'Validation failed: This validator will never pass';
+
+        try {
+          swagger.validate();
+        } catch (err) {
+          shouldNotHadFailed(err);
+        }
+
+        swagger.registerValidator(function () {
+          throw new Error(errorMessage);
+        });
+
+        try {
+          swagger.validate();
+
+          shouldHadFailed();
+        } catch (err) {
+          assert.equal(errorMessage, err.message);
+        }
+      });
+    });
+
+    describe('#validate', function () {
+      it('should not throw an Error for a valid document', function () {
+        try {
+          swagger.validate();
+        } catch (err) {
+          shouldNotHadFailed(err);
+        }
+      });
+
+      describe('should throw an Error for an invalid document', function () {
+        var resolvedDefinition;
+
+        beforeEach(function () {
+          resolvedDefinition = swagger.resolved;
+        });
+
+        afterEach(function () {
+          swagger.resolved = resolvedDefinition;
+        });
+
+        // For testing we will manipulate the internal state of the SwaggerApi object.  This is just for simplicity
+        // and is not something we support or suggest doing.
+
+        it('does not validate against JSON Schema', function () {
+          var cSwagger = _.cloneDeep(swagger.resolved);
+
+          delete cSwagger.paths;
+
+          swagger.resolved = cSwagger;
+
+          try {
+            swagger.validate();
+
+            shouldHadFailed();
+          } catch (err) {
+            assert.equal('SCHEMA_VALIDATION_FAILED', err.code);
+            assert.equal('JSON Schema validation failed', err.message);
+            assert.deepEqual([], err.warnings);
+            assert.deepEqual([
+              {
+                code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                message: 'Missing required property: paths',
+                path: []
+              }
+            ], err.errors);
+          }
+        });
       });
     });
   });

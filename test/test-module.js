@@ -34,9 +34,11 @@ var invalidCreateScenarios = [
   [[], 'options is required'],
   [['wrongType'], 'options must be an object'],
   [[{}], 'options.definition is required'],
-  [[{definition: {}, loaderOptions: 'wrongType'}], 'options.loaderOptions must be an object'],
   [[{definition: false}], 'options.definition must be either an object or a string'],
   [[{definition: {}}], 'Unable to identify the Swagger version or the Swagger version is unsupported'],
+  [[{definition: {}, loaderOptions: 'wrongType'}], 'options.loaderOptions must be an object'],
+  [[{definition: {}, customValidators: 'wrongType'}], 'options.customValidators must be an array'],
+  [[{definition: {}, customValidators: ['wrongType']}], 'options.customValidators at index 0 must be a function'],
   [[{definition: {}}, 'wrongType'], 'callback must be a function']
 ];
 

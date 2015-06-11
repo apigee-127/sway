@@ -13,6 +13,12 @@
 <dd><p>Creates a SwaggerApi object from its Swagger definition(s).</p>
 </dd>
 </dl>
+## Typedefs
+<dl>
+<dt><a href="#validatorCallback">validatorCallback</a> : <code>function</code></dt>
+<dd><p>Callback used for validation.</p>
+</dd>
+</dl>
 <a name="Operation"></a>
 ## Operation
 **Kind**: global class  
@@ -116,12 +122,14 @@ Returns a sample value for the parameter based on its schema;
 **Kind**: global class  
 
 * [SwaggerApi](#SwaggerApi)
-  * [new SwaggerApi(plugin, definition, options, [pluginProperties])](#new_SwaggerApi_new)
+  * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
   * [.getOperation(path, method)](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.registerValidator(validator)](#SwaggerApi+registerValidator)
+  * [.validate()](#SwaggerApi+validate)
 
 <a name="new_SwaggerApi_new"></a>
-### new SwaggerApi(plugin, definition, options, [pluginProperties])
+### new SwaggerApi(plugin, definition, resolved, references, options)
 The Swagger API object.
 
 <strong>Note:</strong> Do not use directly.
@@ -131,8 +139,10 @@ The Swagger API object.
 | --- | --- | --- |
 | plugin | <code>object</code> | The Swagger version plugin |
 | definition | <code>object</code> | The Swagger definition |
+| resolved | <code>object</code> | The fully resolved Swagger definition |
+| references | <code>object</code> | The location and resolution of the resolved references in the Swagger definition |
 | options | <code>object</code> | The options passed to swaggerApi.create |
-| [pluginProperties] | <code>object</code> | The extra properties to set on the SwaggerApi object |
+| [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 
 <a name="SwaggerApi+getOperation"></a>
 ### swaggerApi.getOperation(path, method) ⇒ <code>[Operation](#Operation)</code>
@@ -158,6 +168,29 @@ Returns all operations for the provided path or all operations in the API.
 | --- | --- | --- |
 | [path] | <code>string</code> | The Swagger path |
 
+<a name="SwaggerApi+registerValidator"></a>
+### swaggerApi.registerValidator(validator)
+Registers a validator.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Throws**:
+
+- <code>TypeError</code> If the validator is not a function
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| validator | <code>[validatorCallback](#validatorCallback)</code> | The validator |
+
+<a name="SwaggerApi+validate"></a>
+### swaggerApi.validate()
+Performs validation of the Swagger API document(s).
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Throws**:
+
+- <code>Error</code> If any validators fail
+
 <a name="create"></a>
 ## create(options, [callback]) ⇒ <code>Promise</code>
 Creates a SwaggerApi object from its Swagger definition(s).
@@ -168,8 +201,9 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | Param | Type | Description |
 | --- | --- | --- |
 | options | <code>object</code> | The options for loading the definition(s) |
-| [options.loaderOptions] | <code>object</code> | The options to pass to path-loader |
 | options.definition | <code>object</code> &#124; <code>string</code> | The Swagger definition location or structure |
+| [options.loaderOptions] | <code>object</code> | The options to pass to path-loader |
+| [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 | [callback] | <code>function</code> | Node.js error-first callback |
 
 **Example**
@@ -192,3 +226,13 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, fu
     console.log('Documentation URL: ', api.documentation);
   });
 ```
+<a name="validatorCallback"></a>
+## validatorCallback : <code>function</code>
+Callback used for validation.
+
+**Kind**: global typedef  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
+

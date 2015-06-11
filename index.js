@@ -42,8 +42,9 @@ var supportedVersions = {
  * Creates a SwaggerApi object from its Swagger definition(s).
  *
  * @param {object} options - The options for loading the definition(s)
- * @param {object} [options.loaderOptions] - The options to pass to path-loader
  * @param {object|string} options.definition - The Swagger definition location or structure
+ * @param {object} [options.loaderOptions] - The options to pass to path-loader
+ * @param {validatorCallback[]} [options.customValidators] - The custom validators
  * @param {function} [callback] - Node.js error-first callback
  *
  * @returns {Promise} A promise is always returned even if you provide a callback but it is not required to be used
@@ -82,9 +83,17 @@ module.exports.create = function (options, callback) {
         throw new TypeError('options.definition must be either an object or a string');
       } else if (!_.isUndefined(options.loaderOptions) && !_.isPlainObject(options.loaderOptions)) {
         throw new TypeError('options.loaderOptions must be an object');
+      } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
+        throw new TypeError('options.customValidators must be an array');
       } else if (!_.isUndefined(callback) && !_.isFunction(callback)) {
         throw new TypeError('callback must be a function');
       }
+
+      _.forEach(options.customValidators, function (validator, index) {
+        if (!_.isFunction(validator)) {
+          throw new TypeError('options.customValidators at index ' + index + ' must be a function');
+        }
+      });
 
       resolve();
     });
