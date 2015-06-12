@@ -15,7 +15,7 @@
 </dl>
 ## Typedefs
 <dl>
-<dt><a href="#validatorCallback">validatorCallback</a> : <code>function</code></dt>
+<dt><a href="#validatorCallback">validatorCallback</a> ⇒ <code>object</code></dt>
 <dd><p>Callback used for validation.</p>
 </dd>
 </dl>
@@ -123,10 +123,12 @@ Returns a sample value for the parameter based on its schema;
 
 * [SwaggerApi](#SwaggerApi)
   * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
+  * [.getLastErrors()](#SwaggerApi+getLastErrors) ⇒ <code>Array.&lt;object&gt;</code>
+  * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
   * [.getOperation(path, method)](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.registerValidator(validator)](#SwaggerApi+registerValidator)
-  * [.validate()](#SwaggerApi+validate)
+  * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
 
 <a name="new_SwaggerApi_new"></a>
 ### new SwaggerApi(plugin, definition, resolved, references, options)
@@ -144,6 +146,18 @@ The Swagger API object.
 | options | <code>object</code> | The options passed to swaggerApi.create |
 | [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 
+<a name="SwaggerApi+getLastErrors"></a>
+### swaggerApi.getLastErrors() ⇒ <code>Array.&lt;object&gt;</code>
+Returns the errors from the last validate call.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>Array.&lt;object&gt;</code> - The errors from the previous call to validate or undefined if validate was never called  
+<a name="SwaggerApi+getLastWarnings"></a>
+### swaggerApi.getLastWarnings() ⇒ <code>Array.&lt;object&gt;</code>
+Returns the warnings from the last validate call.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>Array.&lt;object&gt;</code> - The warnings from the previous call to validate or undefined if validate was never called  
 <a name="SwaggerApi+getOperation"></a>
 ### swaggerApi.getOperation(path, method) ⇒ <code>[Operation](#Operation)</code>
 Returns the operation for the provided path and method.
@@ -183,14 +197,11 @@ Registers a validator.
 | validator | <code>[validatorCallback](#validatorCallback)</code> | The validator |
 
 <a name="SwaggerApi+validate"></a>
-### swaggerApi.validate()
+### swaggerApi.validate() ⇒ <code>boolean</code>
 Performs validation of the Swagger API document(s).
 
 **Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Throws**:
-
-- <code>Error</code> If any validators fail
-
+**Returns**: <code>boolean</code> - True if all validators produce zero errors and false otherwise  
 <a name="create"></a>
 ## create(options, [callback]) ⇒ <code>Promise</code>
 Creates a SwaggerApi object from its Swagger definition(s).
@@ -227,10 +238,11 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, fu
   });
 ```
 <a name="validatorCallback"></a>
-## validatorCallback : <code>function</code>
+## validatorCallback ⇒ <code>object</code>
 Callback used for validation.
 
 **Kind**: global typedef  
+**Returns**: <code>object</code> - Object containing the errors and warnings of the validation  
 
 | Param | Type | Description |
 | --- | --- | --- |

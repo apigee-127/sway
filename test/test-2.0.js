@@ -483,6 +483,8 @@ describe('swagger-core-api (Swagger 2.0)', function () {
   describe('SwaggerApi', function () {
     beforeEach(function () {
       swagger.customValidators = [];
+      swagger.errors = [];
+      swagger.warnings = [];
     });
 
     describe('#getOperations', function () {
@@ -545,25 +547,30 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
 
       it('should add validator to list of validators', function () {
-        var errorMessage = 'Validation failed: This validator will never pass';
+        var result = swagger.validate();
+        var expectedErrors = [
+          'error'
+        ];
+        var expectedWarnings = [
+          'warning'
+        ];
 
-        try {
-          swagger.validate();
-        } catch (err) {
-          shouldNotHadFailed(err);
-        }
+        assert.ok(result === true);
+        assert.deepEqual([], swagger.getLastErrors());
+        assert.deepEqual([], swagger.getLastWarnings());
 
         swagger.registerValidator(function () {
-          throw new Error(errorMessage);
+          return {
+            errors: expectedErrors,
+            warnings: expectedWarnings
+          };
         });
 
-        try {
-          swagger.validate();
+        result = swagger.validate();
 
-          shouldHadFailed();
-        } catch (err) {
-          assert.equal(errorMessage, err.message);
-        }
+        assert.ok(result === false);
+        assert.deepEqual(expectedErrors, swagger.getLastErrors());
+        assert.deepEqual(expectedWarnings, swagger.getLastWarnings());
       });
     });
 
@@ -592,27 +599,23 @@ describe('swagger-core-api (Swagger 2.0)', function () {
 
         it('does not validate against JSON Schema', function () {
           var cSwagger = _.cloneDeep(swagger.resolved);
+          var result;
 
           delete cSwagger.paths;
 
           swagger.resolved = cSwagger;
 
-          try {
-            swagger.validate();
+          result = swagger.validate();
 
-            shouldHadFailed();
-          } catch (err) {
-            assert.equal('SCHEMA_VALIDATION_FAILED', err.code);
-            assert.equal('JSON Schema validation failed', err.message);
-            assert.deepEqual([], err.warnings);
-            assert.deepEqual([
-              {
-                code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-                message: 'Missing required property: paths',
-                path: []
-              }
-            ], err.errors);
-          }
+          assert.ok(result === false);
+          assert.deepEqual([], swagger.getLastWarnings());
+          assert.deepEqual([
+            {
+              code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+              message: 'Missing required property: paths',
+              path: []
+            }
+          ], swagger.getLastErrors());
         });
       });
     });
