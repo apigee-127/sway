@@ -43,11 +43,36 @@ npm install swagger-core-api --save
 
 The swagger-core-api project's API documentation can be found here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/API.md
 
+## Swagger Versions
+
+swagger-core-api uses [The Factory Method Pattern][factory-method-pattern] to create the `SwaggerApi` object you see
+documented in the API documentation above.  The core API is concrete but how each version of Swagger generates the
+`SwaggerApi` object and its business logic is Swagger version dependent.  That being said, below are the supported
+versions of Swagger and their documentation:
+
+* [2.0][version-2.0-documentation]
+
+## Swagger Validation
+
+Swagger validation can be broken up into three phases:
+
+* `Structural Validation`: This is where we use the Swagger provided JSON Schema linked above and use a JSON Schema
+validator to validate the structure of your Swagger document
+* `Semantic Validation`: This is where to do validation above and beyond the general structure of your Swagger document.
+The reason for this is that there are some situations that cannot be described using JSON Schema.  There are also
+situations where the existing JSON Schema for Swagger is broken or not as strict as it could be.
+* `Custom Validation`: This is user-configurable validation that typically fall into stylistic checks.
+
+`Structural Validation` is the only type of validation that occurs in a special way.  If structural validation fails,
+no other validation will occur.  But once the structural validation happens, `Semantic Validation` and
+`Custom Validation` will happen.
+
 ## Dependencies
 
 Below is the list of projects being used by swagger-core-api and the purpose(s) they are used for:
 
 * [debug][debug]: Used for producing useful debugging information
+* [js-base64][js-base64]: Used for generating mock/sample data for the `byte` format
 * [js-yaml][js-yaml]: Used for parsing YAML Swagger files
 * [json-refs][json-refs]: Used for dereferncing JSON References in Swagger files
 * [json-schema-faker][json-schema-faker]: Used for generating mock/sample values from JSON Schemas
@@ -61,6 +86,8 @@ they did just in case they wanted to use these libraries.)_
 
 [bower]: http://bower.io/
 [debug]: https://www.npmjs.com/package/debug
+[factory-method-pattern]: https://en.wikipedia.org/wiki/Factory_method_pattern
+[js-base64]: https://www.npmjs.com/package/js-base64
 [js-yaml]: https://www.npmjs.com/package/js-yaml
 [json-refs]: https://www.npmjs.com/package/json-refs
 [json-schema-faker]: https://www.npmjs.com/package/json-schema-faker
@@ -69,5 +96,6 @@ they did just in case they wanted to use these libraries.)_
 [path-loader]: https://www.npmjs.com/package/path-loader
 [promises]: https://www.promisejs.org/
 [npm]: https://www.npmjs.org/
+[version-2.0-documentation]: https://github.com/apigee-127/swagger-core-api/blob/master/docs/versions/2.0.md
 [swagger]: http://swagger.io
 [z-schema]: https://www.npmjs.com/package/z-schema

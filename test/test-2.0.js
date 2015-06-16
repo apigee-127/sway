@@ -584,38 +584,523 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
 
       describe('should throw an Error for an invalid document', function () {
-        var resolvedDefinition;
-
-        beforeEach(function () {
-          resolvedDefinition = swagger.resolved;
-        });
-
-        afterEach(function () {
-          swagger.resolved = resolvedDefinition;
-        });
-
-        // For testing we will manipulate the internal state of the SwaggerApi object.  This is just for simplicity
-        // and is not something we support or suggest doing.
-
-        it('does not validate against JSON Schema', function () {
-          var cSwagger = _.cloneDeep(swagger.resolved);
-          var result;
+        it('does not validate against JSON Schema', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
 
           delete cSwagger.paths;
 
-          swagger.resolved = cSwagger;
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
 
-          result = swagger.validate();
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                  message: 'Missing required property: paths',
+                  path: []
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
 
-          assert.ok(result === false);
-          assert.deepEqual([], swagger.getLastWarnings());
-          assert.deepEqual([
-            {
-              code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-              message: 'Missing required property: paths',
-              path: []
-            }
-          ], swagger.getLastErrors());
+        describe('array type missing required items property', function () {
+          function validateBrokenArray (cSwagger, path, done) {
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                    message: 'Missing required property: items',
+                    path: path
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          }
+
+          describe('schema definitions', function () {
+            describe('array', function () {
+              it('no items', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.definitions.Pet = {
+                  type: 'array'
+                };
+
+                validateBrokenArray(cSwagger, ['definitions', 'Pet'], done);
+              });
+
+              it('items object', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.definitions.Pet = {
+                  type: 'array',
+                  items: {
+                    type: 'array'
+                  }
+                };
+
+                validateBrokenArray(cSwagger, ['definitions', 'Pet', 'items'], done);
+              });
+
+              it('items array', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.definitions.Pet = {
+                  type: 'array',
+                  items: [
+                    {
+                      type: 'array'
+                    }
+                  ]
+                };
+
+                validateBrokenArray(cSwagger, ['definitions', 'Pet', 'items', '0'], done);
+              });
+            });
+
+            describe('object', function () {
+              describe('additionalProperties', function () {
+                it('no items', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    additionalProperties: {
+                      type: 'array'
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'additionalProperties'], done);
+                });
+
+                it('items object', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    additionalProperties: {
+                      type: 'array',
+                      items: {
+                        type: 'array'
+                      }
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'additionalProperties', 'items'], done);
+                });
+
+                it('items array', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    additionalProperties: {
+                      type: 'array',
+                      items: [
+                        {
+                          type: 'array'
+                        }
+                      ]
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger,
+                                      ['definitions', 'Pet', 'additionalProperties', 'items', '0'],
+                                      done);
+                });
+              });
+
+              describe('properties', function () {
+                it('no items', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    properties: {
+                      aliases: {
+                        type: 'array'
+                      }
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases'], done);
+                });
+
+                it('items object', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    properties: {
+                      aliases: {
+                        type: 'array',
+                        items: {
+                          type: 'array'
+                        }
+                      }
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases', 'items'], done);
+                });
+
+                it('items array', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    properties: {
+                      aliases: {
+                        type: 'array',
+                        items: [
+                          {
+                            type: 'array'
+                          }
+                        ]
+                      }
+                    }
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases', 'items', '0'], done);
+                });
+              });
+
+              describe('allOf', function () {
+                it('no items', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    allOf: [
+                      {
+                        type: 'array'
+                      }
+                    ]
+                  };
+
+                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'allOf', '0'], done);
+                });
+
+                it('items object', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    allOf: [
+                      {
+                        type: 'object',
+                        properties: {
+                          aliases: {
+                            type: 'array',
+                            items: {
+                              type: 'array'
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  };
+
+                  validateBrokenArray(cSwagger,
+                                      ['definitions', 'Pet', 'allOf', '0', 'properties', 'aliases', 'items'],
+                                      done);
+                });
+
+                it('items array', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.definitions.Pet = {
+                    type: 'object',
+                    allOf: [
+                      {
+                        type: 'object',
+                        properties: {
+                          aliases: {
+                            type: 'array',
+                            items: [
+                              {
+                                type: 'array'
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  };
+
+                  validateBrokenArray(cSwagger,
+                                      ['definitions', 'Pet', 'allOf', '0', 'properties', 'aliases', 'items', '0'],
+                                      done);
+                });
+              });
+            });
+
+            it('recursive', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+              var errorSchema = {
+                type: 'object',
+                allOf: [
+                  {
+                    type: 'array'
+                  }
+                ],
+                properties: {
+                  aliases: {
+                    type: 'array'
+                  }
+                },
+                additionalProperties: {
+                  type: 'array'
+                }
+              };
+
+              cSwagger.definitions.Pet = {
+                allOf: [
+                  errorSchema
+                ],
+                properties: {
+                  aliases: errorSchema
+                },
+                additionalProperties: errorSchema
+              };
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  var result = api.validate();
+
+                  assert.ok(result === false);
+                  assert.deepEqual([], api.getLastWarnings());
+                  assert.deepEqual([
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'additionalProperties', 'additionalProperties']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'additionalProperties', 'allOf', '0']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'additionalProperties', 'properties', 'aliases']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'allOf', '0', 'additionalProperties']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'allOf', '0', 'allOf', '0']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'allOf', '0', 'properties', 'aliases']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'properties', 'aliases', 'additionalProperties']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'properties', 'aliases', 'allOf', '0']
+                    },
+                    {
+                      code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                      message: 'Missing required property: items',
+                      path: ['definitions', 'Pet', 'properties', 'aliases', 'properties', 'aliases']
+                    }
+                  ], api.getLastErrors());
+                })
+                .then(done, done);
+            });
+          });
+
+          describe('parameter definitions', function () {
+            describe('global', function () {
+              it('body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.parameters = {
+                  petInBody: {
+                      in: 'body',
+                    name: 'body',
+                    description: 'A Pet',
+                    required: true,
+                    schema: {
+                      properties: {
+                        aliases: {
+                          type: 'array'
+                        }
+                      }
+                    }
+                  }
+                };
+
+                validateBrokenArray(cSwagger, ['parameters', 'petInBody', 'schema', 'properties', 'aliases'], done);
+              });
+
+              it('non-body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.parameters = {
+                  petStatus: _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0])
+                };
+
+                delete cSwagger.parameters.petStatus.items;
+
+                validateBrokenArray(cSwagger, ['parameters', 'petStatus'], done);
+              });
+            });
+
+            describe('path-level', function () {
+              it('body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet'].parameters = [
+                  {
+                      in: 'body',
+                    name: 'body',
+                    description: 'A Pet',
+                    required: true,
+                    schema: {
+                      properties: {
+                        aliases: {
+                          type: 'array'
+                        }
+                      }
+                    }
+                  }
+                ];
+
+                validateBrokenArray(cSwagger,
+                                    ['paths', '/pet', 'parameters', '0', 'schema', 'properties', 'aliases'],
+                                    done);
+              });
+
+              it('non-body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet'].parameters = [
+                  _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0])
+                ];
+
+                delete cSwagger.paths['/pet'].parameters[0].items;
+
+                validateBrokenArray(cSwagger, ['paths', '/pet', 'parameters', '0'], done);
+              });
+            });
+
+            describe('operation', function () {
+              it('body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                delete cSwagger.paths['/user/createWithArray'].post.parameters[0].schema.items;
+
+                validateBrokenArray(cSwagger,
+                                    ['paths', '/user/createWithArray', 'post', 'parameters', '0', 'schema'],
+                                    done);
+              });
+
+              it('non-body parameter', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].items;
+
+                validateBrokenArray(cSwagger, ['paths', '/pet/findByStatus', 'get', 'parameters', '0'], done);
+              });
+            });
+          });
+
+          describe('responses', function () {
+            describe('global', function () {
+              it('headers', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.responses = {
+                  success: {
+                    description: 'A response indicative of a successful request',
+                    headers: {
+                      'X-Broken-Array': {
+                        type: 'array'
+                      }
+                    }
+                  }
+                };
+
+                validateBrokenArray(cSwagger, ['responses', 'success', 'headers', 'X-Broken-Array'], done);
+              });
+
+              it('schema definition', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.responses = {
+                  success: {
+                    description: 'A response indicative of a successful request',
+                    schema: {
+                      type: 'array'
+                    }
+                  }
+                };
+
+                validateBrokenArray(cSwagger, ['responses', 'success', 'schema'], done);
+              });
+            });
+
+            describe('operation', function () {
+              it('headers', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet/findByStatus'].get.responses['200'].headers = {
+                  'X-Broken-Array': {
+                    type: 'array'
+                  }
+                };
+
+                validateBrokenArray(cSwagger,
+                                    [
+                                      'paths',
+                                      '/pet/findByStatus',
+                                      'get',
+                                      'responses',
+                                      '200',
+                                      'headers',
+                                      'X-Broken-Array'
+                                    ],
+                                    done);
+              });
+
+              it('schema definition', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                delete cSwagger.paths['/pet/findByStatus'].get.responses['200'].schema.items;
+
+                validateBrokenArray(cSwagger,
+                                    ['paths', '/pet/findByStatus', 'get', 'responses', '200', 'schema'],
+                                    done);
+              });
+            });
+          });
         });
       });
     });
