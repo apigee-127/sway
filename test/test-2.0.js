@@ -608,6 +608,64 @@ describe('swagger-core-api (Swagger 2.0)', function () {
             .then(done, done);
         });
 
+        describe('default values should validate against their respective JSON Schema', function () {
+          it('schema-like object (non-body parameter)', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.paths['/pet'].post.parameters.push({
+                in: 'query',
+              name: 'status',
+              description: 'The Pet status',
+              required: true,
+              type: 'string',
+              default: 123
+            });
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'INVALID_TYPE',
+                    description: 'The Pet status', // Copied in for non-body parameters
+                    message: 'Expected type string but found type integer',
+                    path: ['paths', '/pet', 'post', 'parameters', '1', 'default']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+
+          it('schema object', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.Pet.properties.name.default = 123;
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'INVALID_TYPE',
+                    message: 'Expected type string but found type integer',
+                    path: ['definitions', 'Pet', 'properties', 'name', 'default']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+        });
+
         describe('array type missing required items property', function () {
           function validateBrokenArray (cSwagger, path, done) {
             swaggerApi.create({
