@@ -1102,6 +1102,96 @@ describe('swagger-core-api (Swagger 2.0)', function () {
             });
           });
         });
+
+        it('equivalent paths', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet/{notPetId}'] = {};
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'EQUIVALENT_PATH',
+                  message: 'Equivalent path already exists: /pet/{notPetId}',
+                  path: ['paths', '/pet/{notPetId}']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('missing path parameter declaration', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet/{petId}'].get.parameters = [
+            {
+              description: 'Superfluous path parameter',
+              in: 'path',
+              name: 'petId2',
+              required: true,
+              type: 'string'
+            }
+          ];
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'MISSING_PATH_PARAMETER_DECLARATION',
+                  message: 'Path parameter is defined but is not declared: petId2',
+                  path: ['paths', '/pet/{petId}', 'get', 'parameters', '0']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('missing path parameter definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet/{petId}'].parameters = [];
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'MISSING_PATH_PARAMETER_DEFINITION',
+                  message: 'Path parameter is declared but is not defined: petId',
+                  path: ['paths', '/pet/{petId}', 'get']
+                },
+                {
+                  code: 'MISSING_PATH_PARAMETER_DEFINITION',
+                  message: 'Path parameter is declared but is not defined: petId',
+                  path: ['paths', '/pet/{petId}', 'post']
+                },
+                {
+                  code: 'MISSING_PATH_PARAMETER_DEFINITION',
+                  message: 'Path parameter is declared but is not defined: petId',
+                  path: ['paths', '/pet/{petId}', 'delete']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
       });
     });
   });
