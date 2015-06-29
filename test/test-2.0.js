@@ -1161,7 +1161,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
-        it('equivalent paths', function (done) {
+        it('multiple equivalent paths', function (done) {
           var cSwagger = _.cloneDeep(swaggerDoc);
 
           cSwagger.paths['/pet/{notPetId}'] = {};
@@ -1245,6 +1245,33 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   code: 'MISSING_PATH_PARAMETER_DEFINITION',
                   message: 'Path parameter is declared but is not defined: petId',
                   path: ['paths', '/pet/{petId}', 'delete']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('operation has multiple body parameters', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+          var dBodyParam = _.cloneDeep(cSwagger.paths['/pet'].post.parameters[0]);
+
+          dBodyParam.name = dBodyParam.name + 'Duplicate';
+
+          cSwagger.paths['/pet'].post.parameters.push(dBodyParam);
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'MULTIPLE_BODY_PARAMETERS',
+                  message: 'Operation has multiple body parameters',
+                  path: ['paths', '/pet', 'post']
                 }
               ], api.getLastErrors());
             })
