@@ -1270,7 +1270,37 @@ describe('swagger-core-api (Swagger 2.0)', function () {
               assert.deepEqual([
                 {
                   code: 'MULTIPLE_BODY_PARAMETERS',
-                  message: 'Operation has multiple body parameters',
+                  message: 'Operation cannot have multiple body parameters',
+                  path: ['paths', '/pet', 'post']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('operation can have body or form parameter but not both', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet'].post.parameters.push({
+            name: 'name',
+            in: 'formData',
+            description: 'The Pet name',
+            required: true,
+            type: 'string'
+          });
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'INVALID_PARAMETER_COMBINATION',
+                  message: 'Operation cannot have a body parameter and a formData parameter',
                   path: ['paths', '/pet', 'post']
                 }
               ], api.getLastErrors());
