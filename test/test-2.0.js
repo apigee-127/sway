@@ -1161,6 +1161,64 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
+        describe('duplicate operation parameter', function () {
+          it('operation-level', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+            var cParam = _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0]);
+
+            // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
+            cParam.description = 'Duplicate';
+
+            cSwagger.paths['/pet/findByStatus'].get.parameters.push(cParam);
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'DUPLICATE_PARAMETER',
+                    message: 'Operation cannot have duplicate parameters: #/paths/~1pet~1findByStatus/get/parameters/1',
+                    path: ['paths', '/pet/findByStatus', 'get', 'parameters', '1']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+
+          it('path-level', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+            var cParam = _.cloneDeep(cSwagger.paths['/pet/{petId}'].parameters[0]);
+
+            // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
+            cParam.description = 'Duplicate';
+
+            cSwagger.paths['/pet/{petId}'].parameters.push(cParam);
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'DUPLICATE_PARAMETER',
+                    message: 'Operation cannot have duplicate parameters: #/paths/~1pet~1{petId}/parameters/1',
+                    path: ['paths', '/pet/{petId}', 'parameters', '1']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+        });
+
         it('multiple equivalent paths', function (done) {
           var cSwagger = _.cloneDeep(swaggerDoc);
 
