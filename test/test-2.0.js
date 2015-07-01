@@ -1103,7 +1103,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
-        describe('default values should validate against their respective JSON Schema', function () {
+        describe('default values fail JSON Schema validation', function () {
           it('schema-like object (non-body parameter)', function (done) {
             var cSwagger = _.cloneDeep(swaggerDoc);
 
@@ -1364,6 +1364,66 @@ describe('swagger-core-api (Swagger 2.0)', function () {
               ], api.getLastErrors());
             })
             .then(done, done);
+        });
+
+        describe('missing required property definition', function () {
+          it('allOf', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            delete cSwagger.definitions.Pet.properties.name;
+
+            cSwagger.definitions.Pet.allOf = [
+              {
+                type: 'object',
+                properties: _.cloneDeep(cSwagger.definitions.Pet.properties)
+
+              }
+            ];
+
+            delete cSwagger.definitions.Pet.properties;
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'OBJECT_MISSING_REQUIRED_PROPERTY_DEFINITION',
+                    message: 'Missing required property definition: name',
+                    path: ['definitions', 'Pet']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+
+          it('properties', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            delete cSwagger.definitions.Pet.properties.name;
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'OBJECT_MISSING_REQUIRED_PROPERTY_DEFINITION',
+                    message: 'Missing required property definition: name',
+                    path: ['definitions', 'Pet']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
         });
 
         it('unresolvable references', function (done) {

@@ -35,7 +35,7 @@
     "exposify": "^0.4.0",
     "gulp": "^3.8.11",
     "gulp-concat": "^2.5.2",
-    "gulp-eslint": "^0.8.0",
+    "gulp-eslint": "^0.15.0",
     "gulp-istanbul": "^0.8.1",
     "gulp-jsdoc-to-markdown": "^1.1.1",
     "gulp-load-plugins": "^0.10.0",

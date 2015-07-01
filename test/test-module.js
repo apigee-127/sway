@@ -66,8 +66,8 @@ describe('swagger-core-api (General)', function () {
                       assert.equal(err.message, scenario[1]);
 
                       resolve();
-                    } catch (err) {
-                      reject(err);
+                    } catch (err2) {
+                      reject(err2);
                     }
                   });
               });
@@ -93,8 +93,8 @@ describe('swagger-core-api (General)', function () {
                     assert.equal(err.message, scenario[1]);
 
                     resolve();
-                  } catch (err) {
-                    reject(err);
+                  } catch (err2) {
+                    reject(err2);
                   }
                 });
 
