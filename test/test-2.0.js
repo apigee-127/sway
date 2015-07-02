@@ -1436,6 +1436,142 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
+        describe('unused definitions', function () {
+          it('definition', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.Missing = {};
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result);
+                assert.deepEqual([], api.getLastErrors());
+                assert.deepEqual([
+                  {
+                    code: 'UNUSED_DEFINITION',
+                    message: 'Definition is not used: #/definitions/Missing',
+                    path: ['definitions', 'Missing']
+                  }
+                ], api.getLastWarnings());
+              })
+              .then(done, done);
+          });
+
+          it('parameter', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.parameters = {
+              missing: {
+                name: 'missing',
+                  in: 'query',
+                type: 'string'
+              }
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result);
+                assert.deepEqual([], api.getLastErrors());
+                assert.deepEqual([
+                  {
+                    code: 'UNUSED_DEFINITION',
+                    message: 'Definition is not used: #/parameters/missing',
+                    path: ['parameters', 'missing']
+                  }
+                ], api.getLastWarnings());
+              })
+              .then(done, done);
+          });
+
+          it('response', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.responses = {
+              Missing: {
+                description: 'I am missing'
+              }
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result);
+                assert.deepEqual([], api.getLastErrors());
+                assert.deepEqual([
+                  {
+                    code: 'UNUSED_DEFINITION',
+                    message: 'Definition is not used: #/responses/Missing',
+                    path: ['responses', 'Missing']
+                  }
+                ], api.getLastWarnings());
+              })
+              .then(done, done);
+          });
+
+          it('securityDefinition', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.securityDefinitions.missing = {
+              type: 'apiKey',
+              name: 'api_key',
+                in: 'header'
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result);
+                assert.deepEqual([], api.getLastErrors());
+                assert.deepEqual([
+                  {
+                    code: 'UNUSED_DEFINITION',
+                    message: 'Definition is not used: #/securityDefinitions/missing',
+                    path: ['securityDefinitions', 'missing']
+                  }
+                ], api.getLastWarnings());
+              })
+              .then(done, done);
+          });
+
+          it('security scope', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.securityDefinitions.petstore_auth.scopes.missing = 'I am missing';
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result);
+                assert.deepEqual([], api.getLastErrors());
+                assert.deepEqual([
+                  {
+                    code: 'UNUSED_DEFINITION',
+                    message: 'Definition is not used: #/securityDefinitions/petstore_auth/scopes/missing',
+                    path: ['securityDefinitions', 'petstore_auth', 'scopes', 'missing']
+                  }
+                ], api.getLastWarnings());
+              })
+              .then(done, done);
+          });
+        });
+
         describe('unresolvable references', function () {
           it('json reference', function (done) {
             var cSwagger = _.cloneDeep(swaggerDoc);
