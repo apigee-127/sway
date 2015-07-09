@@ -217,7 +217,7 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 | [callback] | <code>function</code> | Node.js error-first callback |
 
-**Example**
+**Example**  
 ```js
 // Example using promises
 SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
@@ -227,7 +227,7 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
     console.error(err.stack);
   });
 ```
-**Example**
+**Example**  
 ```js
 // Example using callbacks
 SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, function (err, api) {
