@@ -1229,30 +1229,6 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
-        it('multiple equivalent paths', function (done) {
-          var cSwagger = _.cloneDeep(swaggerDoc);
-
-          cSwagger.paths['/pet/{notPetId}'] = {};
-
-          swaggerApi.create({
-            definition: cSwagger
-          })
-            .then(function (api) {
-              var result = api.validate();
-
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
-                {
-                  code: 'EQUIVALENT_PATH',
-                  message: 'Equivalent path already exists: /pet/{notPetId}',
-                  path: ['paths', '/pet/{notPetId}']
-                }
-              ], api.getLastErrors());
-            })
-            .then(done, done);
-        });
-
         it('missing path parameter declaration', function (done) {
           var cSwagger = _.cloneDeep(swaggerDoc);
 
@@ -1313,6 +1289,55 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   code: 'MISSING_PATH_PARAMETER_DEFINITION',
                   message: 'Path parameter is declared but is not defined: petId',
                   path: ['paths', '/pet/{petId}', 'delete']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('multiple equivalent paths', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet/{notPetId}'] = {};
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'EQUIVALENT_PATH',
+                  message: 'Equivalent path already exists: /pet/{notPetId}',
+                  path: ['paths', '/pet/{notPetId}']
+                }
+              ], api.getLastErrors());
+            })
+            .then(done, done);
+        });
+
+        it('multiple operations with the same operationId', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+          var operationId = cSwagger.paths['/pet'].post.operationId;
+
+          cSwagger.paths['/pet'].put.operationId = operationId;
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var result = api.validate();
+
+              assert.ok(result === false);
+              assert.deepEqual([], api.getLastWarnings());
+              assert.deepEqual([
+                {
+                  code: 'DUPLICATE_OPERATIONID',
+                  message: 'Cannot have multiple operations with the same operationId: ' + operationId,
+                  path: ['paths', '/pet', 'put', 'operationId']
                 }
               ], api.getLastErrors());
             })
