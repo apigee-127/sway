@@ -26,8 +26,7 @@
 
 var $ = require('gulp-load-plugins')({
   rename: {
-    'gulp-jsdoc-to-markdown': 'jsdoc2MD',
-    'gulp-mocha-phantomjs': 'mochaPhantomJS'
+    'gulp-jsdoc-to-markdown': 'jsdoc2MD'
   }
 });
 var browserify = require('browserify');
@@ -35,6 +34,8 @@ var del = require('del');
 var exposify = require('exposify');
 var fs = require('fs');
 var gulp = require('gulp');
+var KarmaServer = require('karma').Server;
+var path = require('path');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
 var testHelpers = require('./test/helpers');
@@ -181,6 +182,14 @@ gulp.task('test-browser', ['browserify'], function () {
     }
   }
 
+  function finisher (err) {
+    cleanUp();
+
+    displayCoverageReport(runningAllTests);
+
+    return err;
+  }
+
   return Promise.resolve()
     .then(cleanUp)
     .then(function () {
@@ -215,33 +224,33 @@ gulp.task('test-browser', ['browserify'], function () {
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
-        gulp
-          .src([
-            basePath + 'test-bower.html',
-            basePath + 'test-standalone.html'
-          ])
-          .pipe($.mochaPhantomJS({
-            phantomjs: {
-              localToRemoteUrlAccessEnabled: true,
-              webSecurityEnabled: false,
-              ignoreResourceErrors: true
-            },
-            timeout: 5000
-          }))
-          .on('error', function (err) {
-            cleanUp();
-            displayCoverageReport(runningAllTests);
-
+        new KarmaServer({
+          configFile: path.join(__dirname, 'test/browser/karma-bower.conf.js'),
+          singleRun: true
+        }, function (err) {
+          if (err) {
             reject(err);
-          })
-          .on('finish', function () {
-            cleanUp();
-            displayCoverageReport(runningAllTests);
-
+          } else {
             resolve();
-          });
+          }
+        }).start();
       });
-    });
+    })
+    .then(function () {
+      return new Promise(function (resolve, reject) {
+        new KarmaServer({
+          configFile: path.join(__dirname, 'test/browser/karma-standalone.conf.js'),
+          singleRun: true
+        }, function (err) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        }).start();
+      });
+    })
+    .then(finisher, finisher);
 });
 
 gulp.task('docs', function () {
