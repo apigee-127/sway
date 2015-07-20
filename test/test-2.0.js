@@ -1717,14 +1717,14 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   var result = api.validate();
 
                   assert.ok(result === false);
-                  assert.deepEqual([], api.getLastWarnings());
-                  assert.deepEqual([
+                  assert.deepEqual(api.getLastWarnings(), []);
+                  assert.deepEqual(api.getLastErrors(), [
                     {
                       code: 'UNRESOLVABLE_REFERENCE',
                       message: 'Security scope definition could not be resolved: missing',
                       path: ['paths', '/store/inventory', 'get', 'security', '1', 'petstore_auth', '0']
                     }
-                  ], api.getLastErrors());
+                  ]);
                 })
                 .then(done, done);
             });
