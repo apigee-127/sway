@@ -1211,11 +1211,60 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
 
           it('inline schema', function (done) {
-            done();
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.A = {
+              allOf: [
+                {
+                  allOf: [
+                    {
+                      $ref: '#/definitions/A/allOf/0'
+                    }
+                  ]
+                }
+              ]
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/A/allOf/0',
+                    path: ['definitions', 'A', 'allOf', '0', 'allOf', '0', '$ref']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
           });
 
           it('not composition/inheritance', function (done) {
-            done();
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.Pet.properties.friends = {
+              type: 'array',
+              items: {
+                $ref: '#/definitions/Pet'
+              }
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === true);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([], api.getLastErrors());
+              })
+              .then(done, done);
           });
         });
 
