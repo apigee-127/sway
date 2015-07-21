@@ -1113,6 +1113,112 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           });
         });
 
+        describe('circular composition/inheritance', function () {
+          it('definition (direct)', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.A = {
+              allOf: [
+                {
+                  $ref: '#/definitions/B'
+                }
+              ]
+            };
+            cSwagger.definitions.B = {
+              allOf: [
+                {
+                  $ref: '#/definitions/A'
+                }
+              ]
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/B',
+                    path: ['definitions', 'A', 'allOf', '0', '$ref']
+                  },
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/A',
+                    path: ['definitions', 'B', 'allOf', '0', '$ref']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+
+          it('definition (indirect)', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.definitions.A = {
+              allOf: [
+                {
+                  $ref: '#/definitions/B'
+                }
+              ]
+            };
+            cSwagger.definitions.B = {
+              allOf: [
+                {
+                  $ref: '#/definitions/C'
+                }
+              ]
+            };
+            cSwagger.definitions.C = {
+              allOf: [
+                {
+                  $ref: '#/definitions/A'
+                }
+              ]
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var result = api.validate();
+
+                assert.ok(result === false);
+                assert.deepEqual([], api.getLastWarnings());
+                assert.deepEqual([
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/B',
+                    path: ['definitions', 'A', 'allOf', '0', '$ref']
+                  },
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/C',
+                    path: ['definitions', 'B', 'allOf', '0', '$ref']
+                  },
+                  {
+                    code: 'CIRCULAR_INHERITANCE',
+                    message: 'Schema object inherits from itself: #/definitions/A',
+                    path: ['definitions', 'C', 'allOf', '0', '$ref']
+                  }
+                ], api.getLastErrors());
+              })
+              .then(done, done);
+          });
+
+          it('inline schema', function (done) {
+            done();
+          });
+
+          it('not composition/inheritance', function (done) {
+            done();
+          });
+        });
+
         describe('default values fail JSON Schema validation', function () {
           it('schema-like object (non-body parameter)', function (done) {
             var cSwagger = _.cloneDeep(swaggerDoc);
@@ -1598,28 +1704,56 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         });
 
         describe('unresolvable references', function () {
-          it('json reference', function (done) {
-            var cSwagger = _.cloneDeep(swaggerDoc);
+          describe('json reference', function () {
+            it('local', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
 
-            cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
+              cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
 
-            swaggerApi.create({
-              definition: cSwagger
-            })
-              .then(function (api) {
-                var result = api.validate();
-
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.deepEqual([
-                  {
-                    code: 'UNRESOLVABLE_REFERENCE',
-                    message: 'Reference could not be resolved: #/definitions/Missing',
-                    path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']
-                  }
-                ], api.getLastErrors());
+              swaggerApi.create({
+                definition: cSwagger
               })
-              .then(done, done);
+                .then(function (api) {
+                  var result = api.validate();
+
+                  assert.ok(result === false);
+                  assert.deepEqual([], api.getLastWarnings());
+                  assert.deepEqual([
+                    {
+                      code: 'UNRESOLVABLE_REFERENCE',
+                      message: 'Reference could not be resolved: #/definitions/Missing',
+                      path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']
+                    }
+                  ], api.getLastErrors());
+                })
+                .then(done, done);
+            });
+
+            it('remote', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet'].post.parameters[0].schema.$ref = 'fake.json';
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  var result = api.validate();
+                  var error;
+
+                  assert.ok(result === false);
+                  assert.deepEqual([], api.getLastWarnings());
+                  assert.ok(api.getLastErrors().length === 1);
+
+                  error = api.getLastErrors()[0];
+
+                  assert.equal(error.code, 'UNRESOLVABLE_REFERENCE');
+                  assert.equal(error.message, 'Reference could not be resolved: fake.json');
+                  assert.deepEqual(error.path, ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']);
+                  assert.ok(_.has(error, 'err'));
+                })
+                .then(done, done);
+            });
           });
 
           describe('security definition', function () {
