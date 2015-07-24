@@ -126,7 +126,7 @@ Returns a sample value for the parameter based on its schema;
   * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
   * [.getLastErrors()](#SwaggerApi+getLastErrors) ⇒ <code>Array.&lt;object&gt;</code>
   * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
-  * [.getOperation(path, method)](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
+  * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.registerValidator(validator)](#SwaggerApi+registerValidator)
   * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
@@ -160,8 +160,11 @@ Returns the warnings from the last validate call.
 **Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
 **Returns**: <code>Array.&lt;object&gt;</code> - The warnings from the previous call to validate or undefined if validate was never called  
 <a name="SwaggerApi+getOperation"></a>
-### swaggerApi.getOperation(path, method) ⇒ <code>[Operation](#Operation)</code>
-Returns the operation for the provided path and method.
+### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#Operation)</code>
+Returns the operation for the given path and operation.
+
+**Note:** If you pass in an `http.clientRequest` *(or equivalent)*, the `method` and `url` properties are use to
+          perform the matching.  *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
 **Returns**: <code>[Operation](#Operation)</code> - The operation for the provided path and method or undefined if there is no operation for that
@@ -169,8 +172,8 @@ Returns the operation for the provided path and method.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| path | <code>string</code> | The Swagger path |
-| method | <code>string</code> | The Swagger operation method |
+| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request |
+| [method] | <code>string</code> | The Swagger operation method |
 
 <a name="SwaggerApi+getOperations"></a>
 ### swaggerApi.getOperations([path]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>

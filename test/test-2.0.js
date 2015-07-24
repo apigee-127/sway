@@ -566,18 +566,43 @@ describe('swagger-core-api (Swagger 2.0)', function () {
     });
 
     describe('#getOperation', function () {
-      it('should return the expected operation', function () {
-        var operation = swagger.getOperation('/pet/{petId}', 'get');
+      describe('path + method', function () {
+        it('should return the expected operation', function () {
+          var operation = swagger.getOperation('/pet/{petId}', 'get');
 
-        assert.ok(!_.isUndefined(operation));
+          assert.ok(!_.isUndefined(operation));
+        });
+
+        it('should return no operation for missing path', function () {
+          assert.ok(_.isUndefined(swagger.getOperation('/petz/{petId}', 'get')));
+        });
+
+        it('should return no operation for missing method', function () {
+          assert.ok(_.isUndefined(swagger.getOperation('/pet/{petId}', 'head')));
+        });
       });
 
-      it('should return no operation for missing path', function () {
-        assert.ok(_.isUndefined(swagger.getOperation('/petz/{petId}', 'get')));
-      });
+      describe('http.ClientRequest (or similar)', function () {
+        it('should return the expected operation', function () {
+          assert.ok(!_.isUndefined(swagger.getOperation({
+            method: 'GET',
+            url: swagger.basePath + '/pet/1'
+          })));
+        });
 
-      it('should return no operation for missing method', function () {
-        assert.ok(_.isUndefined(swagger.getOperation('/pet/{petId}', 'head')));
+        it('should return no operation for missing path', function () {
+          assert.ok(_.isUndefined(swagger.getOperation({
+            method: 'GET',
+            url: swagger.basePath + '/petz/1'
+          })));
+        });
+
+        it('should return no operation for missing method', function () {
+          assert.ok(_.isUndefined(swagger.getOperation({
+            method: 'HEAD',
+            url: swagger.basePath + '/pet/1'
+          })));
+        });
       });
     });
 
