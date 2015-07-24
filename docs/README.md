@@ -82,6 +82,7 @@ Swagger project itself has JavaScript libraries that support IE8+ and we wanted 
 they did just in case they wanted to use these libraries.)_
 * [native-promise-only][native-promise-only]: Used to shim in [Promises][promises] support
 * [path-loader][path-loader]: Used to load Swagger files from the local filesystem and remote URLs
+* [path-to-regexp][path-to-regexp]: Used to create `RegExp` objects from Swagger paths
 * [z-schema][z-schema]: Used for JSON Schema validation
 
 [bower]: http://bower.io/
@@ -93,9 +94,10 @@ they did just in case they wanted to use these libraries.)_
 [json-schema-faker]: https://www.npmjs.com/package/json-schema-faker
 [lodash-compat]: https://www.npmjs.com/package/lodash-compat
 [native-promise-only]: https://www.npmjs.com/package/native-promise-only
-[path-loader]: https://www.npmjs.com/package/path-loader
-[promises]: https://www.promisejs.org/
 [npm]: https://www.npmjs.org/
+[path-loader]: https://www.npmjs.com/package/path-loader
+[path-to-regexp]: https://github.com/pillarjs/path-to-regexp
+[promises]: https://www.promisejs.org/
 [version-2.0-documentation]: https://github.com/apigee-127/swagger-core-api/blob/master/docs/versions/2.0.md
 [swagger]: http://swagger.io
 [z-schema]: https://www.npmjs.com/package/z-schema

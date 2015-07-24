@@ -24,13 +24,13 @@
 **Kind**: global class  
 
 * [Operation](#Operation)
-  * [new Operation(api, path, method, ptr, definition)](#new_Operation_new)
+  * [new Operation(api, path, method, ptr, definition, regexp)](#new_Operation_new)
   * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
   * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
 
 <a name="new_Operation_new"></a>
-### new Operation(api, path, method, ptr, definition)
+### new Operation(api, path, method, ptr, definition, regexp)
 The Swagger Operation object.
 
 <strong>Note:</strong> Do not use directly.
@@ -43,6 +43,7 @@ The Swagger Operation object.
 | method | <code>string</code> | The operation method |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | definition | <code>object</code> | The operation definition |
+| regexp | <code>regexp</code> | The regexp used to match request paths against this operation |
 
 <a name="Operation+getParameters"></a>
 ### operation.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>

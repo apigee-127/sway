@@ -289,6 +289,54 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       ]);
     });
 
+    function validateRegExps (api, basePath) {
+      var createPet = api.getOperation('/pet', 'post');
+      var updatePet = api.getOperation('/pet/{petId}', 'post');
+
+      // Make sure they are of the proper type
+      assert.ok(createPet.regexp instanceof RegExp);
+      assert.ok(updatePet.regexp instanceof RegExp);
+
+      // Make sure they have the proper keys
+      assert.equal(0, createPet.regexp.keys.length);
+      assert.equal(1, updatePet.regexp.keys.length);
+      assert.equal('petId', updatePet.regexp.keys[0].name);
+
+      // Make sure they match the expected URLs
+      assert.ok(_.isArray(createPet.regexp.exec(basePath + '/pet')));
+      assert.ok(!_.isArray(createPet.regexp.exec(basePath + '/pets')));
+      assert.ok(_.isArray(updatePet.regexp.exec(basePath + '/pet/1')));
+      assert.ok(!_.isArray(createPet.regexp.exec(basePath + '/pets/1')));
+    }
+
+    it('should create proper regexp (with basePath)', function () {
+      validateRegExps(swagger, swagger.basePath);
+    });
+
+    it('should create proper regexp (with basePath ending in slash)', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+
+      cSwagger.basePath = '/';
+
+      swaggerApi.create({definition: cSwagger})
+        .then(function (api) {
+          validateRegExps(api, '');
+        })
+        .then(done, done);
+    });
+
+    it('should create proper regexp (without basePath)', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+
+      delete cSwagger.basePath;
+
+      swaggerApi.create({definition: cSwagger})
+        .then(function (api) {
+          validateRegExps(api, '');
+        })
+        .then(done, done);
+    });
+
     // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
     describe('#getParameters', function () {
       it('should return the proper parameter objects', function () {
