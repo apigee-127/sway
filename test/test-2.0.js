@@ -266,7 +266,9 @@ describe('swagger-core-api (Swagger 2.0)', function () {
     });
 
     it('should handle composite security', function () {
-      assert.deepEqual(swagger.getOperation('/pet/{petId}', 'get').security, [
+      var operation = swagger.getOperation('/pet/{petId}', 'get');
+
+      assert.deepEqual(operation.security, [
         {
           'petstore_auth': [
             'read:pets',
@@ -274,6 +276,9 @@ describe('swagger-core-api (Swagger 2.0)', function () {
           ]
         }
       ]);
+      assert.deepEqual(operation.securityDefinitions, {
+        'petstore_auth': swagger.resolved.securityDefinitions.petstore_auth
+      });
     });
 
     it('should handle explicit parameters', function () {
