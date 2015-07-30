@@ -531,6 +531,1089 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         }
       });
     });
+
+    describe('#getValue', function () {
+      describe('raw values', function () {
+        describe('body', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet', 'post').getParameters()[0];
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({}).raw));
+          });
+
+          it('provided value', function () {
+            var provided = {
+              name: 'Testing'
+            };
+
+            assert.deepEqual(parameter.getValue({
+              body: provided
+            }).raw, provided);
+          });
+        });
+
+        describe('formData (file)', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/{petId}/uploadImage', 'post').getParameters()[2];
+          });
+
+          it('missing req.files', function () {
+            try {
+              parameter.getValue({});
+
+              shouldHadFailed();
+            } catch (err) {
+              assert.equal(err.message, 'req.files must be provided for \'formData\' parameters of type \'file\'');
+            }
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({
+              files: {}
+            }).raw));
+          });
+
+          it('provided value', function () {
+            assert.deepEqual(parameter.getValue({
+              files: {
+                file: 'fake file'
+              }
+            }).raw, 'fake file');
+          });
+        });
+
+        describe('formData (not file)', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/{petId}', 'post').getParameters()[1];
+          });
+
+          it('missing req.body', function () {
+            try {
+              parameter.getValue({});
+
+              shouldHadFailed();
+            } catch (err) {
+              assert.equal(err.message, 'req.body must be provided for \'formData\' parameters');
+            }
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({
+              body: {}
+            }).raw));
+          });
+
+          it('provided value', function () {
+            assert.deepEqual(parameter.getValue({
+              body: {
+                name: 'Testing',
+                status: 'available'
+              }
+            }).raw, 'Testing');
+          });
+        });
+
+        describe('header', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/{petId}', 'delete').getParameters()[1];
+          });
+
+          it('missing req.headers', function () {
+            try {
+              parameter.getValue({});
+
+              shouldHadFailed();
+            } catch (err) {
+              assert.equal(err.message, 'req.headers must be provided for \'header\' parameters');
+            }
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({
+              headers: {}
+            }).raw));
+          });
+
+          it('provided value (lower case)', function () {
+            assert.deepEqual(parameter.getValue({
+              headers: {
+                'api_key': 'application/json'
+              }
+            }).raw, 'application/json');
+          });
+
+          it('provided value (mixed case)', function () {
+            // Change the parameter name to be mixed case
+            parameter.name = 'Api_Key';
+
+            assert.deepEqual(parameter.getValue({
+              headers: {
+                'api_key': 'application/json'
+              }
+            }).raw, 'application/json');
+
+            // Change it back
+            parameter.name = 'api_key';
+          });
+        });
+
+        describe('path', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/{petId}', 'post').getParameters()[0];
+          });
+
+          it('missing req.url', function () {
+            try {
+              parameter.getValue({});
+
+              shouldHadFailed();
+            } catch (err) {
+              assert.equal(err.message, 'req.url must be provided for \'path\' parameters');
+            }
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({
+              url: '/v2/pet'
+            }).raw));
+          });
+
+          it('provided value (single)', function () {
+            assert.deepEqual(parameter.getValue({
+              url: '/v2/pet/1'
+            }).raw, '1');
+          });
+
+          it('provided value (multiple)', function (done) {
+            var cSwagger = _.cloneDeep(swaggerDoc);
+
+            cSwagger.paths['/pet/{petId}/family/{memberId}'] = {
+              parameters: [
+                {
+                  name: 'petId',
+                    in: 'path',
+                  description: 'ID of pet to return',
+                  required: true,
+                  type: 'integer',
+                  format: 'int64'
+                },
+                {
+                  name: 'memberId',
+                    in: 'path',
+                  description: 'ID of pet\' family member to return',
+                  required: true,
+                  type: 'integer',
+                  format: 'int64'
+                }
+              ],
+              get: {
+                responses: cSwagger.paths['/pet/{petId}'].get.responses
+              }
+            };
+
+            swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                _.each(api.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), function (param) {
+                  var expected;
+
+                  switch (param.name) {
+                  case 'petId':
+                    expected = 1;
+                    break;
+                  case 'memberId':
+                    expected = 3;
+                    break;
+                  default:
+                    throw new Error('Should not happen');
+                  }
+
+                  assert.equal(param.getValue({
+                    url: '/v2/pet/1/family/3'
+                  }).raw, expected);
+                });
+              })
+              .then(done, done);
+          });
+
+          it('provided value (encoded)', function () {
+            assert.deepEqual(parameter.getValue({
+              url: '/v2/pet/abc%3AHZ'
+            }).raw, 'abc:HZ');
+          });
+        });
+
+        describe('query', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0];
+          });
+
+          it('missing req.query', function () {
+            try {
+              parameter.getValue({});
+
+              shouldHadFailed();
+            } catch (err) {
+              assert.equal(err.message, 'req.query must be provided for \'query\' parameters');
+            }
+          });
+
+          it('missing value', function () {
+            assert.ok(_.isUndefined(parameter.getValue({
+              query: {}
+            }).raw));
+          });
+
+          it('provided value', function () {
+            var statuses = ['available', 'pending'];
+
+            assert.deepEqual(parameter.getValue({
+              query: {
+                status: statuses
+              }
+            }).raw, statuses);
+          });
+        });
+
+        it('invalid \'in\' value', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet/{petId}'].parameters[0].in = 'invalid';
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              try {
+                api.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue({});
+
+                shouldHadFailed();
+              } catch (err) {
+                assert.equal(err.message, 'Invalid \'in\' value: invalid');
+              }
+            })
+            .then(done, done);
+        });
+
+        it('missing request', function () {
+          try {
+            swagger.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue();
+
+            shouldHadFailed();
+          } catch (err) {
+            assert.equal(err.message, 'req is required');
+          }
+        });
+
+        it('wrong request type', function () {
+          try {
+            swagger.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue('wrong type');
+
+            shouldHadFailed();
+          } catch (err) {
+            assert.equal(err.message, 'req must be an object');
+          }
+        });
+      });
+
+      describe('processed values', function () {
+        describe('getter', function () {
+          var parameter;
+
+          before(function () {
+            parameter = swagger.getOperation('/pet/{petId}', 'get').getParameters()[0];
+          });
+
+          it('never processed', function () {
+            // Internal state does not exist until processed
+            assert.equal(parameter.getValue({
+              url: '/v2/pet/1'
+            }).value, 1);
+          });
+
+          it('processed', function () {
+            // Internal state does not exist until processed
+            assert.equal(parameter.getValue({
+              url: '/v2/pet/1'
+            }).value, 1);
+
+            // Call again to make sure we're using the internal cache and not reprocessing
+            assert.equal(parameter.getValue({
+              url: '/v2/pet/1'
+            }).value, 1);
+          });
+
+          describe('default values', function () {
+            it('provided (array items array)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+                {
+                  type: 'string',
+                  default: 'available'
+                },
+                {
+                  type: 'integer'
+                }
+              ];
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {}
+                  }).value, ['available', undefined]);
+                })
+                .then(done, done);
+            });
+
+            it('provided (array items object)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {}
+                  }).value, ['available']);
+                })
+                .then(done, done);
+            });
+
+            it('provided (non-array)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.equal(api.getOperation('/pet/{petId}', 'delete').getParameters()[1].getValue({
+                    headers: {}
+                  }).value, '');
+                })
+                .then(done, done);
+            });
+
+            it('missing (array items array)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+                {
+                  type: 'string'
+                },
+                {
+                  type: 'integer'
+                }
+              ];
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {}
+                  }).value));
+                })
+                .then(done, done);
+            });
+
+            it('missing (array items object)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].items.default;
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {}
+                  }).value));
+                })
+                .then(done, done);
+            });
+
+            it('missing (non-array)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  assert.ok(_.isUndefined(api.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue({
+                    url: '/v2/pet'
+                  }).value));
+                })
+                .then(done, done);
+            });
+          });
+
+          describe('type coercion', function () {
+            function validateDate (actual, expected) {
+              assert.ok(actual instanceof Date);
+              assert.equal(actual.toISOString(), expected.toISOString());
+            }
+
+            describe('array', function () {
+              it('items array', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+                  {
+                    type: 'string'
+                  },
+                  {
+                    type: 'string'
+                  }
+                ];
+
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                      query: {
+                        status: [
+                          'one', 'two'
+                        ]
+                      }
+                    }).value, ['one', 'two']);
+                  })
+                  .then(done, done);
+              });
+
+              it('items object', function () {
+                assert.deepEqual(swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                  query: {
+                    status: [
+                      'available', 'pending'
+                    ]
+                  }
+                }).value, ['available', 'pending']);
+              });
+
+              it('non-array string request value', function () {
+                assert.deepEqual(swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                  query: {
+                    status: 'pending'
+                  }
+                }).value, ['pending']);
+              });
+
+              it('non-array, non-string request value', function () {
+                assert.deepEqual(swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                  query: {
+                    status: 1 // We cannot use string because it would be processed by different logic
+                  }
+                }).value, [1]);
+              });
+
+              it('array request value', function () {
+                assert.deepEqual(swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                  query: {
+                    status: ['available', 'pending']
+                  }
+                }).value, ['available', 'pending']);
+              });
+
+              describe('collectionFormat', function () {
+                it('default (csv)', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available,pending'
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('csv', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available,pending'
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('multi', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: [
+                            'available', 'pending'
+                          ]
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('pipes', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available|pending'
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('ssv', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available pending'
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('tsv', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available\tpending'
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                it('invalid', function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      var paramValue = api.getOperation('/pet/findByStatus', 'get')
+                            .getParameters()[0]
+                            .getValue({
+                              query: {
+                                status: '1invalid2invalid3'
+                              }
+                            });
+
+                      assert.ok(_.isUndefined(paramValue.value));
+                      assert.ok(paramValue.errors.length === 1);
+                      assert.equal(paramValue.errors[0].message, 'Invalid \'collectionFormat\' value: invalid');
+                    })
+                    .then(done, done);
+                });
+              });
+            });
+
+            describe('boolean', function () {
+              var cParam;
+
+              before(function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet/available'] = {
+                  parameters: [
+                    {
+                      name: 'status',
+                        in: 'query',
+                      description: 'Whether or not the pet is available',
+                      required: true,
+                      type: 'boolean'
+                    }
+                  ],
+                  get: {
+                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                  }
+                };
+
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    cParam = api.getOperation('/pet/available', 'get').getParameters()[0];
+                  })
+                  .then(done, done);
+              });
+
+              it('boolean request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    status: true
+                  }
+                }).value, true);
+              });
+
+              it('string request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    status: 'false'
+                  }
+                }).value, false);
+
+                assert.equal(cParam.getValue({
+                  query: {
+                    status: 'true'
+                  }
+                }).value, true);
+              });
+
+              it('invalid request value', function () {
+                var paramValue = cParam.getValue({
+                  query: {
+                    status: 'invalid'
+                  }
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message, 'Not a valid boolean: invalid');
+              });
+            });
+
+            describe('integer', function () {
+              var cParam;
+
+              before(function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet/{petId}/friends'] = {
+                  parameters: [
+                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    {
+                      name: 'limit',
+                        in: 'query',
+                      description: 'Maximum number of friends returned',
+                      type: 'integer'
+                    }
+                  ],
+                  get: {
+                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                  }
+                };
+
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameters()[1];
+                  })
+                  .then(done, done);
+              });
+
+              it('integer request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    limit: 5
+                  }
+                }).value, 5);
+              });
+
+              it('string request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    limit: '5'
+                  }
+                }).value, 5);
+              });
+
+              it('invalid request value', function () {
+                var paramValue = cParam.getValue({
+                  query: {
+                    limit: 'invalid'
+                  }
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message, 'Not a valid integer: invalid');
+              });
+            });
+
+            describe('object', function () {
+              var pet = {
+                name: 'My Pet'
+              };
+              var cParam;
+
+              before(function () {
+                cParam = swagger.getOperation('/pet', 'post').getParameters()[0];
+              });
+
+              it('object request value', function () {
+                assert.deepEqual(cParam.getValue({
+                  body: pet
+                }).value, pet);
+              });
+
+              it('string request value', function () {
+                assert.deepEqual(cParam.getValue({
+                  body: JSON.stringify(pet)
+                }).value, pet);
+              });
+
+              it('invalid request value (non-string)', function () {
+                var paramValue = cParam.getValue({
+                  body: 1 // We cannot use string because it would be processed by different logic
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message, 'Not a valid object: 1');
+              });
+
+              it('invalid request value (string)', function () {
+                var paramValue = cParam.getValue({
+                  body: 'invalid'
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message,
+                             typeof window === 'undefined' ? 'Unexpected token i' : 'Unable to parse JSON string');
+              });
+            });
+
+            describe('number', function () {
+              var cParam;
+
+              before(function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
+
+                cSwagger.paths['/pet/{petId}/friends'] = {
+                  parameters: [
+                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    {
+                      name: 'limit',
+                        in: 'query',
+                      description: 'Maximum number of friends returned',
+                      type: 'number'
+                    }
+                  ],
+                  get: {
+                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                  }
+                };
+
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameters()[1];
+                  })
+                  .then(done, done);
+              });
+
+              it('number request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    limit: 5.5
+                  }
+                }).value, 5.5);
+              });
+
+              it('string request value', function () {
+                assert.equal(cParam.getValue({
+                  query: {
+                    limit: '5.5'
+                  }
+                }).value, 5.5);
+              });
+
+              it('invalid request value', function () {
+                var paramValue = cParam.getValue({
+                  query: {
+                    limit: 'invalid'
+                  }
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message, 'Not a valid number: invalid');
+              });
+            });
+
+            describe('string', function () {
+              var cParam;
+
+              before(function () {
+                cParam = swagger.getOperation('/pet/{petId}', 'post').getParameters()[1];
+              });
+
+              it('string request value', function () {
+                assert.equal(cParam.getValue({
+                  body: {
+                    name: 'New Name'
+                  }
+                }).value, 'New Name');
+              });
+
+              it('invalid request value', function () {
+                var paramValue = cParam.getValue({
+                  body: {
+                    name: 1
+                  }
+                });
+
+                assert.ok(_.isUndefined(paramValue.value));
+                assert.equal(paramValue.errors.length, 1);
+                assert.equal(paramValue.errors[0].message, 'Not a valid string: 1');
+              });
+
+              describe('date format', function () {
+                var dateStr = '2015-04-09';
+                var date = new Date(dateStr);
+
+                before(function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/{petId}'].parameters.push({
+                    name: 'createdBefore',
+                    in: 'query',
+                    description: 'Find pets created before',
+                    type: 'string',
+                    format: 'date'
+                  });
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      cParam = api.getOperation('/pet/{petId}', 'get').getParameters()[1];
+                    })
+                    .then(done, done);
+                });
+
+                it('date request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: date
+                    }
+                  });
+
+                  validateDate(paramValue.value, date);
+                });
+
+                it('string request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: dateStr
+                    }
+                  });
+
+                  validateDate(paramValue.value, date);
+                });
+
+                it('invalid request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: 'invalid'
+                    }
+                  });
+
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.errors.length, 1);
+                  assert.equal(paramValue.errors[0].message, 'Not a valid date string: invalid');
+                });
+              });
+
+              describe('date-time format', function () {
+                var dateTimeStr = '2015-04-09T14:07:26-06:00';
+                var dateTime = new Date(dateTimeStr);
+
+                before(function (done) {
+                  var cSwagger = _.cloneDeep(swaggerDoc);
+
+                  cSwagger.paths['/pet/{petId}'].parameters.push({
+                    name: 'createdBefore',
+                      in: 'query',
+                    description: 'Find pets created before',
+                    type: 'string',
+                    format: 'date-time'
+                  });
+
+                  swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      cParam = api.getOperation('/pet/{petId}', 'get').getParameters()[1];
+                    })
+                    .then(done, done);
+                });
+
+                it('date request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: dateTime
+                    }
+                  });
+
+                  validateDate(paramValue.value, dateTime);
+                });
+
+                it('string request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: dateTimeStr
+                    }
+                  });
+
+                  validateDate(paramValue.value, dateTime);
+                });
+
+                it('invalid request value', function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: 'invalid'
+                    }
+                  });
+
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.errors.length, 1);
+                  assert.equal(paramValue.errors[0].message, 'Not a valid date-time string: invalid');
+                });
+              });
+            });
+
+            it('invalid type', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items.type = 'invalid';
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {
+                      status: [
+                        'one', 'two', 'three'
+                      ]
+                    }
+                  });
+
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.errors.length, 1);
+                  assert.equal(paramValue.errors[0].message, 'Invalid \'type\' value: invalid');
+                })
+                .then(done, done);
+            });
+
+            it('invalid type (undefined)', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+                {
+                  type: 'string'
+                },
+                {
+                  type: 'string'
+                }
+              ];
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    query: {
+                      status: [
+                        'one', 'two', 'three' // The extra parameter will cause an 'undefined' schema
+                      ]
+                    }
+                  });
+
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.errors.length, 1);
+                  assert.equal(paramValue.errors[0].message, 'Invalid \'type\' value: undefined');
+                })
+                .then(done, done);
+            });
+
+            it('missing type', function (done) {
+              var cSwagger = _.cloneDeep(swaggerDoc);
+
+              cSwagger.paths['/pet'].post.parameters[0].schema = {};
+
+              swaggerApi.create({
+                definition: cSwagger
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet', 'post').getParameters()[0].getValue({
+                    body: {}
+                  });
+
+                  assert.deepEqual({}, paramValue.raw);
+                  assert.deepEqual({}, paramValue.value);
+                })
+                .then(done, done);
+            });
+          });
+        });
+      });
+    });
   });
 
   describe('SwaggerApi', function () {

@@ -2,6 +2,8 @@
 <dl>
 <dt><a href="#Operation">Operation</a></dt>
 <dd></dd>
+<dt><a href="#ParameterValue">ParameterValue</a></dt>
+<dd></dd>
 <dt><a href="#Parameter">Parameter</a></dt>
 <dd></dd>
 <dt><a href="#SwaggerApi">SwaggerApi</a></dt>
@@ -33,7 +35,7 @@
 ### new Operation(api, path, method, ptr, definition, regexp)
 The Swagger Operation object.
 
-<strong>Note:</strong> Do not use directly.
+**Note:** Do not use directly.
 
 
 | Param | Type | Description |
@@ -83,6 +85,27 @@ Returns a sample value based on the requested code or the default response if no
 | --- | --- | --- | --- |
 | [code] | <code>number</code> &#124; <code>string</code> | <code>default</code> | The response code |
 
+<a name="ParameterValue"></a>
+## ParameterValue
+**Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| errors | <code>Array.&lt;Error&gt;</code> | The error(s) encountered during processing the paramter value |
+| raw | <code>\*</code> | The original parameter value *(Does not take default values into account)* |
+| value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion and can be an                       `Error` if there is a problem during coercion.)* |
+
+<a name="new_ParameterValue_new"></a>
+### new ParameterValue(parameter, raw)
+Object representing a parameter value.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| parameter | <code>[Parameter](#Parameter)</code> | The Parameter Object |
+| raw | <code>\*</code> | The original/raw value |
+
 <a name="Parameter"></a>
 ## Parameter
 **Kind**: global class  
@@ -91,12 +114,13 @@ Returns a sample value based on the requested code or the default response if no
   * [new Parameter(operation, ptr, definition, schema)](#new_Parameter_new)
   * [.getSchema()](#Parameter+getSchema) ⇒ <code>object</code>
   * [.getSample()](#Parameter+getSample) ⇒ <code>\*</code>
+  * [.getValue(req)](#Parameter+getValue) ⇒ <code>[ParameterValue](#ParameterValue)</code>
 
 <a name="new_Parameter_new"></a>
 ### new Parameter(operation, ptr, definition, schema)
 The Swagger Parameter object.
 
-<strong>Note:</strong> Do not use directly.
+**Note:** Do not use directly.
 
 
 | Param | Type | Description |
@@ -118,6 +142,34 @@ Returns a sample value for the parameter based on its schema;
 
 **Kind**: instance method of <code>[Parameter](#Parameter)</code>  
 **Returns**: <code>\*</code> - The sample value  
+<a name="Parameter+getValue"></a>
+### parameter.getValue(req) ⇒ <code>[ParameterValue](#ParameterValue)</code>
+Returns the parameter value from the request.
+
+**Note:** Below is the list `req` of properties used:
+
+* `body`: Used for `body` and `formData` parameters
+* `files`: Used for `formData` parameters whose `type` is `file`
+* `header`: Used for `header` parameters
+* `query`: Used for `query` parameters
+
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
+property.
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+
+**Kind**: instance method of <code>[Parameter](#Parameter)</code>  
+**Returns**: <code>[ParameterValue](#ParameterValue)</code> - The parameter value object  
+**Throws**:
+
+- <code>Error</code> If the `in` value of the parameter's schema is not valid or if the `req` property to retrieve the
+                parameter is missing.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| req | <code>object</code> | The http client request *(or equivalent)* |
+
 <a name="SwaggerApi"></a>
 ## SwaggerApi
 **Kind**: global class  
@@ -135,7 +187,7 @@ Returns a sample value for the parameter based on its schema;
 ### new SwaggerApi(plugin, definition, resolved, references, options)
 The Swagger API object.
 
-<strong>Note:</strong> Do not use directly.
+**Note:** Do not use directly.
 
 
 | Param | Type | Description |
@@ -163,8 +215,13 @@ Returns the warnings from the last validate call.
 ### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#Operation)</code>
 Returns the operation for the given path and operation.
 
-**Note:** If you pass in an `http.clientRequest` *(or equivalent)*, the `method` and `url` properties are use to
-          perform the matching.  *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
+          *(or equivalent)*:
+
+* `method`
+* `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
 **Returns**: <code>[Operation](#Operation)</code> - The operation for the provided path and method or undefined if there is no operation for that
@@ -172,7 +229,7 @@ Returns the operation for the given path and operation.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request |
+| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
 | [method] | <code>string</code> | The Swagger operation method |
 
 <a name="SwaggerApi+getOperations"></a>
