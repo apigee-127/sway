@@ -57,35 +57,37 @@ function displayCoverageReport (display) {
 
 gulp.task('browserify', function () {
   function browserifyBuild (isStandalone, useDebug) {
-    return new Promise(function (resolve, reject) {
-      var b = browserify('./index.js', {
-        debug: useDebug,
-        standalone: 'SwaggerApi'
+    return function () {
+      return new Promise(function (resolve, reject) {
+        var b = browserify('./index.js', {
+          debug: useDebug,
+          standalone: 'SwaggerApi'
+        });
+
+        // Only include the 'en' faker.js locale
+        b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
+
+        if (!isStandalone) {
+          // Expose Bower modules so they can be required
+          exposify.config = {
+            'json-refs': 'JsonRefs',
+            'js-yaml': 'jsyaml',
+            'lodash': '_',
+            'path-loader': 'PathLoader'
+          };
+
+          b.transform('exposify');
+        }
+
+        b.bundle()
+          .pipe(source('swagger-core-api' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
+          .pipe($.if(!useDebug, buffer()))
+          .pipe($.if(!useDebug, $.uglify()))
+          .pipe(gulp.dest('browser/'))
+          .on('error', reject)
+          .on('end', resolve);
       });
-
-      // Only include the 'en' faker.js locale
-      b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
-
-      if (!isStandalone) {
-        // Expose Bower modules so they can be required
-        exposify.config = {
-          'json-refs': 'JsonRefs',
-          'js-yaml': 'jsyaml',
-          'lodash': '_',
-          'path-loader': 'PathLoader'
-        };
-
-        b.transform('exposify');
-      }
-
-      b.bundle()
-        .pipe(source('swagger-core-api' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
-        .pipe($.if(!useDebug, buffer()))
-        .pipe($.if(!useDebug, $.uglify()))
-        .pipe(gulp.dest('browser/'))
-        .on('error', reject)
-        .on('end', resolve);
-    });
+    };
   }
 
   return Promise.resolve()
@@ -195,7 +197,7 @@ gulp.task('test-browser', ['browserify'], function () {
   return Promise.resolve()
     .then(cleanUp)
     .then(function () {
-      // Copy the browser build of json-refs to the test directory
+      // Copy the browser build of swagger-core-api to the test directory
       fs.createReadStream('./browser/swagger-core-api.js')
         .pipe(fs.createWriteStream(basePath + 'swagger-core-api.js'));
       fs.createReadStream('./browser/swagger-core-api-standalone.js')
