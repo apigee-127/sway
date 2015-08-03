@@ -24,7 +24,7 @@
 
 'use strict';
 
-var _ = require('lodash-compat');
+var _ = require('lodash');
 var pathLoader = require('path-loader');
 var YAML = require('js-yaml');
 

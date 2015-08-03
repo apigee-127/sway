@@ -30,6 +30,7 @@ var $ = require('gulp-load-plugins')({
   }
 });
 var browserify = require('browserify');
+var buffer = require('vinyl-buffer');
 var del = require('del');
 var exposify = require('exposify');
 var fs = require('fs');
@@ -62,25 +63,25 @@ gulp.task('browserify', function () {
         standalone: 'SwaggerApi'
       });
 
-      if (!useDebug) {
-        b.transform({global: true}, 'uglifyify');
-      }
+      // Only include the 'en' faker.js locale
+      b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
 
       if (!isStandalone) {
         // Expose Bower modules so they can be required
         exposify.config = {
           'json-refs': 'JsonRefs',
           'js-yaml': 'jsyaml',
-          'lodash-compat': '_',
+          'lodash': '_',
           'path-loader': 'PathLoader'
         };
 
         b.transform('exposify');
       }
 
-      b.transform('brfs')
-        .bundle()
+      b.bundle()
         .pipe(source('swagger-core-api' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
+        .pipe($.if(!useDebug, buffer()))
+        .pipe($.if(!useDebug, $.uglify()))
         .pipe(gulp.dest('browser/'))
         .on('error', reject)
         .on('end', resolve);
@@ -101,7 +102,8 @@ gulp.task('browserify', function () {
 gulp.task('clean', function (done) {
   del([
     'bower_components',
-    'coverage'
+    'coverage',
+    'test/browser/swagger-core-api*.js'
   ], done);
 });
 
@@ -207,8 +209,7 @@ gulp.task('test-browser', ['browserify'], function () {
           debug: true
         });
 
-        b.transform('brfs')
-          .bundle()
+        b.bundle()
           .pipe(source('test-browser.js'))
           .pipe(gulp.dest(basePath))
           .on('error', function (err) {
