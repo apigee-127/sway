@@ -346,6 +346,62 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
     });
 
+    describe('#getResponseExample', function () {
+      var example = {
+        name: 'Sparky',
+        photoUrls: []
+      };
+      var exampleXML = [
+        '<pet>',
+        '  <name>Sparky></name>',
+        '  <photoUrls></photoUrls>',
+        '</pet>'
+      ].join('\n');
+      var operation;
+
+      before(function (done) {
+        var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+        var examples = {
+          'application/json': example,
+          'application/x-yaml': example,
+          'application/xml': exampleXML
+        };
+
+        cSwaggerDoc.paths['/pet/{petId}'].get.responses.default = {
+          description: 'Some description',
+          schema: {
+            $ref: '#/definitions/Pet'
+          },
+          examples: examples
+        };
+        cSwaggerDoc.paths['/pet/{petId}'].get.responses['200'].examples = examples;
+
+        swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            operation = api.getOperation('/pet/{petId}', 'get');
+          })
+          .then(done, done);
+      });
+
+      it('should return default response example when no code is provided', function () {
+        assert.deepEqual(operation.getResponseExample('application/json'), JSON.stringify(example, null, 2));
+      });
+
+      it('should return the proper response example for the provided code', function () {
+        assert.deepEqual(operation.getResponseExample(200, 'application/json'), JSON.stringify(example, null, 2));
+      });
+
+      it('should return the proper response example for non-string example (YAML)', function () {
+        assert.deepEqual(operation.getResponseExample(200, 'application/x-yaml'), YAML.safeDump(example, {indent: 2}));
+      });
+
+      it('should return the proper response example for string example', function () {
+        assert.deepEqual(operation.getResponseExample('application/xml'), exampleXML);
+      });
+    });
+
     describe('#getResponseSchema', function () {
       it('should throw an Error for invalid response code', function () {
         try {

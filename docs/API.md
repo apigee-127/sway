@@ -28,6 +28,7 @@
 * [Operation](#Operation)
   * [new Operation(api, path, method, ptr, definition, regexp)](#new_Operation_new)
   * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
+  * [.getResponseExample(codeOrMimeType, [mimeType])](#Operation+getResponseExample) ⇒ <code>string</code>
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
   * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
 
@@ -53,9 +54,21 @@ Returns all parameters for the operation.
 
 **Kind**: instance method of <code>[Operation](#Operation)</code>  
 **Returns**: <code>[Array.&lt;Parameter&gt;](#Parameter)</code> - All parameters for the operation.  
+<a name="Operation+getResponseExample"></a>
+### operation.getResponseExample(codeOrMimeType, [mimeType]) ⇒ <code>string</code>
+Returns the response example for the requested code and/or mime-type.
+
+**Kind**: instance method of <code>[Operation](#Operation)</code>  
+**Returns**: <code>string</code> - The response example as a string or `undefined` if the response code and/or mime-type is missing  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| codeOrMimeType | <code>number</code> &#124; <code>string</code> | The response code or mime-type (Uses the default response code if this is                                         the only argument) |
+| [mimeType] | <code>string</code> | The mime type |
+
 <a name="Operation+getResponseSchema"></a>
 ### operation.getResponseSchema([code]) ⇒ <code>object</code>
-Returns the JSON Schema for the requested code or the default response if no code is provided.
+Returns the JSON Schema for the requested code.
 
 **Kind**: instance method of <code>[Operation](#Operation)</code>  
 **Returns**: <code>object</code> - The JSON Schema for the response, which can be undefined if the response schema is not provided  

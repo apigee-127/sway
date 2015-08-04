@@ -28,7 +28,7 @@ bower install swagger-core-api --save
 
 The standalone binaries come in two flavors:
 
-* [swagger-core-api-standalone.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api.js): _3,936kb_, full source  and source maps
+* [swagger-core-api-standalone.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api.js): _3,940kb_, full source  and source maps
 * [swagger-core-api-standalone-min.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api-min.js): _580kb_, minified, compressed and no source map
 
 ### Node.js
