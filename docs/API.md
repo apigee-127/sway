@@ -92,8 +92,9 @@ Returns a sample value based on the requested code or the default response if no
 
 | Name | Type | Description |
 | --- | --- | --- |
-| errors | <code>Array.&lt;Error&gt;</code> | The error(s) encountered during processing the paramter value |
+| error | <code>Error</code> | The error(s) encountered during processing/validating the paramter value |
 | raw | <code>\*</code> | The original parameter value *(Does not take default values into account)* |
+| valid | <code>boolean</code> | Whether or not this parameter is valid based on its JSON Schema |
 | value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary)* |
 
 <a name="new_ParameterValue_new"></a>

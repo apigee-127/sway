@@ -1160,8 +1160,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                             });
 
                       assert.ok(_.isUndefined(paramValue.value));
-                      assert.ok(paramValue.errors.length === 1);
-                      assert.equal(paramValue.errors[0].message, 'Invalid \'collectionFormat\' value: invalid');
+                      assert.equal(paramValue.error.message, 'Invalid \'collectionFormat\' value: invalid');
                     })
                     .then(done, done);
                 });
@@ -1228,8 +1227,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message, 'Not a valid boolean: invalid');
+                assert.equal(paramValue.error.message, 'Not a valid boolean: invalid');
               });
             });
 
@@ -1287,8 +1285,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message, 'Not a valid integer: invalid');
+                assert.equal(paramValue.error.message, 'Not a valid integer: invalid');
               });
             });
 
@@ -1320,8 +1317,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message, 'Not a valid object: 1');
+                assert.equal(paramValue.error.message, 'Not a valid object: 1');
               });
 
               it('invalid request value (string)', function () {
@@ -1330,8 +1326,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message,
+                assert.equal(paramValue.error.message,
                              typeof window === 'undefined' ? 'Unexpected token i' : 'Unable to parse JSON string');
               });
             });
@@ -1390,8 +1385,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message, 'Not a valid number: invalid');
+                assert.equal(paramValue.error.message, 'Not a valid number: invalid');
               });
             });
 
@@ -1418,8 +1412,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.errors.length, 1);
-                assert.equal(paramValue.errors[0].message, 'Not a valid string: 1');
+                assert.equal(paramValue.error.message, 'Not a valid string: 1');
               });
 
               describe('date format', function () {
@@ -1474,8 +1467,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.errors.length, 1);
-                  assert.equal(paramValue.errors[0].message, 'Not a valid date string: invalid');
+                  assert.equal(paramValue.error.message, 'Not a valid date string: invalid');
                 });
               });
 
@@ -1531,8 +1523,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.errors.length, 1);
-                  assert.equal(paramValue.errors[0].message, 'Not a valid date-time string: invalid');
+                  assert.equal(paramValue.error.message, 'Not a valid date-time string: invalid');
                 });
               });
             });
@@ -1555,8 +1546,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.errors.length, 1);
-                  assert.equal(paramValue.errors[0].message, 'Invalid \'type\' value: invalid');
+                  assert.equal(paramValue.error.message, 'Invalid \'type\' value: invalid');
                 })
                 .then(done, done);
             });
@@ -1586,8 +1576,7 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                   });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.errors.length, 1);
-                  assert.equal(paramValue.errors[0].message, 'Invalid \'type\' value: undefined');
+                  assert.equal(paramValue.error.message, 'Invalid \'type\' value: undefined');
                 })
                 .then(done, done);
             });
@@ -1611,6 +1600,70 @@ describe('swagger-core-api (Swagger 2.0)', function () {
                 .then(done, done);
             });
           });
+        });
+      });
+
+      describe('validation', function () {
+        it('missing required value (with default)', function () {
+          var paramValue = swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+            query: {}
+          });
+
+          assert.deepEqual(paramValue.value, ['available']);
+          assert.ok(paramValue.valid);
+          assert.ok(_.isUndefined(paramValue.error));
+        });
+
+        it('missing required value (without default)', function () {
+          var paramValue = swagger.getOperation('/pet/findByTags', 'get').getParameters()[0].getValue({
+            query: {}
+          });
+          var error = paramValue.error;
+
+          assert.ok(_.isUndefined(paramValue.value));
+          assert.ok(paramValue.valid === false);
+          assert.equal(error.message, 'Value is required but was not provided');
+          assert.equal(error.code, 'REQUIRED');
+          assert.ok(error.failedValidation);
+        });
+
+        it('provided required value', function () {
+          var pet = {
+            name: 'Sparky',
+            photoUrls: []
+          };
+          var paramValue = swagger.getOperation('/pet', 'post').getParameters()[0].getValue({
+            body: pet
+          });
+
+          assert.deepEqual(paramValue.value, pet);
+          assert.ok(_.isUndefined(paramValue.error));
+          assert.ok(paramValue.valid);
+        });
+
+        it('provided value fails JSON Schema validation', function () {
+          var paramValue = swagger.getOperation('/pet', 'post').getParameters()[0].getValue({
+            body: {}
+          });
+          var error = paramValue.error;
+
+          assert.deepEqual(paramValue.value, {});
+          assert.ok(paramValue.valid === false);
+          assert.equal(error.message, 'Value failed JSON Schema validation');
+          assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.ok(error.failedValidation);
+          assert.deepEqual(error.errors, [
+            {
+              code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+              message: 'Missing required property: photoUrls',
+              path: []
+            },
+            {
+              code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+              message: 'Missing required property: name',
+              path: []
+            }
+          ]);
         });
       });
     });
