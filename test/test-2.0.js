@@ -195,6 +195,210 @@ describe('swagger-core-api (Swagger 2.0)', function () {
     });
   });
 
+  describe('general', function () {
+    describe('format generators', function () {
+      it('byte', function (done) {
+        var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'byte',
+          in: 'query',
+          type: 'string',
+          format: 'byte'
+        });
+
+        swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getSample()));
+          })
+          .then(done, done);
+      });
+
+      it('password', function (done) {
+        var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'byte',
+            in: 'query',
+          type: 'string',
+          format: 'password'
+        });
+
+        swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getSample()));
+          })
+          .then(done, done);
+      });
+    });
+
+    describe('format validators', function () {
+      it('always truthy', function (done) {
+        var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'byte',
+            in: 'query',
+          type: 'string',
+          format: 'byte',
+          default: 'pretendThisIsABase64EncodedString'
+        });
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'double',
+            in: 'query',
+          type: 'number',
+          format: 'double',
+          default: 1.1
+        });
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'float',
+            in: 'query',
+          type: 'number',
+          format: 'float',
+          default: 1.1
+        });
+
+        cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+          name: 'password',
+            in: 'query',
+          type: 'string',
+          format: 'password',
+          default: 'somepassword'
+        });
+
+        swaggerApi.create({definition: cSwaggerDoc})
+          .then(function (api) {
+            assert.ok(api.validate());
+          })
+          .then(done, done);
+      });
+
+      describe('int32', function () {
+        var badParam;
+        var goodParam;
+
+        before(function (done) {
+          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+            name: 'int32',
+              in: 'query',
+            type: 'integer',
+            format: 'int32'
+          });
+
+          // Test the format validator using parameter validation
+          swaggerApi.create({definition: cSwaggerDoc})
+            .then(function (api) {
+              badParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  int32: 1.1
+                }
+              });
+              goodParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  int32: 1
+                }
+              });
+            })
+            .then(done, done);
+        });
+
+        it('bad value', function () {
+          var error = badParam.error;
+
+          assert.ok(!badParam.valid);
+          assert.ok(!_.isUndefined(badParam.value));
+          assert.equal(badParam.raw, 1.1);
+          assert.equal(error.message, 'Value failed JSON Schema validation');
+          assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.ok(error.failedValidation);
+          assert.deepEqual(error.errors, [
+            {
+              code: 'INVALID_TYPE',
+              message: 'Expected type integer but found type number',
+              path: []
+            },
+            {
+              code: 'INVALID_FORMAT',
+              message: 'Object didn\'t pass validation for format int32: 1.1',
+              path: []
+            }
+          ]);
+        });
+
+        it('good value', function () {
+          assert.ok(goodParam.valid);
+        });
+      });
+
+      describe('int64', function () {
+        var badParam;
+        var goodParam;
+
+        before(function (done) {
+          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+            name: 'int64',
+              in: 'query',
+            type: 'integer',
+            format: 'int64'
+          });
+
+          // Test the format validator using parameter validation
+          swaggerApi.create({definition: cSwaggerDoc})
+            .then(function (api) {
+              badParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  int64: 1.1
+                }
+              });
+              goodParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  int64: 1
+                }
+              });
+            })
+            .then(done, done);
+        });
+
+        it('bad value', function () {
+          var error = badParam.error;
+
+          assert.ok(!badParam.valid);
+          assert.ok(!_.isUndefined(badParam.value));
+          assert.equal(badParam.raw, 1.1);
+          assert.equal(error.message, 'Value failed JSON Schema validation');
+          assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.ok(error.failedValidation);
+          assert.deepEqual(error.errors, [
+            {
+              code: 'INVALID_TYPE',
+              message: 'Expected type integer but found type number',
+              path: []
+            },
+            {
+              code: 'INVALID_FORMAT',
+              message: 'Object didn\'t pass validation for format int64: 1.1',
+              path: []
+            }
+          ]);
+        });
+
+        it('good value', function () {
+          assert.ok(goodParam.valid);
+        });
+      });
+    });
+  });
+
   describe('Operation', function () {
     it('should handle composite parameters', function () {
       var method = 'post';
