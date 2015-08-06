@@ -194,6 +194,7 @@ property.
   * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
   * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.registerValidator(validator)](#SwaggerApi+registerValidator)
   * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
 
@@ -256,6 +257,17 @@ Returns all operations for the provided path or all operations in the API.
 | Param | Type | Description |
 | --- | --- | --- |
 | [path] | <code>string</code> | The Swagger path |
+
+<a name="SwaggerApi+getOperationsByTag"></a>
+### swaggerApi.getOperationsByTag([tag]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Returns all operations for the provided tag.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - All operations for the provided tag.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [tag] | <code>string</code> | The Swagger tag |
 
 <a name="SwaggerApi+registerValidator"></a>
 ### swaggerApi.registerValidator(validator)

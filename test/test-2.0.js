@@ -2002,6 +2002,23 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
     });
 
+    describe('#getOperationsByTag', function () {
+      it('should return no operation for incorrect tag', function () {
+        var operations = swagger.getOperationsByTag('incorrect tag');
+
+        assert.equal(operations.length, 0);
+      });
+
+      it('should return all operations for the given tag', function () {
+        var operations = swagger.getOperationsByTag('store');
+
+        assert.equal(operations.length,
+                     getOperationCount(swagger.definition.paths['/store/inventory']) +
+                     getOperationCount(swagger.definition.paths['/store/order']) +
+                     getOperationCount(swagger.definition.paths['/store/order/{orderId}']));
+      });
+    });
+
     describe('#registerValidator', function () {
       it('should throw TypeError for invalid arguments', function () {
         var scenarios = [
