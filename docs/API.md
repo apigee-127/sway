@@ -329,7 +329,15 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, fu
 Callback used for validation.
 
 **Kind**: global typedef  
-**Returns**: <code>object</code> - Object containing the errors and warnings of the validation  
+**Returns**: <code>object</code> - The validation results.  This object should contain two properties: `errors` and `warnings`.  Each
+                  of these property values should be an array of objects that have at minimum the following
+                  properties:
+
+                    * code: The code used to identify the error/warning
+                    * message: The human readable message for the error/warning
+                    * path: The array of path segments to portion of the document associated with the error/warning
+
+                  Any other properties can be added to the error/warning objects as well but these must be there.  
 
 | Param | Type | Description |
 | --- | --- | --- |
