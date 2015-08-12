@@ -1,4 +1,4 @@
-/* eslint-env mocha */
+/* eslint-env browser, mocha */
 
 /*
  * The MIT License (MIT)
@@ -28,7 +28,7 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var swaggerApi = require('..');
+var swaggerApi = typeof window === 'undefined' ? require('..') : window.SwaggerApi;
 
 var invalidCreateScenarios = [
   [[], 'options is required'],
@@ -42,8 +42,8 @@ var invalidCreateScenarios = [
   [[{definition: {}}, 'wrongType'], 'callback must be a function']
 ];
 
-describe('swagger-core-api (General)', function () {
-  describe('swagger-core-api#create', function () {
+describe('sway (General)', function () {
+  describe('sway#create', function () {
     it('should always return a promise', function () {
       assert.ok(swaggerApi.create({}) instanceof Promise);
       assert.ok(swaggerApi.create({}, function () {}) instanceof Promise);

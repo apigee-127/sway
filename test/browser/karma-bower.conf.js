@@ -11,8 +11,15 @@ module.exports = function (config) {
     basePath: '.',
     frameworks: ['mocha'],
     files: [
-      {pattern: 'vendor/**/*', watch: false, included: true},
-      {pattern: 'swagger-core-api.js', watch: false, included: true},
+      {pattern: 'vendor/base64.min.js', watch: false, included: true},
+      {pattern: 'vendor/debug.js', watch: false, included: true},
+      {pattern: 'vendor/js-yaml.js', watch: false, included: true},
+      {pattern: 'vendor/lodash.min.js', watch: false, included: true},
+      {pattern: 'vendor/traverse.js', watch: false, included: true},
+      {pattern: 'vendor/ZSchema-browser-min.js', watch: false, included: true},
+      {pattern: 'vendor/path-loader-min.js', watch: false, included: true},
+      {pattern: 'vendor/json-refs-min.js', watch: false, included: true},
+      {pattern: 'sway.js', watch: false, included: true},
       {pattern: 'test-browser.js', watch: false, included: true}
     ],
     client: {

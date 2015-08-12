@@ -64,8 +64,11 @@ gulp.task('browserify', function () {
           standalone: 'SwaggerApi'
         });
 
+        // We have to comment this out because it breaks our build:
+        //   https://github.com/substack/node-browserify/issues/968
+        //
         // Only include the 'en' faker.js locale
-        b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
+        // b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
 
         if (!isStandalone) {
           // Expose Bower modules so they can be required
@@ -80,7 +83,7 @@ gulp.task('browserify', function () {
         }
 
         b.bundle()
-          .pipe(source('swagger-core-api' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
+          .pipe(source('sway' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
           .pipe($.if(!useDebug, buffer()))
           .pipe($.if(!useDebug, $.uglify()))
           .pipe(gulp.dest('browser/'))
@@ -105,7 +108,7 @@ gulp.task('clean', function (done) {
   del([
     'bower_components',
     'coverage',
-    'test/browser/swagger-core-api*.js'
+    'test/browser/sway*.js'
   ], done);
 });
 
@@ -176,8 +179,8 @@ gulp.task('test-browser', ['browserify'], function () {
   function cleanUp () {
     // Clean up just in case
     del.sync([
-      basePath + 'swagger-core-api.js',
-      basePath + 'swagger-core-api-standalone.js',
+      basePath + 'sway.js',
+      basePath + 'sway-standalone.js',
       basePath + 'test-browser.js'
     ]);
 
@@ -197,11 +200,11 @@ gulp.task('test-browser', ['browserify'], function () {
   return Promise.resolve()
     .then(cleanUp)
     .then(function () {
-      // Copy the browser build of swagger-core-api to the test directory
-      fs.createReadStream('./browser/swagger-core-api.js')
-        .pipe(fs.createWriteStream(basePath + 'swagger-core-api.js'));
-      fs.createReadStream('./browser/swagger-core-api-standalone.js')
-        .pipe(fs.createWriteStream(basePath + 'swagger-core-api-standalone.js'));
+      // Copy the browser build of sway to the test directory
+      fs.createReadStream('./browser/sway.js')
+        .pipe(fs.createWriteStream(basePath + 'sway.js'));
+      fs.createReadStream('./browser/sway-standalone.js')
+        .pipe(fs.createWriteStream(basePath + 'sway-standalone.js'));
 
       return new Promise(function (resolve, reject) {
         var b = browserify([

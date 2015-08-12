@@ -29,7 +29,7 @@
 var _ = require('lodash');
 var assert = require('assert');
 var JsonRefs = require('json-refs');
-var swaggerApi = require('..');
+var swaggerApi = typeof window === 'undefined' ? require('..') : window.SwaggerApi;
 var pathLoader = require('path-loader');
 var types = require('../lib/types');
 var YAML = require('js-yaml');
@@ -67,7 +67,7 @@ function shouldNotHadFailed (err) {
   fail('The code above should not had thrown an error');
 }
 
-describe('swagger-core-api (Swagger 2.0)', function () {
+describe('sway (Swagger 2.0)', function () {
   var resolvedRefs;
   var resolvedSwaggerDoc;
   var swagger;
@@ -107,10 +107,9 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       .then(done, done);
   });
 
-  describe('swagger-core-api#create', function () {
+  describe('sway#create', function () {
     function validateCreateSwaggerApi (options) {
       return function (theApi) {
-        assert.ok(theApi instanceof types.SwaggerApi);
         assert.deepEqual(theApi.definition, swaggerDoc);
         assert.equal(theApi.documentation, implementation.documentation);
         assert.deepEqual(theApi.options, options);
@@ -126,15 +125,6 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         // Validate the operations (Simple tests for now, deeper testing is below)
         assert.ok(_.isArray(theApi.operationObjects));
         assert.ok(theApi.operationObjects.length > 0);
-
-        _.each(theApi.operationObjects, function (operation) {
-          assert.ok(operation instanceof types.Operation);
-
-          // Validate the parameters (Simple tests for now, deeper testing is below)
-          _.each(operation.parameterObjects, function (parameter) {
-            assert.ok(parameter instanceof types.Parameter);
-          });
-        });
       };
     }
 
@@ -433,10 +423,6 @@ describe('swagger-core-api (Swagger 2.0)', function () {
       });
 
       assert.equal(operation.parameterObjects.length, 3);
-
-      _.each(operation.parameterObjects, function (parameter) {
-        assert.ok(parameter instanceof types.Parameter);
-      });
     });
 
     it('should handle explicit parameters', function () {
@@ -462,10 +448,6 @@ describe('swagger-core-api (Swagger 2.0)', function () {
         } else {
           assert.deepEqual(val, pathDef[method][key]);
         }
-      });
-
-      _.each(operation.parameterObjects, function (parameter) {
-        assert.ok(parameter instanceof types.Parameter);
       });
     });
 

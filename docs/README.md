@@ -1,8 +1,8 @@
-swagger-core-api is an API around consuming [Swagger][swagger] definitions.  The APIs provided attempt to solve common
+A library that simplifies [Swagger][swagger] integrations.  The APIs provided attempt to solve common
 problems when working with Swagger definitions, like loading a Swagger definition.  _(For example: You might want to compose
 a Swagger definition programmatically or you might want to load a Swagger definition from the filesystem...or some URL.)_
 
-What you will find below is information on how to install swagger-core-api based on your environment.  You will also
+What you will find below is information on how to install sway based on your environment.  You will also
 find detailed information about how to use the provided APIs.
 
 # Disclaimer
@@ -12,7 +12,7 @@ time up until we publish the first release.
 
 ## Installation
 
-swagger-core-api is available for both Node.js and the browser.  Installation instructions for each environment are below.
+sway is available for both Node.js and the browser.  Installation instructions for each environment are below.
 
 ### Browser
 
@@ -21,31 +21,39 @@ Installation for browser applications can be done via [Bower][bower] or by downl
 #### Using Bower
 
 ```
-bower install swagger-core-api --save
+bower install sway --save
 ```
 
 #### Standalone Binaries
 
 The standalone binaries come in two flavors:
 
-* [swagger-core-api.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api.js): _3,940kb_, full source  and source maps
-* [swagger-core-api-min.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api-min.js): _580kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _5,536kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _1,020kb_, minified, compressed and no source map
+
+**Note:** I realize these browser binaries are not small.  For the most part, this is due to a library we are using for
+creating mock/sample parameters/responses.  [json-schema-faker](https://github.com/pateketrueke/json-schema-faker) uses
+[faker.js](https://github.com/Marak/faker.js) which ships with a number of locales, which we currently are not using.
+Attempts to package sway in a way to make it smaller led to a
+[json-schema-faker packaging issue](https://github.com/pateketrueke/json-schema-faker/issues/56) that is unresolved.  In
+the future, if we were to expose this local support we would need these locales in the binary anyways so at the end of
+the day I've marked this as unavoidable.
 
 ### Node.js
 
 Installation for Node.js applications can be done via [NPM][npm].
 
 ```
-npm install swagger-core-api --save
+npm install sway --save
 ```
 
 ## API Documentation
 
-The swagger-core-api project's API documentation can be found here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/API.md
+The sway project's API documentation can be found here: https://github.com/apigee-127/sway/blob/master/docs/API.md
 
 ## Swagger Versions
 
-swagger-core-api uses [The Factory Method Pattern][factory-method-pattern] to create the `SwaggerApi` object you see
+sway uses [The Factory Method Pattern][factory-method-pattern] to create the `SwaggerApi` object you see
 documented in the API documentation above.  The core API is concrete but how each version of Swagger generates the
 `SwaggerApi` object and its business logic is Swagger version dependent.  That being said, below are the supported
 versions of Swagger and their documentation:
@@ -69,7 +77,7 @@ no other validation will occur.  But once the structural validation happens, `Se
 
 ## Dependencies
 
-Below is the list of projects being used by swagger-core-api and the purpose(s) they are used for:
+Below is the list of projects being used by sway and the purpose(s) they are used for:
 
 * [debug][debug]: Used for producing useful debugging information
 * [js-base64][js-base64]: Used for generating mock/sample data for the `byte` format
@@ -98,6 +106,6 @@ they did just in case they wanted to use these libraries.)_
 [path-loader]: https://www.npmjs.com/package/path-loader
 [path-to-regexp]: https://github.com/pillarjs/path-to-regexp
 [promises]: https://www.promisejs.org/
-[version-2.0-documentation]: https://github.com/apigee-127/swagger-core-api/blob/master/docs/versions/2.0.md
+[version-2.0-documentation]: https://github.com/apigee-127/sway/blob/master/docs/versions/2.0.md
 [swagger]: http://swagger.io
 [z-schema]: https://www.npmjs.com/package/z-schema

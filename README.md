@@ -1,18 +1,18 @@
-An API for interacting with [Swagger][swagger] documents.
+A library that simplifies [Swagger][swagger] integrations.
 
 ## Project Badges
 
-* Build status: [![Build Status](https://travis-ci.org/apigee-127/swagger-core-api.svg)](https://travis-ci.org/apigee-127/swagger-core-api)
-* Dependencies: [![Dependencies](https://david-dm.org/apigee-127/swagger-core-api.svg)](https://david-dm.org/apigee-127/swagger-core-api)
-* Developer dependencies: [![Dev Dependencies](https://david-dm.org/apigee-127/swagger-core-api/dev-status.svg)](https://david-dm.org/apigee-127/swagger-core-api#info=devDependencies&view=table)
-* Downloads: [![NPM Downloads Per Month](http://img.shields.io/npm/dm/swagger-core-api.svg)](https://www.npmjs.org/package/swagger-core-api)
-* Gitter: [![Join the chat at https://gitter.im/apigee-127/swagger-core-api](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apigee-127/swagger-core-api?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-* License: [![License](http://img.shields.io/npm/l/swagger-core-api.svg)](https://github.com/apigee-127/swagger-core-api/blob/master/LICENSE)
-* Version: [![NPM Version](http://img.shields.io/npm/v/swagger-core-api.svg)](https://www.npmjs.org/package/swagger-core-api)
+* Build status: [![Build Status](https://travis-ci.org/apigee-127/sway.svg)](https://travis-ci.org/apigee-127/sway)
+* Dependencies: [![Dependencies](https://david-dm.org/apigee-127/sway.svg)](https://david-dm.org/apigee-127/sway)
+* Developer dependencies: [![Dev Dependencies](https://david-dm.org/apigee-127/sway/dev-status.svg)](https://david-dm.org/apigee-127/sway#info=devDependencies&view=table)
+* Downloads: [![NPM Downloads Per Month](http://img.shields.io/npm/dm/sway.svg)](https://www.npmjs.org/package/sway)
+* Gitter: [![Join the chat at https://gitter.im/apigee-127/sway](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apigee-127/sway?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+* License: [![License](http://img.shields.io/npm/l/sway.svg)](https://github.com/apigee-127/sway/blob/master/LICENSE)
+* Version: [![NPM Version](http://img.shields.io/npm/v/sway.svg)](https://www.npmjs.org/package/sway)
 
 ## Installation
 
-swagger-core-api is available for both Node.js and the browser.  Installation instructions for each environment are below.
+sway is available for both Node.js and the browser.  Installation instructions for each environment are below.
 
 ### Browser
 
@@ -21,28 +21,36 @@ Installation for browser applications can be done via [Bower][bower] or by downl
 #### Using Bower
 
 ```
-bower install swagger-core-api --save
+bower install sway --save
 ```
 
 #### Standalone Binaries
 
 The standalone binaries come in two flavors:
 
-* [swagger-core-api-standalone.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api.js): _3,940kb_, full source  and source maps
-* [swagger-core-api-standalone-min.js](https://raw.github.com/apigee-127/swagger-core-api/master/browser/swagger-core-api-min.js): _580kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _5,536kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _1,020kb_, minified, compressed and no source map
+
+**Note:** I realize these browser binaries are not small.  For the most part, this is due to a library we are using for
+creating mock/sample parameters/responses.  [json-schema-faker](https://github.com/pateketrueke/json-schema-faker) uses
+[faker.js](https://github.com/Marak/faker.js) which ships with a number of locales, which we currently are not using.
+Attempts to package sway in a way to make it smaller led to a
+[json-schema-faker packaging issue](https://github.com/pateketrueke/json-schema-faker/issues/56) that is unresolved.  In
+the future, if we were to expose this local support we would need these locales in the binary anyways so at the end of
+the day I've marked this as unavoidable.
 
 ### Node.js
 
 Installation for Node.js applications can be done via [NPM][npm].
 
 ```
-npm install swagger-core-api --save
+npm install sway --save
 ```
 
 ## Documentation
 
-The documentation for this project can be found here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/README.md
-Of course, if you just want a quick link to the API documentation, that would be here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/API.md
+The documentation for this project can be found here: https://github.com/apigee-127/sway/blob/master/docs/README.md
+Of course, if you just want a quick link to the API documentation, that would be here: https://github.com/apigee-127/sway/blob/master/docs/API.md
 
 ## Contributing
 

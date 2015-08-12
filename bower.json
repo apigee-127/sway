@@ -1,12 +1,12 @@
 {
-  "name": "swagger-core-api",
-  "main": "browser/swagger-core-api.js",
-  "version": "0.2.0",
-  "homepage": "https://github.com/apigee-127/swagger-core-api",
+  "name": "sway",
+  "main": "browser/sway.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/apigee-127/sway",
   "authors": [
     "Jeremy Whitlock <jwhitlock@apache.org>"
   ],
-  "description": "An API for interacting with Swagger documents.",
+  "description": "A library that simplifies Swagger integrations.",
   "keywords": [
     "swagger"
   ],

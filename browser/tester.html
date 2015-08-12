@@ -5,10 +5,10 @@
   <body>
     <p>Processing this Swagger Document: <a href="http://petstore.swagger.io/v2/swagger.yaml">http://petstore.swagger.io/v2/swagger.yaml</a></p>
   </body>
-  <script src="swagger-core-api-standalone.js" type=""></script>
+  <script src="sway-standalone.js" charset="UTF-8"></script>
   <script>
     SwaggerApi
-      .create({document: 'http://petstore.swagger.io/v2/swagger.yaml'})
+      .create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
       .then(function (theApi) {
         document.body.innerHTML += '<div>';
         document.body.innerHTML += '<ul>';

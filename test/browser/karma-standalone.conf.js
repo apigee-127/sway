@@ -11,7 +11,7 @@ module.exports = function (config) {
     basePath: '.',
     frameworks: ['mocha'],
     files: [
-      {pattern: 'swagger-core-api-standalone.js', watch: false, included: true},
+      {pattern: 'sway-standalone.js', watch: false, included: true},
       {pattern: 'test-browser.js', watch: false, included: true}
     ],
     client: {

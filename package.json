@@ -1,12 +1,13 @@
 {
-  "name": "swagger-core-api",
+  "name": "sway",
   "version": "0.0.1",
-  "description": "An API for interacting with Swagger documents.",
+  "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
   "scripts": {
     "test": "gulp"
   },
   "keywords": [
+    "api",
     "swagger"
   ],
   "author": {
@@ -15,13 +16,13 @@
     "url": "https://github.com/whitlockjc"
   },
   "bugs": {
-    "url": "https://github.com/apigee-127/swagger-core-api/issues"
+    "url": "https://github.com/apigee-127/sway/issues"
   },
-  "homepage": "https://github.com/apigee-127/swagger-core-api",
+  "homepage": "https://github.com/apigee-127/sway",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/apigee-127/swagger-core-api.git"
+    "url": "git://github.com/apigee-127/sway.git"
   },
   "files": [
     "index.js",
