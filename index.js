@@ -43,7 +43,7 @@ var supportedVersions = {
  *
  * @param {object} options - The options for loading the definition(s)
  * @param {object|string} options.definition - The Swagger definition location or structure
- * @param {object} [options.loaderOptions] - The options to pass to path-loader
+ * @param {object} [options.jsonRefs] - The options to pass to json-refs
  * @param {validatorCallback[]} [options.customValidators] - The custom validators
  * @param {function} [callback] - Node.js error-first callback
  *
@@ -81,8 +81,8 @@ module.exports.create = function (options, callback) {
         throw new TypeError('options.definition is required');
       } else if (!_.isPlainObject(options.definition) && !_.isString(options.definition)) {
         throw new TypeError('options.definition must be either an object or a string');
-      } else if (!_.isUndefined(options.loaderOptions) && !_.isPlainObject(options.loaderOptions)) {
-        throw new TypeError('options.loaderOptions must be an object');
+      } else if (!_.isUndefined(options.jsonRefs) && !_.isPlainObject(options.jsonRefs)) {
+        throw new TypeError('options.jsonRefs must be an object');
       } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
         throw new TypeError('options.customValidators must be an array');
       } else if (!_.isUndefined(callback) && !_.isFunction(callback)) {
@@ -107,7 +107,7 @@ module.exports.create = function (options, callback) {
     // Load the remote definition or return options.definition
     .then(function () {
       if (_.isString(options.definition)) {
-        return pathLoader.load(options.definition, options.loaderOptions || {}).then(YAML.safeLoad);
+        return pathLoader.load(options.definition, options.jsonRefs || {}).then(YAML.safeLoad);
       } else {
         return options.definition;
       }

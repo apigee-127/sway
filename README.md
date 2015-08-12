@@ -42,6 +42,7 @@ npm install swagger-core-api --save
 ## Documentation
 
 The documentation for this project can be found here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/README.md
+Of course, if you just want a quick link to the API documentation, that would be here: https://github.com/apigee-127/swagger-core-api/blob/master/docs/API.md
 
 ## Contributing
 

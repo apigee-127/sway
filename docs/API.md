@@ -300,7 +300,7 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | --- | --- | --- |
 | options | <code>object</code> | The options for loading the definition(s) |
 | options.definition | <code>object</code> &#124; <code>string</code> | The Swagger definition location or structure |
-| [options.loaderOptions] | <code>object</code> | The options to pass to path-loader |
+| [options.jsonRefs] | <code>object</code> | The options to pass to json-refs |
 | [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 | [callback] | <code>function</code> | Node.js error-first callback |
 
