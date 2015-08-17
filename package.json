@@ -49,6 +49,7 @@
     "karma-mocha-reporter": "^1.0.4",
     "karma-phantomjs-launcher": "^0.2.0",
     "mocha": "^2.2.5",
+    "pathmodify": "^0.4.0",
     "phantomjs": "^1.9.17",
     "run-sequence": "^1.1.2",
     "vinyl-buffer": "^1.0.0",

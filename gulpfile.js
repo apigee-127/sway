@@ -37,6 +37,7 @@ var fs = require('fs');
 var gulp = require('gulp');
 var KarmaServer = require('karma').Server;
 var path = require('path');
+var pathmodify = require('pathmodify');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
 var testHelpers = require('./test/helpers');
@@ -64,11 +65,18 @@ gulp.task('browserify', function () {
           standalone: 'SwaggerApi'
         });
 
-        // We have to comment this out because it breaks our build:
-        //   https://github.com/substack/node-browserify/issues/968
-        //
         // Only include the 'en' faker.js locale
-        // b.require('json-schema-faker/node_modules/faker/locale/en.js', {expose: 'faker'});
+        b.plugin(pathmodify(), {mods: [
+          function (rec) {
+            var alias;
+
+            if (rec.id === 'faker' && rec.opts.filename.indexOf('json-schema-faker/lib/util/container.js') > -1) {
+              alias = {id: 'faker/locale/en'};
+            }
+
+            return alias;
+          }
+        ]});
 
         if (!isStandalone) {
           // Expose Bower modules so they can be required
