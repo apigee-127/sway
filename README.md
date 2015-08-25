@@ -10,6 +10,11 @@ A library that simplifies [Swagger][swagger] integrations.
 * License: [![License](http://img.shields.io/npm/l/sway.svg)](https://github.com/apigee-127/sway/blob/master/LICENSE)
 * Version: [![NPM Version](http://img.shields.io/npm/v/sway.svg)](https://www.npmjs.org/package/sway)
 
+## Project Status
+
+Up until `1.0.0`, the API is unstable and can change without warning.  While we will do our best to ensure this does
+not happen, as we begin to use sway we may run into situations where changing the API is required.
+
 ## Installation
 
 sway is available for both Node.js and the browser.  Installation instructions for each environment are below.
