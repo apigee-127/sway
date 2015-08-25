@@ -6,6 +6,8 @@
 <dd></dd>
 <dt><a href="#Parameter">Parameter</a></dt>
 <dd></dd>
+<dt><a href="#Path">Path</a></dt>
+<dd></dd>
 <dt><a href="#SwaggerApi">SwaggerApi</a></dt>
 <dd></dd>
 </dl>
@@ -24,29 +26,43 @@
 <a name="Operation"></a>
 ## Operation
 **Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
+| definition | <code>object</code> | The operation definition |
+| method | <code>string</code> | The HTTP method for this operation |
+| pathObject | <code>[Path](#Path)</code> | The Path object |
+| parameterObjects | <code>[Array.&lt;Parameter&gt;](#Parameter)</code> | The Parameter objects |
+| ptr | <code>string</code> | The JSON Pointer to the operation |
+| securityDefinitions | <code>object</code> | The security definitions used by this operation |
+
 
 * [Operation](#Operation)
-  * [new Operation(api, path, method, ptr, definition, regexp)](#new_Operation_new)
+  * [new Operation(api, pathObject, method, ptr, definition)](#new_Operation_new)
   * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
   * [.getResponseExample(codeOrMimeType, [mimeType])](#Operation+getResponseExample) ⇒ <code>string</code>
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
   * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
 
 <a name="new_Operation_new"></a>
-### new Operation(api, path, method, ptr, definition, regexp)
+### new Operation(api, pathObject, method, ptr, definition)
 The Swagger Operation object.
 
 **Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
-| path | <code>string</code> | The operation path |
+| pathObject | <code>[Path](#Path)</code> | The Path object |
 | method | <code>string</code> | The operation method |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | definition | <code>object</code> | The operation definition |
-| regexp | <code>regexp</code> | The regexp used to match request paths against this operation |
 
 <a name="Operation+getParameters"></a>
 ### operation.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
@@ -114,6 +130,8 @@ Returns a sample value based on the requested code or the default response if no
 ### new ParameterValue(parameter, raw)
 Object representing a parameter value.
 
+**Note:** Do not use directly.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -123,23 +141,36 @@ Object representing a parameter value.
 <a name="Parameter"></a>
 ## Parameter
 **Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| definition | <code>object</code> | The parameter definition |
+| operationObject | <code>[Operation](#Operation)</code> | The Operation object (Can be undefined for path-level parameters) |
+| pathObject | <code>[Path](#Path)</code> | The Path object |
+| ptr | <code>string</code> | The JSON Pointer to the parameter definition |
+| schema | <code>object</code> | The JSON Schema for the parameter |
+
 
 * [Parameter](#Parameter)
-  * [new Parameter(operation, ptr, definition, schema)](#new_Parameter_new)
+  * [new Parameter(opOrPath, ptr, definition, schema)](#new_Parameter_new)
   * [.getSchema()](#Parameter+getSchema) ⇒ <code>object</code>
   * [.getSample()](#Parameter+getSample) ⇒ <code>\*</code>
   * [.getValue(req)](#Parameter+getValue) ⇒ <code>[ParameterValue](#ParameterValue)</code>
 
 <a name="new_Parameter_new"></a>
-### new Parameter(operation, ptr, definition, schema)
+### new Parameter(opOrPath, ptr, definition, schema)
 The Swagger Parameter object.
 
 **Note:** Do not use directly.
 
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
-| operation | <code>[Operation](#Operation)</code> | The Swagger Operation object |
+| opOrPath | <code>[Operation](#Operation)</code> &#124; <code>[Path](#Path)</code> | The Operation or Path object |
 | ptr | <code>string</code> | The JSON Pointer to the parameter |
 | definition | <code>object</code> | The parameter definition |
 | schema | <code>object</code> | The JSON Schema for the parameter |
@@ -184,9 +215,100 @@ property.
 | --- | --- | --- |
 | req | <code>object</code> | The http client request *(or equivalent)* |
 
+<a name="Path"></a>
+## Path
+**Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
+| definition | <code>object</code> | The path definition |
+| operationObjects | <code>[Array.&lt;Operation&gt;](#Operation)</code> | The operation objects |
+| parameterObjects | <code>[Array.&lt;Parameter&gt;](#Parameter)</code> | The path-level parameter objects |
+| path | <code>string</code> | The path string |
+| ptr | <code>ptr</code> | The JSON Pointer to the path |
+| regexp | <code>regexp</code> | The regexp used to match request paths against this path |
+
+
+* [Path](#Path)
+  * [new Path(api, path, ptr, definition, regexp)](#new_Path_new)
+  * [.getOperation(method)](#Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperations()](#Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperationsByTag(tag)](#Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getParameters()](#Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
+
+<a name="new_Path_new"></a>
+### new Path(api, path, ptr, definition, regexp)
+The Path object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| api | <code>[SwaggerApi](#SwaggerApi)</code> | The Swagger API object |
+| path | <code>string</code> | The path string |
+| ptr | <code>ptr</code> | The JSON Pointer to the path |
+| definition | <code>object</code> | The path definition |
+| regexp | <code>regexp</code> | The regexp used to match request paths against this path |
+
+<a name="Path+getOperation"></a>
+### path.getOperation(method) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Return the operation for this path and method.
+
+**Kind**: instance method of <code>[Path](#Path)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - The Operation objects for this path and method or undefined if there is no operation for the
+                       provided method.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| method | <code>string</code> | The method |
+
+<a name="Path+getOperations"></a>
+### path.getOperations() ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Return the operations for this path.
+
+**Kind**: instance method of <code>[Path](#Path)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - The Operation objects for this path.  
+<a name="Path+getOperationsByTag"></a>
+### path.getOperationsByTag(tag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Return the operations for this path and tag.
+
+**Kind**: instance method of <code>[Path](#Path)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - The Operation objects for this path and tag  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| tag | <code>string</code> | The tag |
+
+<a name="Path+getParameters"></a>
+### path.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
+Return the parameters for this path.
+
+**Kind**: instance method of <code>[Path](#Path)</code>  
+**Returns**: <code>[Array.&lt;Parameter&gt;](#Parameter)</code> - The Parameter objects for this path.  
 <a name="SwaggerApi"></a>
 ## SwaggerApi
 **Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| customValidators | <code>Array.&lt;function()&gt;</code> | The array of custom validators |
+| definition | <code>object</code> | The API definition |
+| documentation | <code>string</code> | The URL to the Swagger documentation |
+| errors | <code>Array.&lt;object&gt;</code> | The validation errors or undefined if validation has not run |
+| pathObjects | <code>[Array.&lt;Path&gt;](#Path)</code> | The unique path objects |
+| options | <code>object</code> | The options passed to the constructor |
+| references | <code>object</code> | The reference metadata |
+| resolved | <code>object</code> | The fully resolved API definition |
+| version | <code>string</code> | The Swagger API version |
+| warnings | <code>Array.&lt;object&gt;</code> | The validation warnings or undefined if validation has not run |
+
 
 * [SwaggerApi](#SwaggerApi)
   * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
@@ -195,6 +317,8 @@ property.
   * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
+  * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
   * [.registerValidator(validator)](#SwaggerApi+registerValidator)
   * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
 
@@ -203,6 +327,9 @@ property.
 The Swagger API object.
 
 **Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
 
 
 | Param | Type | Description |
@@ -269,6 +396,30 @@ Returns all operations for the provided tag.
 | --- | --- | --- |
 | [tag] | <code>string</code> | The Swagger tag |
 
+<a name="SwaggerApi+getPath"></a>
+### swaggerApi.getPath(pathOrReq) ⇒ <code>[Path](#Path)</code>
+Returns the path object for the given path or request.
+
+**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
+          *(or equivalent)*:
+
+* `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Path](#Path)</code> - The corresponding Path object for the requested path or request.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
+
+<a name="SwaggerApi+getPaths"></a>
+### swaggerApi.getPaths() ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
+Returns all path objects for the Swagger API.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Array.&lt;Path&gt;](#Path)</code> - The Path objects  
 <a name="SwaggerApi+registerValidator"></a>
 ### swaggerApi.registerValidator(validator)
 Registers a validator.
