@@ -1,6 +1,6 @@
 ## Release Notes
 
-### v0.2.1
+### v0.2.1 (2015-08-26)
 
 * Fix bug with loading relative references *(Issue #17)*
 * Fix bug with loading YAML references *(Issue #17)*
