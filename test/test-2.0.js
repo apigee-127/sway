@@ -3484,4 +3484,28 @@ describe('sway (Swagger 2.0)', function () {
       });
     });
   });
+
+  describe('issues', function () {
+    it('should trap document processing errors (Issue 16)', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+
+      cSwagger.paths['/pet/{petId}'].get = null;
+
+      swaggerApi.create({
+        definition: cSwagger
+      })
+        .then(function () {
+          shouldHadFailed();
+        })
+        .catch(function (err) {
+          var errorMessages = [
+            'Cannot read property \'parameters\' of null', // Node.js
+            '\'null\' is not an object (evaluating \'operation.parameters\')' // PhantomJS (browser)
+          ];
+
+          assert.ok(errorMessages.indexOf(err.message) > -1);
+        })
+        .then(done, done);
+    });
+  });
 });
