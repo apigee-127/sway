@@ -29,7 +29,10 @@ var fs = require('fs');
 var path = require('path');
 
 var app = connect();
+var infoYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/refs/info.yaml'), 'utf-8');
+var pathsYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/refs/paths.yaml'), 'utf-8');
 var swaggerYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/swagger.yaml'), 'utf-8');
+var swaggerRelRefsYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/swagger-relative-refs.yaml'), 'utf-8');
 
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -43,10 +46,28 @@ app.use(function (req, res, next) {
 
 app.use(function (req, res) {
   switch (req.url) {
+  case '/refs/info.yaml':
+    res.setHeader('Content-Type', 'application/x-yaml');
+    res.statusCode = 200;
+    res.end(infoYaml);
+
+    break;
+  case '/refs/paths.yaml':
+    res.setHeader('Content-Type', 'application/x-yaml');
+    res.statusCode = 200;
+    res.end(pathsYaml);
+
+    break;
   case '/swagger.yaml':
     res.setHeader('Content-Type', 'application/x-yaml');
     res.statusCode = 200;
     res.end(swaggerYaml);
+
+    break;
+  case '/swagger-relative-refs.yaml':
+    res.setHeader('Content-Type', 'application/x-yaml');
+    res.statusCode = 200;
+    res.end(swaggerRelRefsYaml);
 
     break;
   default:

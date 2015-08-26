@@ -1,7 +1,9 @@
 ## Release Notes
 
-### TBD
+### v0.2.1
 
+* Fix bug with loading relative references *(Issue #17)*
+* Fix bug with loading YAML references *(Issue #17)*
 * Make errors in `SwaggerApi#create` handleable *(Issue #16)*
 
 ### v0.2.0 (2015-08-25)

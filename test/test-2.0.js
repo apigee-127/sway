@@ -3507,5 +3507,20 @@ describe('sway (Swagger 2.0)', function () {
         })
         .then(done, done);
     });
+
+    it('should support relative references (and to YAML files) (Issue 17)', function (done) {
+      swaggerApi.create({
+        definition: 'http://localhost:44444/swagger-relative-refs.yaml'
+      })
+        .then(function () {
+          assert.ok(_.isUndefined(swagger.resolved.info.$ref));
+          assert.ok(Object.keys(swagger.resolved.definitions).length > 1);
+          assert.ok(Object.keys(swagger.resolved.paths).length > 1);
+          assert.equal(swagger.resolved.info.title, 'Swagger Petstore');
+          assert.ok(_.isPlainObject(swagger.resolved.definitions.Pet));
+          assert.ok(_.isPlainObject(swagger.resolved.paths['/pet/{petId}'].get));
+        })
+        .then(done, done);
+    });
   });
 });
