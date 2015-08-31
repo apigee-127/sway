@@ -1,5 +1,9 @@
 ## Release Notes
 
+## v0.2.2 (2015-08/31)
+
+* Fix a bug where missing `securityDefinitions` could result in a runtime error
+
 ### v0.2.1 (2015-08-26)
 
 * Fix bug with loading relative references *(Issue #17)*
