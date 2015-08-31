@@ -1,6 +1,10 @@
 ## Release Notes
 
-## v0.2.2 (2015-08/31)
+### v0.2.3 (2015-08-31)
+
+* Updated json-refs to fix a big bug in local reference resolution for remote documents *(See [json-refs/issues/30](https://github.com/whitlockjc/json-refs/issues/30))*
+
+### v0.2.2 (2015-08-31)
 
 * Fix a bug where missing `securityDefinitions` could result in a runtime error
 
