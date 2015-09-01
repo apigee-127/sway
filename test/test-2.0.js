@@ -3519,6 +3519,10 @@ describe('sway (Swagger 2.0)', function () {
           assert.equal(swagger.resolved.info.title, 'Swagger Petstore');
           assert.ok(_.isPlainObject(swagger.resolved.definitions.Pet));
           assert.ok(_.isPlainObject(swagger.resolved.paths['/pet/{petId}'].get));
+
+          _.each(swagger.references, function (entry) {
+            assert.ok(typeof entry.missing === 'undefined');
+          });
         })
         .then(done, done);
     });
