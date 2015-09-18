@@ -3526,5 +3526,19 @@ describe('sway (Swagger 2.0)', function () {
         })
         .then(done, done);
     });
+
+    it('should not throw an error for unknown formats (Issue 20)', function (done) {
+      var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+      cSwaggerDoc.definitions.Pet.properties.name.format = 'unknown';
+
+      swaggerApi.create({
+        definition: cSwaggerDoc
+      })
+        .then(function (api) {
+          assert.ok(api.validate());
+        })
+        .then(done, done);
+    });
   });
 });

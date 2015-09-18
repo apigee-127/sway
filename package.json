@@ -65,6 +65,6 @@
     "native-promise-only": "^0.8.0-a",
     "path-loader": "^0.2.0",
     "path-to-regexp": "^1.2.0",
-    "z-schema": "^3.12.3"
+    "z-schema": "^3.15.2"
   }
 }

@@ -1,5 +1,10 @@
 ## Release Notes
 
+### v0.3.0 (2015-09-18)
+
+* Updated json-refs for service/web worker support *(Issues #22)*
+* Updated z-schema to avoid throwing runtime errors on unknown formats *(Issues #20)*
+
 ### v0.2.3 (2015-08-31)
 
 * Updated json-refs to fix a big bug in local reference resolution for remote documents *(See [json-refs/issues/30](https://github.com/whitlockjc/json-refs/issues/30))*
