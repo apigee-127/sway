@@ -3540,5 +3540,79 @@ describe('sway (Swagger 2.0)', function () {
         })
         .then(done, done);
     });
+
+    it('should return an error for number+string "numbers" (Issue )', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+
+      cSwagger.paths['/pet/{petId}/friends'] = {
+        parameters: [
+          cSwagger.paths['/pet/{petId}'].parameters[0],
+          {
+            name: 'limit',
+              in: 'query',
+            description: 'Maximum number of friends returned',
+            type: 'number'
+          }
+        ],
+        get: {
+          responses: cSwagger.paths['/pet/{petId}'].get.responses
+        }
+      };
+
+      swaggerApi.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          var paramValue = api
+            .getOperation('/pet/{petId}/friends', 'get')
+            .getParameters()[1]
+            .getValue({
+              query: {
+                limit: '2something'
+              }
+            });
+
+          assert.ok(_.isUndefined(paramValue.value));
+          assert.equal(paramValue.error.message, 'Not a valid number: 2something');
+        })
+        .then(done, done);
+    });
+
+    it('should return an error for number+string "integers" (Issue )', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+
+      cSwagger.paths['/pet/{petId}/friends'] = {
+        parameters: [
+          cSwagger.paths['/pet/{petId}'].parameters[0],
+          {
+            name: 'limit',
+              in: 'query',
+            description: 'Maximum number of friends returned',
+            type: 'integer'
+          }
+        ],
+        get: {
+          responses: cSwagger.paths['/pet/{petId}'].get.responses
+        }
+      };
+
+      swaggerApi.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          var paramValue = api
+            .getOperation('/pet/{petId}/friends', 'get')
+            .getParameters()[1]
+            .getValue({
+              query: {
+                limit: '2something'
+              }
+            });
+
+          assert.ok(_.isUndefined(paramValue.value));
+          assert.equal(paramValue.error.message, 'Not a valid integer: 2something');
+        })
+        .then(done, done);
+    });
   });
 });
