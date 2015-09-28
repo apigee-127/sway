@@ -3482,6 +3482,151 @@ describe('sway (Swagger 2.0)', function () {
           });
         });
       });
+
+      describe('human readable errors for invalid schema', function () {
+        function validateError (api, defType) {
+          assert.ok(!api.validate());
+          assert.equal(api.getLastErrors().length, 1);
+          assert.equal(api.getLastWarnings().length, 0);
+          assert.equal(api.getLastErrors()[0].message, 'Not a valid ' + defType + ' definition');
+        }
+
+        it('should handle parameter definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet'].post.parameters[0] = {};
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'parameter');
+            })
+            .then(done, done);
+        });
+
+        it('should handle global parameter definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.parameters = {
+            broken: {}
+          };
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'parameter');
+            })
+            .then(done, done);
+        });
+
+        it('should handle response definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet'].post.responses.default = {};
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'response');
+            })
+            .then(done, done);
+        });
+
+        it('should handle response schema definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.paths['/pet'].post.responses.default = {
+            description: 'A broken response',
+            schema: []
+          };
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'response');
+            })
+            .then(done, done);
+        });
+
+        it('should handle schema additionalProperties definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.definitions.Broken = {
+            type: 'object',
+            additionalProperties: []
+          };
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'schema additionalProperties');
+            })
+            .then(done, done);
+        });
+
+        it('should handle schema items definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.definitions.Broken = {
+            type: 'object',
+            properties: {
+              urls: {
+                type: 'array',
+                items: false
+              }
+            }
+          };
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'schema items');
+            })
+            .then(done, done);
+        });
+
+        it('should handle securityDefinitions definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.securityDefinitions.broken = {};
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'securityDefinitions');
+            })
+            .then(done, done);
+        });
+
+        it('should handle schema items definition', function (done) {
+          var cSwagger = _.cloneDeep(swaggerDoc);
+
+          cSwagger.definitions.Broken = {
+            type: 'object',
+            properties: {
+              urls: {
+                type: 'array',
+                items: true
+              }
+            }
+          };
+
+          swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              validateError(api, 'schema items');
+            })
+            .then(done, done);
+        });
+      });
     });
   });
 

@@ -1,5 +1,10 @@
 ## Release Notes
 
+### v0.3.1 (2015-09-28)
+
+* Better integer validation for parameter values *(PR #26)*
+* More human-readable errors related to JSON Schema validation when `anyOf` or `oneOf` validation fails *(Issue #15)*
+
 ### v0.3.0 (2015-09-18)
 
 * Updated json-refs for service/web worker support *(Issues #22)*
