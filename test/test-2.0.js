@@ -1508,15 +1508,41 @@ describe('sway (Swagger 2.0)', function () {
                 }).value, 5);
               });
 
-              it('invalid request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    limit: 'invalid'
-                  }
-                });
+              it('invalid request value', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
 
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Not a valid integer: invalid');
+                cSwagger.paths['/pet/{petId}/friends'] = {
+                  parameters: [
+                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    {
+                      name: 'limit',
+                        in: 'query',
+                      description: 'Maximum number of friends returned',
+                      type: 'number'
+                    }
+                  ],
+                  get: {
+                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                  }
+                };
+
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    var paramValue = api
+                          .getOperation('/pet/{petId}/friends', 'get')
+                          .getParameters()[1]
+                          .getValue({
+                            query: {
+                              limit: '2something'
+                            }
+                          });
+
+                    assert.ok(_.isUndefined(paramValue.value));
+                    assert.equal(paramValue.error.message, 'Not a valid number: 2something');
+                  })
+                  .then(done, done);
               });
             });
 
@@ -1607,16 +1633,41 @@ describe('sway (Swagger 2.0)', function () {
                   }
                 }).value, 5.5);
               });
+              it('invalid request value', function (done) {
+                var cSwagger = _.cloneDeep(swaggerDoc);
 
-              it('invalid request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    limit: 'invalid'
+                cSwagger.paths['/pet/{petId}/friends'] = {
+                  parameters: [
+                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    {
+                      name: 'limit',
+                        in: 'query',
+                      description: 'Maximum number of friends returned',
+                      type: 'number'
+                    }
+                  ],
+                  get: {
+                    responses: cSwagger.paths['/pet/{petId}'].get.responses
                   }
-                });
+                };
 
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Not a valid number: invalid');
+                swaggerApi.create({
+                  definition: cSwagger
+                })
+                  .then(function (api) {
+                    var paramValue = api
+                          .getOperation('/pet/{petId}/friends', 'get')
+                          .getParameters()[1]
+                          .getValue({
+                            query: {
+                              limit: '2something'
+                            }
+                          });
+
+                    assert.ok(_.isUndefined(paramValue.value));
+                    assert.equal(paramValue.error.message, 'Not a valid number: 2something');
+                  })
+                  .then(done, done);
               });
             });
 
@@ -1835,62 +1886,6 @@ describe('sway (Swagger 2.0)', function () {
       });
 
       describe('validation', function () {
-        it('empty optional integer', function (done) {
-          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
-
-          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
-            type: 'integer',
-            format: 'int32',
-            name: 'limit',
-            in: 'query'
-          });
-
-          swaggerApi.create({
-            definition: cSwaggerDoc
-          })
-            .then(function (api) {
-              var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
-                query: {
-                  limit: ''
-                }
-              });
-
-              assert.equal(paramValue.raw, '');
-              assert.equal(paramValue.value, undefined);
-              assert.ok(!paramValue.valid);
-              assert.equal(paramValue.error.message, 'Not a valid integer: ');
-            })
-            .then(done, done);
-        });
-
-        it('empty optional number', function (done) {
-          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
-
-          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
-            type: 'number',
-            format: 'int32',
-            name: 'limit',
-              in: 'query'
-          });
-
-          swaggerApi.create({
-            definition: cSwaggerDoc
-          })
-            .then(function (api) {
-              var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
-                query: {
-                  limit: ''
-                }
-              });
-
-              assert.equal(paramValue.raw, '');
-              assert.equal(paramValue.value, undefined);
-              assert.ok(!paramValue.valid);
-              assert.equal(paramValue.error.message, 'Not a valid number: ');
-            })
-            .then(done, done);
-        });
-
         it('missing required value (with default)', function () {
           var paramValue = swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
             query: {}
@@ -1912,6 +1907,124 @@ describe('sway (Swagger 2.0)', function () {
           assert.equal(error.message, 'Value is required but was not provided');
           assert.equal(error.code, 'REQUIRED');
           assert.ok(error.failedValidation);
+        });
+
+        describe('provided empty value', function () {
+          describe('integer', function () {
+            it('allowEmptyValue false', function (done) {
+              var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+                type: 'integer',
+                format: 'int32',
+                name: 'limit',
+                  in: 'query'
+              });
+
+              swaggerApi.create({
+                definition: cSwaggerDoc
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                    query: {
+                      limit: ''
+                    }
+                  });
+
+                  assert.equal(paramValue.raw, '');
+                  assert.equal(paramValue.value, undefined);
+                  assert.ok(!paramValue.valid);
+                  assert.equal(paramValue.error.message, 'Not a valid integer: ');
+                })
+                .then(done, done);
+            });
+
+            it('allowEmptyValue true', function (done) {
+              var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+                type: 'integer',
+                format: 'int32',
+                name: 'limit',
+                  in: 'query',
+                allowEmptyValue: true
+              });
+
+              swaggerApi.create({
+                definition: cSwaggerDoc
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                    query: {
+                      limit: ''
+                    }
+                  });
+
+                  assert.equal(paramValue.raw, '');
+                  assert.equal(paramValue.value, '');
+                  assert.ok(paramValue.valid);
+                })
+                .then(done, done);
+            });
+          });
+
+          describe('number', function () {
+            it('allowEmptyValue false', function (done) {
+              var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+                type: 'number',
+                format: 'int32',
+                name: 'limit',
+                  in: 'query'
+              });
+
+              swaggerApi.create({
+                definition: cSwaggerDoc
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                    query: {
+                      limit: ''
+                    }
+                  });
+
+                  assert.equal(paramValue.raw, '');
+                  assert.equal(paramValue.value, undefined);
+                  assert.ok(!paramValue.valid);
+                  assert.equal(paramValue.error.message, 'Not a valid number: ');
+                })
+                .then(done, done);
+            });
+
+            it('allowEmptyValue true', function (done) {
+              var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+                type: 'number',
+                format: 'int32',
+                name: 'limit',
+                  in: 'query',
+                allowEmptyValue: true
+              });
+
+              swaggerApi.create({
+                definition: cSwaggerDoc
+              })
+                .then(function (api) {
+                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                    query: {
+                      limit: ''
+                    }
+                  });
+
+                  assert.equal(paramValue.raw, '');
+                  assert.equal(paramValue.value, '');
+                  assert.ok(paramValue.valid);
+                })
+                .then(done, done);
+            });
+          });
         });
 
         it('provided required value', function () {
@@ -3738,80 +3851,6 @@ describe('sway (Swagger 2.0)', function () {
       })
         .then(function (api) {
           assert.ok(api.validate());
-        })
-        .then(done, done);
-    });
-
-    it('should return an error for number+string "numbers" (Issue )', function (done) {
-      var cSwagger = _.cloneDeep(swaggerDoc);
-
-      cSwagger.paths['/pet/{petId}/friends'] = {
-        parameters: [
-          cSwagger.paths['/pet/{petId}'].parameters[0],
-          {
-            name: 'limit',
-              in: 'query',
-            description: 'Maximum number of friends returned',
-            type: 'number'
-          }
-        ],
-        get: {
-          responses: cSwagger.paths['/pet/{petId}'].get.responses
-        }
-      };
-
-      swaggerApi.create({
-        definition: cSwagger
-      })
-        .then(function (api) {
-          var paramValue = api
-            .getOperation('/pet/{petId}/friends', 'get')
-            .getParameters()[1]
-            .getValue({
-              query: {
-                limit: '2something'
-              }
-            });
-
-          assert.ok(_.isUndefined(paramValue.value));
-          assert.equal(paramValue.error.message, 'Not a valid number: 2something');
-        })
-        .then(done, done);
-    });
-
-    it('should return an error for number+string "integers" (Issue )', function (done) {
-      var cSwagger = _.cloneDeep(swaggerDoc);
-
-      cSwagger.paths['/pet/{petId}/friends'] = {
-        parameters: [
-          cSwagger.paths['/pet/{petId}'].parameters[0],
-          {
-            name: 'limit',
-              in: 'query',
-            description: 'Maximum number of friends returned',
-            type: 'integer'
-          }
-        ],
-        get: {
-          responses: cSwagger.paths['/pet/{petId}'].get.responses
-        }
-      };
-
-      swaggerApi.create({
-        definition: cSwagger
-      })
-        .then(function (api) {
-          var paramValue = api
-            .getOperation('/pet/{petId}/friends', 'get')
-            .getParameters()[1]
-            .getValue({
-              query: {
-                limit: '2something'
-              }
-            });
-
-          assert.ok(_.isUndefined(paramValue.value));
-          assert.equal(paramValue.error.message, 'Not a valid integer: 2something');
         })
         .then(done, done);
     });

@@ -1,7 +1,8 @@
 ## Release Notes
 
-### v0.3.1 (2015-09-28)
+### v0.3.1 TBD
 
+* Add support for `allowEmptyValue` for parameter value validation *(Issue #27)*
 * Better integer validation for parameter values *(PR #26)*
 * More human-readable errors related to JSON Schema validation when `anyOf` or `oneOf` validation fails *(Issue #15)*
 * Update json-refs to work with `options.jsonRefs.location` having a hash *(Issue #24)*
