@@ -4,6 +4,7 @@
 
 * Better integer validation for parameter values *(PR #26)*
 * More human-readable errors related to JSON Schema validation when `anyOf` or `oneOf` validation fails *(Issue #15)*
+* Update json-refs to work with `options.jsonRefs.location` having a hash *(Issue #24)*
 
 ### v0.3.0 (2015-09-18)
 
