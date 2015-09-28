@@ -1835,6 +1835,62 @@ describe('sway (Swagger 2.0)', function () {
       });
 
       describe('validation', function () {
+        it('empty optional integer', function (done) {
+          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+            type: 'integer',
+            format: 'int32',
+            name: 'limit',
+            in: 'query'
+          });
+
+          swaggerApi.create({
+            definition: cSwaggerDoc
+          })
+            .then(function (api) {
+              var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  limit: ''
+                }
+              });
+
+              assert.equal(paramValue.raw, '');
+              assert.equal(paramValue.value, undefined);
+              assert.ok(!paramValue.valid);
+              assert.equal(paramValue.error.message, 'Not a valid integer: ');
+            })
+            .then(done, done);
+        });
+
+        it('empty optional number', function (done) {
+          var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+          cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+            type: 'number',
+            format: 'int32',
+            name: 'limit',
+              in: 'query'
+          });
+
+          swaggerApi.create({
+            definition: cSwaggerDoc
+          })
+            .then(function (api) {
+              var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {
+                  limit: ''
+                }
+              });
+
+              assert.equal(paramValue.raw, '');
+              assert.equal(paramValue.value, undefined);
+              assert.ok(!paramValue.valid);
+              assert.equal(paramValue.error.message, 'Not a valid number: ');
+            })
+            .then(done, done);
+        });
+
         it('missing required value (with default)', function () {
           var paramValue = swagger.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
             query: {}
