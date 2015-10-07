@@ -1,5 +1,10 @@
 ## Release Notes
 
+### TBD
+
+* Fixed sub-schema validation of properties with special names *(PR 30)*
+* Updated Swagger 2.0 JSON Schema *(PR 31)*
+
 ### v0.3.1 (2015-09-30)
 
 * Add support for `allowEmptyValue` for parameter value validation *(Issue #27)*
