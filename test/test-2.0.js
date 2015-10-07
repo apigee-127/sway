@@ -3854,5 +3854,19 @@ describe('sway (Swagger 2.0)', function () {
         })
         .then(done, done);
     });
+
+    it('should handle default and id fields (Issue 29)', function (done) {
+      var cSwaggerDoc = _.cloneDeep(swaggerDoc);
+
+      cSwaggerDoc.definitions.Pet.properties.default = {type: 'string'};
+
+      swaggerApi.create({
+        definition: cSwaggerDoc
+      })
+        .then(function (api) {
+          assert.ok(api.validate());
+        })
+        .then(done, done);
+    });
   });
 });
