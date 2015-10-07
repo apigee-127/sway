@@ -3189,8 +3189,16 @@ describe('sway (Swagger 2.0)', function () {
 
         it('multiple equivalent paths', function (done) {
           var cSwagger = _.cloneDeep(swaggerDoc);
+          var duplicatePath = cSwagger.paths['/pet/{petId}'];
+          var parameter = _.clone(duplicatePath.parameters[0]);
+          var method = _.clone(duplicatePath.post);
 
-          cSwagger.paths['/pet/{notPetId}'] = {};
+          parameter.name = 'notPetId';
+          delete method.operationId;
+          cSwagger.paths['/pet/{notPetId}'] = {
+            'parameters': [parameter],
+            'post': method
+          };
 
           swaggerApi.create({
             definition: cSwagger
@@ -3203,8 +3211,8 @@ describe('sway (Swagger 2.0)', function () {
               assert.deepEqual([
                 {
                   code: 'EQUIVALENT_PATH',
-                  message: 'Equivalent path already exists: /pet/{notPetId}',
-                  path: ['paths', '/pet/{notPetId}']
+                  message: 'Operation already exsist in equivalent path: /pet/{notPetId}',
+                  path: ['paths', '/pet/{notPetId}', 'post']
                 }
               ], api.getLastErrors());
             })
@@ -3862,6 +3870,27 @@ describe('sway (Swagger 2.0)', function () {
 
       swaggerApi.create({
         definition: cSwaggerDoc
+      })
+        .then(function (api) {
+          assert.ok(api.validate());
+        })
+        .then(done, done);
+    });
+    it('should handle duplicate paths but different methods (Issue 32)', function (done) {
+      var cSwagger = _.cloneDeep(swaggerDoc);
+      var duplicatePath = cSwagger.paths['/pet/{petId}'];
+      var parameter = _.clone(duplicatePath.parameters[0]);
+      var method = _.clone(duplicatePath.get);
+
+      parameter.name = 'notPetId';
+      delete method.operationId;
+      cSwagger.paths['/pet/{notPetId}'] = {
+        'parameters': [parameter],
+        'head': method
+      };
+
+      swaggerApi.create({
+        definition: cSwagger
       })
         .then(function (api) {
           assert.ok(api.validate());
