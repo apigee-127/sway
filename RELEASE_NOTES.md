@@ -1,6 +1,6 @@
 ## Release Notes
 
-### TBD
+### v0.3.2 (2015-10-14)
 
 * Fixed sub-schema validation of properties with special names *(PR 30)*
 * Updated Swagger 2.0 JSON Schema *(PR 31)*
