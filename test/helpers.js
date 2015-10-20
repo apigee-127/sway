@@ -24,58 +24,20 @@
 
 'use strict';
 
-var connect = require('connect');
-var fs = require('fs');
-var path = require('path');
+var assert = require('assert');
 
-var app = connect();
-var infoYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/refs/info.yaml'), 'utf-8');
-var pathsYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/refs/paths.yaml'), 'utf-8');
-var swaggerYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/swagger.yaml'), 'utf-8');
-var swaggerRelRefsYaml = fs.readFileSync(path.resolve(__dirname, '../samples/2.0/swagger-relative-refs.yaml'), 'utf-8');
+function fail (msg) {
+  assert.fail(msg);
+}
 
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Accept,Allow,Authorization,Content-Type');
-  res.setHeader('Access-Control-Request-Methods', 'GET,PUT,POST,DELETE');
+module.exports.fail = fail;
 
-  next();
-});
+module.exports.shouldHadFailed = function () {
+  fail('The code above should had thrown an error');
+};
 
-app.use(function (req, res) {
-  switch (req.url) {
-  case '/refs/info.yaml':
-    res.setHeader('Content-Type', 'application/x-yaml');
-    res.statusCode = 200;
-    res.end(infoYaml);
+module.exports.shouldNotHadFailed = function (err) {
+  console.error(err.stack);
 
-    break;
-  case '/refs/paths.yaml':
-    res.setHeader('Content-Type', 'application/x-yaml');
-    res.statusCode = 200;
-    res.end(pathsYaml);
-
-    break;
-  case '/swagger.yaml':
-    res.setHeader('Content-Type', 'application/x-yaml');
-    res.statusCode = 200;
-    res.end(swaggerYaml);
-
-    break;
-  case '/swagger-relative-refs.yaml':
-    res.setHeader('Content-Type', 'application/x-yaml');
-    res.statusCode = 200;
-    res.end(swaggerRelRefsYaml);
-
-    break;
-  default:
-    res.writeHead(404);
-    res.end();
-  }
-});
-
-module.exports.createServer = function (transport) {
-  return transport.createServer(app);
+  fail('The code above should not had thrown an error');
 };

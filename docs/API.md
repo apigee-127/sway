@@ -1,5 +1,7 @@
 ## Classes
 <dl>
+<dt><a href="#SwaggerApi">SwaggerApi</a></dt>
+<dd></dd>
 <dt><a href="#Operation">Operation</a></dt>
 <dd></dd>
 <dt><a href="#ParameterValue">ParameterValue</a></dt>
@@ -7,8 +9,6 @@
 <dt><a href="#Parameter">Parameter</a></dt>
 <dd></dd>
 <dt><a href="#Path">Path</a></dt>
-<dd></dd>
-<dt><a href="#SwaggerApi">SwaggerApi</a></dt>
 <dd></dd>
 </dl>
 ## Functions
@@ -23,6 +23,155 @@
 <dd><p>Callback used for validation.</p>
 </dd>
 </dl>
+<a name="SwaggerApi"></a>
+## SwaggerApi
+**Kind**: global class  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| customValidators | <code>Array.&lt;function()&gt;</code> | The array of custom validators |
+| definition | <code>object</code> | The API definition |
+| documentation | <code>string</code> | The URL to the Swagger documentation |
+| errors | <code>Array.&lt;object&gt;</code> | The validation errors or undefined if validation has not run |
+| pathObjects | <code>[Array.&lt;Path&gt;](#Path)</code> | The unique path objects |
+| options | <code>object</code> | The options passed to the constructor |
+| references | <code>object</code> | The reference metadata |
+| resolved | <code>object</code> | The fully resolved API definition |
+| version | <code>string</code> | The Swagger API version |
+| warnings | <code>Array.&lt;object&gt;</code> | The validation warnings or undefined if validation has not run |
+
+
+* [SwaggerApi](#SwaggerApi)
+  * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
+  * [.getLastErrors()](#SwaggerApi+getLastErrors) ⇒ <code>Array.&lt;object&gt;</code>
+  * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
+  * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
+  * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
+  * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
+  * [.registerValidator(validator)](#SwaggerApi+registerValidator)
+  * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
+
+<a name="new_SwaggerApi_new"></a>
+### new SwaggerApi(plugin, definition, resolved, references, options)
+The Swagger API object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| plugin | <code>object</code> | The Swagger version plugin |
+| definition | <code>object</code> | The Swagger definition |
+| resolved | <code>object</code> | The fully resolved Swagger definition |
+| references | <code>object</code> | The location and resolution of the resolved references in the Swagger definition |
+| options | <code>object</code> | The options passed to swaggerApi.create |
+| [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
+
+<a name="SwaggerApi+getLastErrors"></a>
+### swaggerApi.getLastErrors() ⇒ <code>Array.&lt;object&gt;</code>
+Returns the errors from the last validate call.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>Array.&lt;object&gt;</code> - The errors from the previous call to validate or undefined if validate was never called  
+<a name="SwaggerApi+getLastWarnings"></a>
+### swaggerApi.getLastWarnings() ⇒ <code>Array.&lt;object&gt;</code>
+Returns the warnings from the last validate call.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>Array.&lt;object&gt;</code> - The warnings from the previous call to validate or undefined if validate was never called  
+<a name="SwaggerApi+getOperation"></a>
+### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#Operation)</code>
+Returns the operation for the given path and operation.
+
+**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
+          *(or equivalent)*:
+
+* `method`
+* `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Operation](#Operation)</code> - The operation for the provided path and method or undefined if there is no operation for that
+                     path and method combination.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
+| [method] | <code>string</code> | The Swagger operation method |
+
+<a name="SwaggerApi+getOperations"></a>
+### swaggerApi.getOperations([path]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Returns all operations for the provided path or all operations in the API.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - All operations for the provided path or all API operations.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [path] | <code>string</code> | The Swagger path |
+
+<a name="SwaggerApi+getOperationsByTag"></a>
+### swaggerApi.getOperationsByTag([tag]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+Returns all operations for the provided tag.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - All operations for the provided tag.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [tag] | <code>string</code> | The Swagger tag |
+
+<a name="SwaggerApi+getPath"></a>
+### swaggerApi.getPath(pathOrReq) ⇒ <code>[Path](#Path)</code>
+Returns the path object for the given path or request.
+
+**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
+          *(or equivalent)*:
+
+* `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Path](#Path)</code> - The corresponding Path object for the requested path or request.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
+
+<a name="SwaggerApi+getPaths"></a>
+### swaggerApi.getPaths() ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
+Returns all path objects for the Swagger API.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>[Array.&lt;Path&gt;](#Path)</code> - The Path objects  
+<a name="SwaggerApi+registerValidator"></a>
+### swaggerApi.registerValidator(validator)
+Registers a validator.
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Throws**:
+
+- <code>TypeError</code> If the validator is not a function
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| validator | <code>[validatorCallback](#validatorCallback)</code> | The validator |
+
+<a name="SwaggerApi+validate"></a>
+### swaggerApi.validate() ⇒ <code>boolean</code>
+Performs validation of the Swagger API document(s).
+
+**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
+**Returns**: <code>boolean</code> - True if all validators produce zero errors and false otherwise  
 <a name="Operation"></a>
 ## Operation
 **Kind**: global class  
@@ -291,155 +440,6 @@ Return the parameters for this path.
 
 **Kind**: instance method of <code>[Path](#Path)</code>  
 **Returns**: <code>[Array.&lt;Parameter&gt;](#Parameter)</code> - The Parameter objects for this path.  
-<a name="SwaggerApi"></a>
-## SwaggerApi
-**Kind**: global class  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| customValidators | <code>Array.&lt;function()&gt;</code> | The array of custom validators |
-| definition | <code>object</code> | The API definition |
-| documentation | <code>string</code> | The URL to the Swagger documentation |
-| errors | <code>Array.&lt;object&gt;</code> | The validation errors or undefined if validation has not run |
-| pathObjects | <code>[Array.&lt;Path&gt;](#Path)</code> | The unique path objects |
-| options | <code>object</code> | The options passed to the constructor |
-| references | <code>object</code> | The reference metadata |
-| resolved | <code>object</code> | The fully resolved API definition |
-| version | <code>string</code> | The Swagger API version |
-| warnings | <code>Array.&lt;object&gt;</code> | The validation warnings or undefined if validation has not run |
-
-
-* [SwaggerApi](#SwaggerApi)
-  * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
-  * [.getLastErrors()](#SwaggerApi+getLastErrors) ⇒ <code>Array.&lt;object&gt;</code>
-  * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
-  * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
-  * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-  * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-  * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
-  * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
-  * [.registerValidator(validator)](#SwaggerApi+registerValidator)
-  * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
-
-<a name="new_SwaggerApi_new"></a>
-### new SwaggerApi(plugin, definition, resolved, references, options)
-The Swagger API object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
-                      object.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| plugin | <code>object</code> | The Swagger version plugin |
-| definition | <code>object</code> | The Swagger definition |
-| resolved | <code>object</code> | The fully resolved Swagger definition |
-| references | <code>object</code> | The location and resolution of the resolved references in the Swagger definition |
-| options | <code>object</code> | The options passed to swaggerApi.create |
-| [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
-
-<a name="SwaggerApi+getLastErrors"></a>
-### swaggerApi.getLastErrors() ⇒ <code>Array.&lt;object&gt;</code>
-Returns the errors from the last validate call.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;object&gt;</code> - The errors from the previous call to validate or undefined if validate was never called  
-<a name="SwaggerApi+getLastWarnings"></a>
-### swaggerApi.getLastWarnings() ⇒ <code>Array.&lt;object&gt;</code>
-Returns the warnings from the last validate call.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;object&gt;</code> - The warnings from the previous call to validate or undefined if validate was never called  
-<a name="SwaggerApi+getOperation"></a>
-### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#Operation)</code>
-Returns the operation for the given path and operation.
-
-**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
-          *(or equivalent)*:
-
-* `method`
-* `url`
-
-*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>[Operation](#Operation)</code> - The operation for the provided path and method or undefined if there is no operation for that
-                     path and method combination.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
-| [method] | <code>string</code> | The Swagger operation method |
-
-<a name="SwaggerApi+getOperations"></a>
-### swaggerApi.getOperations([path]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-Returns all operations for the provided path or all operations in the API.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - All operations for the provided path or all API operations.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [path] | <code>string</code> | The Swagger path |
-
-<a name="SwaggerApi+getOperationsByTag"></a>
-### swaggerApi.getOperationsByTag([tag]) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-Returns all operations for the provided tag.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>[Array.&lt;Operation&gt;](#Operation)</code> - All operations for the provided tag.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [tag] | <code>string</code> | The Swagger tag |
-
-<a name="SwaggerApi+getPath"></a>
-### swaggerApi.getPath(pathOrReq) ⇒ <code>[Path](#Path)</code>
-Returns the path object for the given path or request.
-
-**Note:** Below is the list of `reqOrPath` properties used when `reqOrPath` is an `http.ClientRequest`
-          *(or equivalent)*:
-
-* `url`
-
-*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>[Path](#Path)</code> - The corresponding Path object for the requested path or request.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
-
-<a name="SwaggerApi+getPaths"></a>
-### swaggerApi.getPaths() ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
-Returns all path objects for the Swagger API.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>[Array.&lt;Path&gt;](#Path)</code> - The Path objects  
-<a name="SwaggerApi+registerValidator"></a>
-### swaggerApi.registerValidator(validator)
-Registers a validator.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Throws**:
-
-- <code>TypeError</code> If the validator is not a function
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| validator | <code>[validatorCallback](#validatorCallback)</code> | The validator |
-
-<a name="SwaggerApi+validate"></a>
-### swaggerApi.validate() ⇒ <code>boolean</code>
-Performs validation of the Swagger API document(s).
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>boolean</code> - True if all validators produce zero errors and false otherwise  
 <a name="create"></a>
 ## create(options, [callback]) ⇒ <code>Promise</code>
 Creates a SwaggerApi object from its Swagger definition(s).

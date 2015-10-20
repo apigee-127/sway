@@ -30,6 +30,7 @@
     "LICENSE"
   ],
   "devDependencies": {
+    "brfs": "^1.4.1",
     "browserify": "^11.0.1",
     "connect": "^3.4.0",
     "del": "^1.2.0",
@@ -52,11 +53,13 @@
     "pathmodify": "^0.4.0",
     "phantomjs": "^1.9.17",
     "run-sequence": "^1.1.2",
+    "through2": "^2.0.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
     "debug": "^2.2.0",
+    "glob": "^5.0.15",
     "js-base64": "^2.1.9",
     "js-yaml": "^3.3.1",
     "json-refs": "^1.1.1",

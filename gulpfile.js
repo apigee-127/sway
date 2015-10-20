@@ -34,13 +34,14 @@ var buffer = require('vinyl-buffer');
 var del = require('del');
 var exposify = require('exposify');
 var fs = require('fs');
+var glob = require('glob');
 var gulp = require('gulp');
 var KarmaServer = require('karma').Server;
 var path = require('path');
 var pathmodify = require('pathmodify');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
-var testHelpers = require('./test/helpers');
+var testServer = require('./test/mock-server');
 
 var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
 
@@ -148,7 +149,7 @@ gulp.task('test-node', function () {
 
   return Promise.resolve()
     .then(function () {
-      httpServer = testHelpers.createServer(require('http')).listen(44444);
+      httpServer = testServer.createServer(require('http')).listen(44444);
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
@@ -215,14 +216,12 @@ gulp.task('test-browser', ['browserify'], function () {
         .pipe(fs.createWriteStream(basePath + 'sway-standalone.js'));
 
       return new Promise(function (resolve, reject) {
-        var b = browserify([
-          './test/test-module.js',
-          './test/test-2.0.js'
-        ], {
+        var b = browserify(glob.sync('test/**/test-*.js'), {
           debug: true
         });
 
-        b.bundle()
+        b.transform('brfs')
+          .bundle()
           .pipe(source('test-browser.js'))
           .pipe(gulp.dest(basePath))
           .on('error', function (err) {
@@ -234,7 +233,7 @@ gulp.task('test-browser', ['browserify'], function () {
       });
     })
     .then(function () {
-      httpServer = testHelpers.createServer(require('http')).listen(44444);
+      httpServer = testServer.createServer(require('http')).listen(44444);
     })
     .then(function () {
       return new Promise(function (resolve, reject) {
@@ -270,7 +269,7 @@ gulp.task('test-browser', ['browserify'], function () {
 gulp.task('docs', function () {
   return gulp.src([
     './index.js',
-    'lib/types.js'
+    'lib/types/*.js'
   ])
     .pipe($.concat('API.md'))
     .pipe($.jsdoc2MD())
