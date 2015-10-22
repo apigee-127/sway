@@ -110,4 +110,16 @@ describe('issues (Swagger 2.0)', function () {
       })
       .then(done, done);
   });
+
+  it('should handle request objects that are not plain objects (Issue 35)', function () {
+    var mockReq = new Object(); // eslint-disable-line no-new-object
+
+    mockReq.url = '/pet/1';
+
+    try {
+      sway.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue(mockReq);
+    } catch (err) {
+      tHelpers.shouldNotHadFailed();
+    }
+  });
 });

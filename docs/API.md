@@ -340,12 +340,13 @@ Returns a sample value for the parameter based on its schema;
 ### parameter.getValue(req) ⇒ <code>[ParameterValue](#ParameterValue)</code>
 Returns the parameter value from the request.
 
-**Note:** Below is the list `req` of properties used:
+**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
 
 * `body`: Used for `body` and `formData` parameters
 * `files`: Used for `formData` parameters whose `type` is `file`
 * `header`: Used for `header` parameters
 * `query`: Used for `query` parameters
+* `url`: used for `path` parameters
 
 For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
 property.

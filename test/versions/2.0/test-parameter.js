@@ -458,16 +458,6 @@ describe('Parameter (Swagger 2.0)', function () {
           assert.equal(err.message, 'req is required');
         }
       });
-
-      it('wrong request type', function () {
-        try {
-          sway.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue('wrong type');
-
-          tHelpers.shouldHadFailed();
-        } catch (err) {
-          assert.equal(err.message, 'req must be an object');
-        }
-      });
     });
 
     describe('processed values', function () {
