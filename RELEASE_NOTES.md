@@ -1,5 +1,9 @@
 ## Release Notes
 
+### TBD
+
+* Updated json-refs to fix a bug with remote reference errors *(Issue #36)*
+
 ### v0.3.2 (2015-10-14)
 
 * Fixed sub-schema validation of properties with special names *(PR 30)*
