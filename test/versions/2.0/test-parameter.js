@@ -594,6 +594,32 @@ describe('Parameter (Swagger 2.0)', function () {
           });
         });
 
+        it('optional value', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+          cSwagger.paths['/pet/findByStatus'].get.parameters.push({
+            name: 'age',
+            type: 'integer',
+              in: 'query',
+            required: false
+          });
+
+          helpers.swaggerApi.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              var optionalValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                query: {}
+              });
+
+              assert.ok(_.isUndefined(optionalValue.raw));
+              assert.ok(_.isUndefined(optionalValue.error));
+              assert.ok(_.isUndefined(optionalValue.value));
+              assert.ok(optionalValue.valid);
+            })
+            .then(done, done);
+        });
+
         describe('type coercion', function () {
           function validateDate (actual, expected) {
             assert.ok(actual instanceof Date);
