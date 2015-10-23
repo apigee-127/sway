@@ -2,6 +2,7 @@
 
 ### TBD
 
+* Fixed issue with file parameters being marked as invalid *(Issue #37)* 
 * Fixed issue with optional parameters being marked as invalid *(Issue #34)*
 * Fixed issue with `Parameter#getValue` not supporting non-plain object *(We need this for when passing in an `http.ClientRequest`) *(Issue #35)*
 * Updated json-refs to fix a bug with remote reference errors *(Issue #36)*

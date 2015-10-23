@@ -122,4 +122,23 @@ describe('issues (Swagger 2.0)', function () {
       tHelpers.shouldNotHadFailed();
     }
   });
+
+  it('should validate file parameters based on existence alone (Issue 37)', function () {
+    var mockFile = {
+      originalname: 'swagger.yaml',
+      mimetype: 'application/x-yaml'
+    };
+    var paramValue = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameters()[2].getValue({
+      url: '/pet/1/uploadImage',
+      files: {
+        file: mockFile
+      }
+    });
+
+    assert.deepEqual(paramValue.raw, mockFile);
+    assert.deepEqual(paramValue.value, mockFile);
+    console.log(paramValue.error);
+    assert.ok(_.isUndefined(paramValue.error));
+    assert.ok(paramValue.valid);
+  });
 });
