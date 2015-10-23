@@ -1,6 +1,6 @@
 ## Release Notes
 
-### TBD
+### v0.3.3 (2015-10-23)
 
 * Fixed issue with file parameters being marked as invalid *(Issue #37)* 
 * Fixed issue with optional parameters being marked as invalid *(Issue #34)*
