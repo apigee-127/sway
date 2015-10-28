@@ -778,13 +778,15 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               assert.deepEqual([
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  message: 'Schema object inherits from itself: #/definitions/B',
-                  path: ['definitions', 'A', 'allOf', '0', '$ref']
+                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/A'],
+                  message: 'Schema object inherits from itself: #/definitions/A',
+                  path: ['definitions', 'A']
                 },
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  message: 'Schema object inherits from itself: #/definitions/A',
-                  path: ['definitions', 'B', 'allOf', '0', '$ref']
+                  lineage: ['#/definitions/B', '#/definitions/A', '#/definitions/B'],
+                  message: 'Schema object inherits from itself: #/definitions/B',
+                  path: ['definitions', 'B']
                 }
               ], api.getLastErrors());
             })
@@ -827,18 +829,21 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               assert.deepEqual([
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  message: 'Schema object inherits from itself: #/definitions/B',
-                  path: ['definitions', 'A', 'allOf', '0', '$ref']
-                },
-                {
-                  code: 'CIRCULAR_INHERITANCE',
-                  message: 'Schema object inherits from itself: #/definitions/C',
-                  path: ['definitions', 'B', 'allOf', '0', '$ref']
-                },
-                {
-                  code: 'CIRCULAR_INHERITANCE',
+                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/C', '#/definitions/A'],
                   message: 'Schema object inherits from itself: #/definitions/A',
-                  path: ['definitions', 'C', 'allOf', '0', '$ref']
+                  path: ['definitions', 'A']
+                },
+                {
+                  code: 'CIRCULAR_INHERITANCE',
+                  lineage: ['#/definitions/B', '#/definitions/C', '#/definitions/A', '#/definitions/B'],
+                  message: 'Schema object inherits from itself: #/definitions/B',
+                  path: ['definitions', 'B']
+                },
+                {
+                  code: 'CIRCULAR_INHERITANCE',
+                  lineage: ['#/definitions/C', '#/definitions/A', '#/definitions/B', '#/definitions/C'],
+                  message: 'Schema object inherits from itself: #/definitions/C',
+                  path: ['definitions', 'C']
                 }
               ], api.getLastErrors());
             })
@@ -871,8 +876,9 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               assert.deepEqual([
                 {
                   code: 'CIRCULAR_INHERITANCE',
+                  lineage: ['#/definitions/A/allOf/0', '#/definitions/A/allOf/0'],
                   message: 'Schema object inherits from itself: #/definitions/A/allOf/0',
-                  path: ['definitions', 'A', 'allOf', '0', 'allOf', '0', '$ref']
+                  path: ['definitions', 'A', 'allOf', '0']
                 }
               ], api.getLastErrors());
             })

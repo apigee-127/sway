@@ -137,8 +137,48 @@ describe('issues (Swagger 2.0)', function () {
 
     assert.deepEqual(paramValue.raw, mockFile);
     assert.deepEqual(paramValue.value, mockFile);
-    console.log(paramValue.error);
     assert.ok(_.isUndefined(paramValue.error));
     assert.ok(paramValue.valid);
+  });
+
+  it('should handle allOf $ref to a definition with circular reference (Issue 38)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.definitions.A = {
+      allOf: [
+        {
+          $ref: '#/definitions/B'
+        }
+      ],
+      properties: {
+        b: {
+          $ref: '#/definitions/B'
+        }
+      }
+    };
+
+    cSwaggerDoc.definitions.B = {
+      properties: {
+        a: {
+          $ref: '#/definitions/A'
+        }
+      }
+    };
+
+    cSwaggerDoc.definitions.C = {
+      allOf: [
+        {
+          $ref: '#/definitions/A'
+        }
+      ]
+    };
+
+    helpers.swaggerApi.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        assert.ok(api.validate());
+      })
+      .then(done, done);
   });
 });
