@@ -1,5 +1,14 @@
 ## Release Notes
 
+### v0.5.0 (2015-11-02)
+
+**Note:** This release changes how `Operation#validateResponse` works.  Instead of throwing an `Error` whenver the API
+is consumed when providing a status code that is not documented in Swagger, we now provide the error details in the
+response structure.  *(I realize I said I'd do my best to avoid breaking changes but this change was based on user
+feedback and the chances of `v0.4.0` installations being out there are very small.)*
+
+* Updated `Operation#validateResponse` to no longer throw an `Error` but instead to put the error details in the response structure
+
 ### v0.4.0 (2015-11-02)
 
 **Note:** This release has a breaking change as documented below.  I realize changing APIs should result in a major

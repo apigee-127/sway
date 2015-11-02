@@ -521,23 +521,29 @@ describe('Operation (Swagger 2.0)', function () {
 
     describe('should throw an error for undefined response', function () {
       it('undefined value but no default', function () {
-        try {
-          sway.getOperation('/pet', 'post').validateResponse();
+        var results = sway.getOperation('/pet', 'post').validateResponse();
 
-          tHelpers.shouldHadFailed();
-        } catch (err) {
-          assert.equal(err.message, 'This operation does not have a defined \'default\' response code');
-        }
+        assert.deepEqual(results.warnings, []);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_RESPONSE_CODE',
+            message: 'This operation does not have a defined \'default\' response code',
+            path: []
+          }
+        ]);
       });
 
       it('provided value', function () {
-        try {
-          sway.getOperation('/pet/{petId}', 'post').validateResponse(201);
+        var results = sway.getOperation('/pet/{petId}', 'post').validateResponse(201);
 
-          tHelpers.shouldHadFailed();
-        } catch (err) {
-          assert.equal(err.message, 'This operation does not have a defined \'201\' response code');
-        }
+        assert.deepEqual(results.warnings, []);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_RESPONSE_CODE',
+            message: 'This operation does not have a defined \'201\' response code',
+            path: []
+          }
+        ]);
       });
     });
 

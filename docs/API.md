@@ -326,13 +326,9 @@ Validates the response.
                       * path: The path to the failure or [] for the value itself being invalid
                     * message: The human readable message for the error/warning
                     * [name]: The header name when the error is a header validation error
-                    * path: The array of path segments to portion of the document associated with the error/warning
+                    * [path]: The array of path segments to portion of the document associated with the error/warning
 
                   Any other properties can be added to the error/warning objects as well but these must be there.  
-**Throws**:
-
-- <code>Error</code> if we cannot find a response definition for the requested status code.
-
 
 | Param | Type | Description |
 | --- | --- | --- |
