@@ -1,7 +1,7 @@
 {
   "name": "sway",
   "main": "browser/sway.js",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "homepage": "https://github.com/apigee-127/sway",
   "authors": [
     "Jeremy Whitlock <jwhitlock@apache.org>"
