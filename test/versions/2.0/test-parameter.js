@@ -882,7 +882,7 @@ describe('Parameter (Swagger 2.0)', function () {
               });
 
               assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message, 'Not a valid boolean: invalid');
+              assert.equal(paramValue.error.message, 'Expected type boolean but found type string');
             });
           });
 
@@ -964,7 +964,7 @@ describe('Parameter (Swagger 2.0)', function () {
                         });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.error.message, 'Not a valid number: 2something');
+                  assert.equal(paramValue.error.message, 'Expected type number but found type string');
                 })
                 .then(done, done);
             });
@@ -998,7 +998,7 @@ describe('Parameter (Swagger 2.0)', function () {
               });
 
               assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message, 'Not a valid object: 1');
+              assert.equal(paramValue.error.message, 'Expected type object but found type number');
             });
 
             it('invalid request value (string)', function () {
@@ -1089,7 +1089,7 @@ describe('Parameter (Swagger 2.0)', function () {
                         });
 
                   assert.ok(_.isUndefined(paramValue.value));
-                  assert.equal(paramValue.error.message, 'Not a valid number: 2something');
+                  assert.equal(paramValue.error.message, 'Expected type number but found type string');
                 })
                 .then(done, done);
             });
@@ -1118,7 +1118,7 @@ describe('Parameter (Swagger 2.0)', function () {
               });
 
               assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message, 'Not a valid string: 1');
+              assert.equal(paramValue.error.message, 'Expected type string but found type number');
             });
 
             describe('date format', function () {
@@ -1153,6 +1153,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 validateDate(paramValue.value, date);
+                assert.ok(paramValue.valid);
               });
 
               it('string request value', function () {
@@ -1163,6 +1164,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 validateDate(paramValue.value, date);
+                assert.ok(paramValue.valid);
               });
 
               it('invalid request value', function () {
@@ -1173,7 +1175,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Not a valid date string: invalid');
+                assert.equal(paramValue.error.message, 'Object didn\'t pass validation for format date: invalid');
               });
             });
 
@@ -1209,6 +1211,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 validateDate(paramValue.value, dateTime);
+                assert.ok(paramValue.valid);
               });
 
               it('string request value', function () {
@@ -1219,6 +1222,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 validateDate(paramValue.value, dateTime);
+                assert.ok(paramValue.valid);
               });
 
               it('invalid request value', function () {
@@ -1229,7 +1233,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 });
 
                 assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Not a valid date-time string: invalid');
+                assert.equal(paramValue.error.message,  'Object didn\'t pass validation for format date-time: invalid');
               });
             });
           });
@@ -1358,7 +1362,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 assert.equal(paramValue.raw, '');
                 assert.equal(paramValue.value, undefined);
                 assert.ok(!paramValue.valid);
-                assert.equal(paramValue.error.message, 'Not a valid integer: ');
+                assert.equal(paramValue.error.message, 'Expected type integer but found type string');
               })
               .then(done, done);
           });
@@ -1416,7 +1420,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 assert.equal(paramValue.raw, '');
                 assert.equal(paramValue.value, undefined);
                 assert.ok(!paramValue.valid);
-                assert.equal(paramValue.error.message, 'Not a valid number: ');
+                assert.equal(paramValue.error.message, 'Expected type number but found type string');
               })
               .then(done, done);
           });

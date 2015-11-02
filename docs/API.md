@@ -16,6 +16,9 @@
 <dt><a href="#create">create(options, [callback])</a> ⇒ <code>Promise</code></dt>
 <dd><p>Creates a SwaggerApi object from its Swagger definition(s).</p>
 </dd>
+<dt><a href="#validateContentType">validateContentType(contentType, supportedTypes, results)</a></dt>
+<dd><p>Validates the content type.</p>
+</dd>
 </dl>
 ## Typedefs
 <dl>
@@ -189,14 +192,16 @@ Performs validation of the Swagger API document(s).
 
 
 * [Operation](#Operation)
-  * [new Operation(api, pathObject, method, ptr, definition)](#new_Operation_new)
+  * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_Operation_new)
   * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
   * [.getResponseExample(codeOrMimeType, [mimeType])](#Operation+getResponseExample) ⇒ <code>string</code>
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
   * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
+  * [.validateRequest(req)](#Operation+validateRequest) ⇒ <code>object</code>
+  * [.validateResponse(statusCode, headers, body)](#Operation+validateResponse) ⇒ <code>object</code>
 
 <a name="new_Operation_new"></a>
-### new Operation(api, pathObject, method, ptr, definition)
+### new Operation(api, pathObject, method, ptr, definition, consumes, produces)
 The Swagger Operation object.
 
 **Note:** Do not use directly.
@@ -212,6 +217,8 @@ The Swagger Operation object.
 | method | <code>string</code> | The operation method |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | definition | <code>object</code> | The operation definition |
+| consumes | <code>Array.&lt;string&gt;</code> | The mime types this operation consumes |
+| produces | <code>Array.&lt;string&gt;</code> | The mime types this operation produces |
 
 <a name="Operation+getParameters"></a>
 ### operation.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
@@ -263,6 +270,77 @@ Returns a sample value based on the requested code or the default response if no
 | --- | --- | --- | --- |
 | [code] | <code>number</code> &#124; <code>string</code> | <code>default</code> | The response code |
 
+<a name="Operation+validateRequest"></a>
+### operation.validateRequest(req) ⇒ <code>object</code>
+Validates the request.
+
+**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
+
+* `body`: Used for `body` and `formData` parameters
+* `files`: Used for `formData` parameters whose `type` is `file`
+* `headers`: Used for `header` parameters and consumes
+* `query`: Used for `query` parameters
+* `url`: used for `path` parameters
+
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
+property.
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+
+**Kind**: instance method of <code>[Operation](#Operation)</code>  
+**Returns**: <code>object</code> - The validation results.  This object should contain two properties: `errors` and `warnings`.  Each
+                  of these property values should be an array of objects that have at minimum the following
+                  properties:
+
+                    * code: The code used to identify the error/warning
+                    * errors: The error(s) encountered during validation
+                      * code: The code used to identify the error/warning
+                      * [in]: The parameter location when the errors is a parameter validation error
+                      * message: The human readable message for the error/warning
+                      * [name]: The parameter name when the error is a parameter validation error
+                      * path: The path to the failure or [] for the value itself being invalid
+                    * message: The human readable message for the error/warning
+
+                  Any other properties can be added to the error/warning objects as well but these must be there.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| req | <code>object</code> | The http client request *(or equivalent)* |
+
+<a name="Operation+validateResponse"></a>
+### operation.validateResponse(statusCode, headers, body) ⇒ <code>object</code>
+Validates the response.
+
+**Note:** We are not using an `http.ServerResponse` or equivalent because to do so would require an opinionated
+          interaction flow and we do not want to have to impose any restrictions.  We also do not validate the
+          `Content-Type` or body for void, 204 or 304 responses.
+
+**Kind**: instance method of <code>[Operation](#Operation)</code>  
+**Returns**: <code>object</code> - The validation results.  This object should contain two properties: `errors` and `warnings`.  Each
+                  of these property values should be an array of objects that have at minimum the following
+                  properties:
+
+                    * code: The code used to identify the error/warning
+                    * errors: The error(s) encountered during validation
+                      * code: The code used to identify the error/warning
+                      * message: The human readable message for the error/warning
+                      * path: The path to the failure or [] for the value itself being invalid
+                    * message: The human readable message for the error/warning
+                    * [name]: The header name when the error is a header validation error
+                    * path: The array of path segments to portion of the document associated with the error/warning
+
+                  Any other properties can be added to the error/warning objects as well but these must be there.  
+**Throws**:
+
+- <code>Error</code> if we cannot find a response definition for the requested status code.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| statusCode | <code>number</code> | The response status code *(`undefined` will map to the `default` response)* |
+| headers | <code>object</code> | The response headers |
+| body | <code>\*</code> | The response body |
+
 <a name="ParameterValue"></a>
 ## ParameterValue
 **Kind**: global class  
@@ -271,9 +349,10 @@ Returns a sample value based on the requested code or the default response if no
 | Name | Type | Description |
 | --- | --- | --- |
 | error | <code>Error</code> | The error(s) encountered during processing/validating the paramter value |
+| parameterObject | <code>[Parameter](#Parameter)</code> | The Parameter object |
 | raw | <code>\*</code> | The original parameter value *(Does not take default values into account)* |
 | valid | <code>boolean</code> | Whether or not this parameter is valid based on its JSON Schema |
-| value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary)* |
+| value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary)*                       or `undefined` in the event that processing the value is impossible (invalid types, etc.). |
 
 <a name="new_ParameterValue_new"></a>
 ### new ParameterValue(parameter, raw)
@@ -344,7 +423,7 @@ Returns the parameter value from the request.
 
 * `body`: Used for `body` and `formData` parameters
 * `files`: Used for `formData` parameters whose `type` is `file`
-* `header`: Used for `header` parameters
+* `headers`: Used for `header` parameters
 * `query`: Used for `query` parameters
 * `url`: used for `path` parameters
 
@@ -476,6 +555,18 @@ SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, fu
     console.log('Documentation URL: ', api.documentation);
   });
 ```
+<a name="validateContentType"></a>
+## validateContentType(contentType, supportedTypes, results)
+Validates the content type.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| contentType | <code>string</code> | The Content-Type value of the request/response |
+| supportedTypes | <code>Array.&lt;string&gt;</code> | The supported (declared) Content-Type values for the request/response |
+| results | <code>object</code> | The results object to update in the event of an invalid content type |
+
 <a name="validatorCallback"></a>
 ## validatorCallback ⇒ <code>object</code>
 Callback used for validation.

@@ -2,6 +2,7 @@
 
 ### TBD
 
+* Added `Operation#validateRequest` and `Operation#validateResponse` APIs
 * Fixed issue with valid models being marked as inheriting circularly when an ancestor model has a circular reference *(Issue #38)*
 
 ### v0.3.3 (2015-10-23)

@@ -297,4 +297,607 @@ describe('Operation (Swagger 2.0)', function () {
       assert.ok(_.isUndefined(sway.getOperation('/pet', 'post').getResponseSample(405)));
     });
   });
+
+  describe('#validateRequest', function () {
+    describe('validate Content-Type', function () {
+      var baseRequest = {
+        url: '/pet',
+        body: {
+          name: 'Test Pet',
+          photoUrls: []
+        }
+      };
+
+      describe('operation level consumes', function () {
+        var operation;
+
+        before(function () {
+          operation = sway.getOperation('/pet', 'post');
+        });
+
+        it('should return an error for an unsupported value', function () {
+          var request = _.cloneDeep(baseRequest);
+          var results;
+
+          request.headers = {
+            'content-type': 'application/x-yaml'
+          };
+
+          results = operation.validateRequest(request);
+
+          assert.equal(results.warnings.length, 0);
+          assert.equal(results.errors.length, 1);
+        });
+
+        it('should handle an undefined value (defaults to application/octet-stream)', function () {
+          var request = _.cloneDeep(baseRequest);
+          var results;
+
+          request.headers = {};
+
+          results = operation.validateRequest(request);
+
+          assert.equal(results.warnings.length, 0);
+          assert.deepEqual(results.errors, [
+            {
+              code: 'INVALID_CONTENT_TYPE',
+              message: 'Invalid Content-Type (application/octet-stream).  ' +
+                'These are supported: application/json, application/xml',
+              path: []
+            }
+          ]);
+        });
+
+        it('should not return an error for a supported value', function () {
+          var request = _.cloneDeep(baseRequest);
+          var results;
+
+          request.headers = {
+            'content-type': 'application/json'
+          };
+
+          results = operation.validateRequest(request);
+
+          assert.equal(results.warnings.length, 0);
+          assert.equal(results.errors.length, 0);
+        });
+      });
+
+      // We only need one test to make sure that we're using the global consumes
+
+      it('should handle global level consumes', function (done) {
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+        cSwaggerDoc.consumes = cSwaggerDoc.paths['/pet'].post.consumes;
+
+        delete cSwaggerDoc.paths['/pet'].post.consumes;
+
+        helpers.swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var operation = api.getOperation('/pet', 'post');
+            var request = _.cloneDeep(baseRequest);
+            var results;
+
+            request.headers = {
+              'content-type': 'application/x-yaml'
+            };
+
+            results = operation.validateRequest(request);
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                  'These are supported: application/json, application/xml',
+                path: []
+              }
+            ]);
+          })
+          .then(done, done);
+      });
+
+      it('should handle mime-type parameters (exact match)', function (done) {
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+        var mimeType = 'application/x-yaml; charset=utf-8';
+
+        cSwaggerDoc.paths['/pet'].post.consumes.push(mimeType);
+
+        helpers.swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var request = _.cloneDeep(baseRequest);
+            var results;
+
+            request.headers = {
+              'content-type': mimeType
+            };
+
+            results = api.getOperation('/pet', 'post').validateRequest(request);
+
+            assert.equal(results.warnings.length, 0);
+            assert.equal(results.errors.length, 0);
+          })
+          .then(done, done);
+      });
+    });
+
+    describe('validate parameters', function () {
+      // We do not need to exhaustively test parameter validation since we're basically just relying on
+      // ParameterValue's validation and which is heavily tested elsewhere.
+
+      it('should return an error for invalid non-primitive parameters', function () {
+        var operation = sway.getOperation('/pet', 'post');
+        var results = operation.validateRequest({
+          url: '/v2/pet',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: {},
+          files: {}
+        });
+
+        assert.equal(results.warnings.length, 0);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_REQUEST_PARAMETER',
+            errors: [
+              {
+                code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                message: 'Missing required property: photoUrls',
+                path: []
+              },
+              {
+                code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                message: 'Missing required property: name',
+                path: []
+              }
+            ],
+            in: 'body',
+            message: 'Invalid parameter (body): Value failed JSON Schema validation',
+            name: 'body',
+            path: ['paths', '/pet', 'post', 'parameters', '0']
+          }
+        ]);
+      });
+
+      it('should return an error for invalid primitive parameters', function () {
+        var operation = sway.getOperation('/pet/{petId}/uploadImage', 'post');
+        var results = operation.validateRequest({
+          url: '/v2/pet/notANumber/uploadImage',
+          headers: {
+            'content-type': 'multipart/form-data'
+          },
+          body: {},
+          files: {}
+        });
+
+        assert.equal(results.warnings.length, 0);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_REQUEST_PARAMETER',
+            errors: [
+              {
+                code: 'INVALID_TYPE',
+                message: 'Expected type integer but found type string',
+                path: []
+              }
+            ],
+              in: 'path',
+            message: 'Invalid parameter (petId): Expected type integer but found type string',
+            name: 'petId',
+            path: []
+          }
+        ]);
+      });
+
+      it('should not return an error for valid parameters', function () {
+        var operation = sway.getOperation('/pet/{petId}', 'post');
+        var results = operation.validateRequest({
+          url: '/v2/pet/1',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          body: {
+            name: 'New Pet',
+            status: 'available'
+          }
+        });
+
+        assert.equal(results.errors.length, 0);
+        assert.equal(results.warnings.length, 0);
+      });
+    });
+  });
+
+  describe('#validateResponse', function () {
+    var validPet = {
+      name: 'Test Pet',
+      photoUrls: []
+    };
+
+    describe('should throw an error for undefined response', function () {
+      it('undefined value but no default', function () {
+        try {
+          sway.getOperation('/pet', 'post').validateResponse();
+
+          tHelpers.shouldHadFailed();
+        } catch (err) {
+          assert.equal(err.message, 'This operation does not have a defined \'default\' response code');
+        }
+      });
+
+      it('provided value', function () {
+        try {
+          sway.getOperation('/pet/{petId}', 'post').validateResponse(201);
+
+          tHelpers.shouldHadFailed();
+        } catch (err) {
+          assert.equal(err.message, 'This operation does not have a defined \'201\' response code');
+        }
+      });
+    });
+
+    describe('validate Content-Type', function () {
+      describe('operation level produces', function () {
+        var cSway;
+
+        before(function (done) {
+          var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+          // Schemas are added so they don't get recognized as void responses
+          cSwaggerDoc.paths['/pet/{petId}'].delete.responses['204'] = {
+            description: 'Successfully deleted',
+            schema: {
+              type: 'string'
+            }
+          };
+          cSwaggerDoc.paths['/pet/{petId}'].get.responses['304'] = {
+            description: 'Cached response',
+            schema: {
+              type: 'string'
+            }
+          };
+
+          helpers.swaggerApi.create({
+            definition: cSwaggerDoc
+          })
+            .then(function (api) {
+              cSway = api;
+            })
+            .then(done, done);
+        });
+
+        describe('unsupported value', function () {
+          it('should return an error for a provided value', function () {
+            var results = sway.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+              'content-type': 'application/x-yaml'
+            }, validPet);
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                  'These are supported: application/xml, application/json',
+                path: []
+              }
+            ]);
+          });
+
+          it('should not return an error for a void response', function () {
+            var results = sway.getOperation('/user', 'post').validateResponse(undefined, {
+              'content-type': 'application/x-yaml'
+            });
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+
+          it('should not return an error for a 204 response', function () {
+            var results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse(204, {
+              'content-type': 'application/x-yaml'
+            }, validPet);
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+
+          it('should not return an error for a 304 response', function () {
+            var results = cSway.getOperation('/pet/{petId}', 'get').validateResponse(304, {
+              'content-type': 'application/x-yaml'
+            }, validPet);
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+        });
+
+        it('should not return an error for a supported value', function () {
+          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+            'content-type': 'application/json'
+          }, validPet);
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+
+        describe('undefined value', function () {
+          it('should return an error when not a void/204/304 response', function () {
+            var results = sway.getOperation('/pet/{petId}', 'get').validateResponse(200, {}, {
+              name: 'Test Pet',
+              photoUrls: []
+            }, validPet);
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (undefined).  ' +
+                  'These are supported: application/xml, application/json',
+                path: []
+              }
+            ]);
+          });
+
+          it('should not return an error for a void response', function () {
+            var results = cSway.getOperation('/user', 'post').validateResponse(undefined, {}, validPet);
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+
+          it('should not return an error for a 204 response', function () {
+            var results = cSway.getOperation('/pet/{petId}', 'delete').validateResponse(204, {}, validPet);
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+
+          it('should not return an error for a 304 response', function () {
+            var results = cSway.getOperation('/pet/{petId}', 'get').validateResponse(304, {}, validPet);
+
+            assert.equal(results.errors.length, 0);
+            assert.equal(results.warnings.length, 0);
+          });
+        });
+      });
+
+      // We only need one test to make sure that we're using the global produces
+
+      it('should handle global level produces', function (done) {
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+        cSwaggerDoc.produces = [
+          'application/json',
+          'application/xml'
+        ];
+
+        delete cSwaggerDoc.paths['/pet/{petId}'].get.produces;
+
+        helpers.swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var results = api.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+              'content-type': 'application/x-yaml'
+            }, validPet);
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                  'These are supported: application/json, application/xml',
+                path: []
+              }
+            ]);
+          })
+          .then(done, done);
+      });
+
+      it('should handle mime-type parameters (exact match)', function (done) {
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+        var mimeType = 'application/x-yaml; charset=utf-8';
+
+        cSwaggerDoc.paths['/pet/{petId}'].get.produces.push(mimeType);
+
+        helpers.swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var results = api.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+              'content-type': mimeType
+            }, validPet);
+
+            assert.equal(results.warnings.length, 0);
+            assert.equal(results.errors.length, 0);
+          })
+          .then(done, done);
+      });
+    });
+
+    describe('validate headers', function () {
+      it('should return errors for invalid headers (schema)', function (done) {
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+        cSwaggerDoc.paths['/user/login'].get.responses['200'].headers['X-Rate-Limit'].maximum = 5;
+
+        helpers.swaggerApi.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var results = api.getOperation('/user/login', 'get').validateResponse(200, {
+              'content-type': 'application/json',
+              'x-rate-limit': 1000
+            }, 'OK');
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_RESPONSE_HEADER',
+                errors: [
+                  {
+                    code: 'MAXIMUM',
+                    description: 'calls per hour allowed by the user',
+                    message: 'Value 1000 is greater than maximum 5',
+                    path: []
+                  }
+                ],
+                message: 'Invalid header (X-Rate-Limit): Value 1000 is greater than maximum 5',
+                name: 'X-Rate-Limit',
+                path: []
+              }
+            ]);
+          })
+          .then(done, done);
+      });
+
+      it('should return errors for invalid headers (type)', function () {
+        var results = sway.getOperation('/user/login', 'get').validateResponse(200, {
+          'content-type': 'application/json',
+          'x-rate-limit': 'invalid',
+          'x-expires-after': 'invalid'
+        }, 'OK');
+
+        assert.equal(results.warnings.length, 0);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_RESPONSE_HEADER',
+            errors: [
+              {
+                code: 'INVALID_TYPE',
+                message: 'Expected type integer but found type string',
+                path: []
+              }
+            ],
+            message: 'Invalid header (X-Rate-Limit): Expected type integer but found type string',
+            name: 'X-Rate-Limit',
+            path: []
+          },
+          {
+            code: 'INVALID_RESPONSE_HEADER',
+            errors: [
+              {
+                code: 'INVALID_FORMAT',
+                message: 'Object didn\'t pass validation for format date-time: invalid',
+                path: []
+              }
+            ],
+            message: 'Invalid header (X-Expires-After): Object didn\'t pass validation for format date-time: invalid',
+            name: 'X-Expires-After',
+            path: []
+          }
+        ]);
+      });
+
+      it('should not return errors for valid headers', function () {
+        var results = sway.getOperation('/user/login', 'get').validateResponse(200, {
+          'content-type': 'application/json',
+          'x-rate-limit': '1000',
+          'x-expires-after': '2015-04-09T14:07:26-06:00'
+        }, 'OK');
+
+        assert.equal(results.warnings.length, 0);
+        assert.equal(results.errors.length, 0);
+      });
+    });
+
+    describe('validate body', function () {
+      describe('should not return an error for a valid response body', function () {
+        it('empty body for void response', function () {
+          var results = sway.getOperation('/pet', 'post').validateResponse(405, {});
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+
+        it('non-empty body for void response', function () {
+          var results = sway.getOperation('/pet', 'post').validateResponse(405, {}, 'Bad Request');
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+
+        it('primitive body', function () {
+          var results = sway.getOperation('/user/login', 'get').validateResponse(200, {
+            'content-type': 'application/json',
+            'x-rate-limit': '1000',
+            'x-expires-after': '2015-04-09T14:07:26-06:00'
+          }, 'OK');
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+
+        it('complex body', function () {
+          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+            'content-type': 'application/json'
+          }, {
+            name: 'First Pet',
+            photoUrls: []
+          });
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+      });
+
+      describe('should return an error for an invalid response body', function () {
+        it('primitive body', function () {
+          var results = sway.getOperation('/user/login', 'get').validateResponse(200, {
+            'content-type': 'application/json',
+            'x-rate-limit': '1000',
+            'x-expires-after': '2015-04-09T14:07:26-06:00'
+          }, {});
+
+          assert.equal(results.warnings.length, 0);
+          assert.deepEqual(results.errors, [
+            {
+              code: 'INVALID_RESPONSE_BODY',
+              errors: [
+                {
+                  code: 'INVALID_TYPE',
+                  message: 'Expected type string but found type object',
+                  path: []
+                }
+              ],
+              message: 'Invalid body: Expected type string but found type object',
+              path: []
+            }
+          ]);
+        });
+
+        it('complex body', function () {
+          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse(200, {
+            'content-type': 'application/json'
+          }, {});
+
+          assert.equal(results.warnings.length, 0);
+          assert.deepEqual(results.errors, [
+            {
+              code: 'INVALID_RESPONSE_BODY',
+              errors: [
+                {
+                  code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                  message: 'Missing required property: photoUrls',
+                  path: []
+                },
+                {
+                  code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+                  message: 'Missing required property: name',
+                  path: []
+                }
+              ],
+              message: 'Invalid body: Value failed JSON Schema validation',
+              path: []
+            }
+          ]);
+        });
+      });
+    });
+  });
 });
