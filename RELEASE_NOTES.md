@@ -1,9 +1,16 @@
 ## Release Notes
 
-### TBD
+### v0.4.0 (2015-11-02)
+
+**Note:** This release has a breaking change as documented below.  I realize changing APIs should result in a major
+version release but I did not want to force an early `v1.0.0` release just because of this.  The possibility of
+breaking API changes prior to `v1.0.0` were clearly mentioned on the project home page from day one.  While I will
+do my best to avoid this happening, this was one of those cases where for API consistency, the change was merited.
 
 * Added `Operation#validateRequest` and `Operation#validateResponse` APIs
 * Fixed issue with valid models being marked as inheriting circularly when an ancestor model has a circular reference *(Issue #38)*
+* **(BREAKING)** Removed `SwaggerApi#getLastErrors` and `SwaggerApi#getLastWarnings` in favor of `SwaggerApi#validate`
+returning the validation results.  This will make all of the validation APIs consistent in how they work.
 
 ### v0.3.3 (2015-10-23)
 

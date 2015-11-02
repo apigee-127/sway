@@ -182,7 +182,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
     });
 
     it('should add validator to list of validators', function () {
-      var result = sway.validate();
+      var results = sway.validate();
       var expectedErrors = [
         'error'
       ];
@@ -190,9 +190,8 @@ describe('SwaggerApi (Swagger 2.0)', function () {
         'warning'
       ];
 
-      assert.ok(result === true);
-      assert.deepEqual([], sway.getLastErrors());
-      assert.deepEqual([], sway.getLastWarnings());
+      assert.deepEqual(results.errors, []);
+      assert.deepEqual(results.warnings, []);
 
       sway.registerValidator(function () {
         return {
@@ -201,24 +200,22 @@ describe('SwaggerApi (Swagger 2.0)', function () {
         };
       });
 
-      result = sway.validate();
+      results = sway.validate();
 
-      assert.ok(result === false);
-      assert.deepEqual(expectedErrors, sway.getLastErrors());
-      assert.deepEqual(expectedWarnings, sway.getLastWarnings());
+      assert.deepEqual(results.errors, expectedErrors);
+      assert.deepEqual(results.warnings, expectedWarnings);
     });
   });
 
   describe('#validate', function () {
-    it('should not throw an Error for a valid document', function () {
-      try {
-        sway.validate();
-      } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
-      }
+    it('should return zero errors/warnings for a valid document', function () {
+      var results = sway.validate();
+
+      assert.deepEqual(results.errors, []);
+      assert.deepEqual(results.warnings, []);
     });
 
-    describe('should throw an Error for an invalid document', function () {
+    describe('should return errors for an invalid document', function () {
       it('does not validate against JSON Schema', function (done) {
         var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
@@ -228,17 +225,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                 message: 'Missing required property: paths',
                 path: []
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -249,22 +245,20 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
-
-              assert.ok(result === false);
+              var results = api.validate();
 
               // Validate that all warnings are unused definitions
-              _.forEach(api.getLastWarnings(), function (warning) {
-                assert.equal('UNUSED_DEFINITION', warning.code);
+              _.forEach(results.warnings, function (warning) {
+                assert.equal(warning.code, 'UNUSED_DEFINITION');
               });
 
-              assert.deepEqual([
+              assert.deepEqual(results.errors, [
                 {
                   code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                   message: 'Missing required property: items',
                   path: path
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         }
@@ -520,16 +514,14 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
-
-                assert.ok(result === false);
+                var results = api.validate();
 
                 // Validate that all warnings are unused definitions
-                _.forEach(api.getLastWarnings(), function (warning) {
-                  assert.equal('UNUSED_DEFINITION', warning.code);
+                _.forEach(results.warnings, function (warning) {
+                  assert.equal(warning.code, 'UNUSED_DEFINITION');
                 });
 
-                assert.deepEqual([
+                assert.deepEqual(results.errors, [
                   {
                     code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                     message: 'Missing required property: items',
@@ -575,7 +567,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                     message: 'Missing required property: items',
                     path: ['definitions', 'Pet', 'properties', 'aliases', 'properties', 'aliases']
                   }
-                ], api.getLastErrors());
+                ]);
               })
               .then(done, done);
           });
@@ -771,11 +763,10 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/A'],
@@ -788,7 +779,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                   message: 'Schema object inherits from itself: #/definitions/B',
                   path: ['definitions', 'B']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -822,11 +813,10 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/C', '#/definitions/A'],
@@ -845,7 +835,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                   message: 'Schema object inherits from itself: #/definitions/C',
                   path: ['definitions', 'C']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -869,18 +859,17 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/A/allOf/0', '#/definitions/A/allOf/0'],
                   message: 'Schema object inherits from itself: #/definitions/A/allOf/0',
                   path: ['definitions', 'A', 'allOf', '0']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -899,11 +888,10 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === true);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([], api.getLastErrors());
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, []);
             })
             .then(done, done);
         });
@@ -926,18 +914,17 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'INVALID_TYPE',
                   description: 'The Pet status', // Copied in for non-body parameters
                   message: 'Expected type string but found type integer',
                   path: ['paths', '/pet', 'post', 'parameters', '1', 'default']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -951,17 +938,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type string but found type integer',
                   path: ['definitions', 'Pet', 'properties', 'name', 'default']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -981,17 +967,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'DUPLICATE_PARAMETER',
                   message: 'Operation cannot have duplicate parameters: #/paths/~1pet~1findByStatus/get/parameters/1',
                   path: ['paths', '/pet/findByStatus', 'get', 'parameters', '1']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -1009,17 +994,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'DUPLICATE_PARAMETER',
                   message: 'Operation cannot have duplicate parameters: #/paths/~1pet~1{petId}/parameters/1',
                   path: ['paths', '/pet/{petId}', 'parameters', '1']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -1042,17 +1026,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'MISSING_PATH_PARAMETER_DECLARATION',
                 message: 'Path parameter is defined but is not declared: petId2',
                 path: ['paths', '/pet/{petId}', 'get', 'parameters', '0']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1066,11 +1049,10 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'MISSING_PATH_PARAMETER_DEFINITION',
                 message: 'Path parameter is declared but is not defined: petId',
@@ -1086,7 +1068,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                 message: 'Path parameter is declared but is not defined: petId',
                 path: ['paths', '/pet/{petId}', 'delete']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1100,17 +1082,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'EQUIVALENT_PATH',
                 message: 'Equivalent path already exists: /pet/{notPetId}',
                 path: ['paths', '/pet/{notPetId}']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1125,17 +1106,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'DUPLICATE_OPERATIONID',
                 message: 'Cannot have multiple operations with the same operationId: ' + operationId,
                 path: ['paths', '/pet', 'put', 'operationId']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1152,17 +1132,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'MULTIPLE_BODY_PARAMETERS',
                 message: 'Operation cannot have multiple body parameters',
                 path: ['paths', '/pet', 'post']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1182,17 +1161,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            var result = api.validate();
+            var results = api.validate();
 
-            assert.ok(result === false);
-            assert.deepEqual([], api.getLastWarnings());
-            assert.deepEqual([
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
               {
                 code: 'INVALID_PARAMETER_COMBINATION',
                 message: 'Operation cannot have a body parameter and a formData parameter',
                 path: ['paths', '/pet', 'post']
               }
-            ], api.getLastErrors());
+            ]);
           })
           .then(done, done);
       });
@@ -1217,17 +1195,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'OBJECT_MISSING_REQUIRED_PROPERTY_DEFINITION',
                   message: 'Missing required property definition: name',
                   path: ['definitions', 'Pet']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -1241,17 +1218,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result === false);
-              assert.deepEqual([], api.getLastWarnings());
-              assert.deepEqual([
+              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.errors, [
                 {
                   code: 'OBJECT_MISSING_REQUIRED_PROPERTY_DEFINITION',
                   message: 'Missing required property definition: name',
                   path: ['definitions', 'Pet']
                 }
-              ], api.getLastErrors());
+              ]);
             })
             .then(done, done);
         });
@@ -1267,17 +1243,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result);
-              assert.deepEqual([], api.getLastErrors());
-              assert.deepEqual([
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, [
                 {
                   code: 'UNUSED_DEFINITION',
                   message: 'Definition is not used: #/definitions/Missing',
                   path: ['definitions', 'Missing']
                 }
-              ], api.getLastWarnings());
+              ]);
             })
             .then(done, done);
         });
@@ -1297,17 +1272,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result);
-              assert.deepEqual([], api.getLastErrors());
-              assert.deepEqual([
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, [
                 {
                   code: 'UNUSED_DEFINITION',
                   message: 'Definition is not used: #/parameters/missing',
                   path: ['parameters', 'missing']
                 }
-              ], api.getLastWarnings());
+              ]);
             })
             .then(done, done);
         });
@@ -1325,17 +1299,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result);
-              assert.deepEqual([], api.getLastErrors());
-              assert.deepEqual([
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, [
                 {
                   code: 'UNUSED_DEFINITION',
                   message: 'Definition is not used: #/responses/Missing',
                   path: ['responses', 'Missing']
                 }
-              ], api.getLastWarnings());
+              ]);
             })
             .then(done, done);
         });
@@ -1353,17 +1326,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result);
-              assert.deepEqual([], api.getLastErrors());
-              assert.deepEqual([
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, [
                 {
                   code: 'UNUSED_DEFINITION',
                   message: 'Definition is not used: #/securityDefinitions/missing',
                   path: ['securityDefinitions', 'missing']
                 }
-              ], api.getLastWarnings());
+              ]);
             })
             .then(done, done);
         });
@@ -1377,17 +1349,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var result = api.validate();
+              var results = api.validate();
 
-              assert.ok(result);
-              assert.deepEqual([], api.getLastErrors());
-              assert.deepEqual([
+              assert.deepEqual(results.errors, []);
+              assert.deepEqual(results.warnings, [
                 {
                   code: 'UNUSED_DEFINITION',
                   message: 'Definition is not used: #/securityDefinitions/petstore_auth/scopes/missing',
                   path: ['securityDefinitions', 'petstore_auth', 'scopes', 'missing']
                 }
-              ], api.getLastWarnings());
+              ]);
             })
             .then(done, done);
         });
@@ -1404,17 +1375,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
 
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.deepEqual([
+                assert.deepEqual(results.warnings, []);
+                assert.deepEqual(results.errors, [
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Reference could not be resolved: #/definitions/Missing',
                     path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']
                   }
-                ], api.getLastErrors());
+                ]);
               })
               .then(done, done);
           });
@@ -1428,14 +1398,13 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
                 var error;
 
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.ok(api.getLastErrors().length === 1);
+                assert.deepEqual(results.warnings, []);
+                assert.equal(results.errors.length, 1);
 
-                error = api.getLastErrors()[0];
+                error = results.errors[0];
 
                 assert.equal(error.code, 'UNRESOLVABLE_REFERENCE');
                 assert.equal(error.message, 'Reference could not be resolved: fake.json');
@@ -1458,17 +1427,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
 
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.deepEqual([
+                assert.deepEqual(results.warnings, []);
+                assert.deepEqual(results.errors, [
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Security definition could not be resolved: missing',
                     path: ['security', '1', 'missing']
                   }
-                ], api.getLastErrors());
+                ]);
               })
               .then(done, done);
           });
@@ -1484,17 +1452,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
 
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.deepEqual([
+                assert.deepEqual(results.warnings, []);
+                assert.deepEqual(results.errors, [
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Security definition could not be resolved: missing',
                     path: ['paths', '/store/inventory', 'get', 'security', '1', 'missing']
                   }
-                ], api.getLastErrors());
+                ]);
               })
               .then(done, done);
           });
@@ -1510,17 +1477,16 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
 
-                assert.ok(result === false);
-                assert.deepEqual([], api.getLastWarnings());
-                assert.deepEqual([
+                assert.deepEqual(results.warnings, []);
+                assert.deepEqual(results.errors, [
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Security scope definition could not be resolved: missing',
                     path: ['security', '0', 'petstore_auth', '2']
                   }
-                ], api.getLastErrors());
+                ]);
               })
               .then(done, done);
           });
@@ -1538,11 +1504,10 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var result = api.validate();
+                var results = api.validate();
 
-                assert.ok(result === false);
-                assert.deepEqual(api.getLastWarnings(), []);
-                assert.deepEqual(api.getLastErrors(), [
+                assert.deepEqual(results.warnings, []);
+                assert.deepEqual(results.errors, [
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Security scope definition could not be resolved: missing',
@@ -1558,10 +1523,11 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
     describe('human readable errors for invalid schema', function () {
       function validateError (api, defType) {
-        assert.ok(!api.validate());
-        assert.equal(api.getLastErrors().length, 1);
-        assert.equal(api.getLastWarnings().length, 0);
-        assert.equal(api.getLastErrors()[0].message, 'Not a valid ' + defType + ' definition');
+        var results = api.validate();
+
+        assert.equal(results.errors.length, 1);
+        assert.equal(results.warnings.length, 0);
+        assert.equal(results.errors[0].message, 'Not a valid ' + defType + ' definition');
       }
 
       it('should handle parameter definition', function (done) {

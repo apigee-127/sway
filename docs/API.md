@@ -47,15 +47,13 @@
 
 * [SwaggerApi](#SwaggerApi)
   * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
-  * [.getLastErrors()](#SwaggerApi+getLastErrors) ⇒ <code>Array.&lt;object&gt;</code>
-  * [.getLastWarnings()](#SwaggerApi+getLastWarnings) ⇒ <code>Array.&lt;object&gt;</code>
   * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
   * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
   * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
   * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
   * [.registerValidator(validator)](#SwaggerApi+registerValidator)
-  * [.validate()](#SwaggerApi+validate) ⇒ <code>boolean</code>
+  * [.validate()](#SwaggerApi+validate) ⇒ <code>object</code>
 
 <a name="new_SwaggerApi_new"></a>
 ### new SwaggerApi(plugin, definition, resolved, references, options)
@@ -76,18 +74,6 @@ The Swagger API object.
 | options | <code>object</code> | The options passed to swaggerApi.create |
 | [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
 
-<a name="SwaggerApi+getLastErrors"></a>
-### swaggerApi.getLastErrors() ⇒ <code>Array.&lt;object&gt;</code>
-Returns the errors from the last validate call.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;object&gt;</code> - The errors from the previous call to validate or undefined if validate was never called  
-<a name="SwaggerApi+getLastWarnings"></a>
-### swaggerApi.getLastWarnings() ⇒ <code>Array.&lt;object&gt;</code>
-Returns the warnings from the last validate call.
-
-**Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;object&gt;</code> - The warnings from the previous call to validate or undefined if validate was never called  
 <a name="SwaggerApi+getOperation"></a>
 ### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#Operation)</code>
 Returns the operation for the given path and operation.
@@ -170,11 +156,24 @@ Registers a validator.
 | validator | <code>[validatorCallback](#validatorCallback)</code> | The validator |
 
 <a name="SwaggerApi+validate"></a>
-### swaggerApi.validate() ⇒ <code>boolean</code>
+### swaggerApi.validate() ⇒ <code>object</code>
 Performs validation of the Swagger API document(s).
 
 **Kind**: instance method of <code>[SwaggerApi](#SwaggerApi)</code>  
-**Returns**: <code>boolean</code> - True if all validators produce zero errors and false otherwise  
+**Returns**: <code>object</code> - The validation results.  This object should contain two properties: `errors` and `warnings`.  Each
+                  of these property values should be an array of objects that have at minimum the following
+                  properties:
+
+                    * code: The code used to identify the error/warning
+                    * [errors]: The nested error(s) encountered during validation
+                      * code: The code used to identify the error/warning
+                      * message: The human readable message for the error/warning
+                      * path: The path to the failure or [] for the value itself being invalid
+                    * message: The human readable message for the error/warning
+                    * [name]: The header name when the error is a header validation error
+                    * path: The array of path segments to portion of the document associated with the error/warning
+
+                  Any other properties can be added to the error/warning objects as well but these must be there.  
 <a name="Operation"></a>
 ## Operation
 **Kind**: global class  
@@ -293,7 +292,7 @@ property.
                   properties:
 
                     * code: The code used to identify the error/warning
-                    * errors: The error(s) encountered during validation
+                    * [errors]: The error(s) encountered during validation
                       * code: The code used to identify the error/warning
                       * [in]: The parameter location when the errors is a parameter validation error
                       * message: The human readable message for the error/warning
@@ -321,7 +320,7 @@ Validates the response.
                   properties:
 
                     * code: The code used to identify the error/warning
-                    * errors: The error(s) encountered during validation
+                    * [errors]: The nested error(s) encountered during validation
                       * code: The code used to identify the error/warning
                       * message: The human readable message for the error/warning
                       * path: The path to the failure or [] for the value itself being invalid
