@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v0.5.1 (2015-11-03)
+
+* Updated `Operation#validateResponse` to use the `default` response when validating a response code that isn't defined
+
 ### v0.5.0 (2015-11-02)
 
 **Note:** This release changes how `Operation#validateResponse` works.  Instead of throwing an `Error` whenver the API

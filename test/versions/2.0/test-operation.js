@@ -519,7 +519,7 @@ describe('Operation (Swagger 2.0)', function () {
       photoUrls: []
     };
 
-    describe('should throw an error for undefined response', function () {
+    describe('should return an error for undefined response', function () {
       it('undefined value but no default', function () {
         var results = sway.getOperation('/pet', 'post').validateResponse();
 
@@ -540,11 +540,18 @@ describe('Operation (Swagger 2.0)', function () {
         assert.deepEqual(results.errors, [
           {
             code: 'INVALID_RESPONSE_CODE',
-            message: 'This operation does not have a defined \'201\' response code',
+            message: 'This operation does not have a defined \'201\' or \'default\' response code',
             path: []
           }
         ]);
       });
+    });
+
+    it('should return the \'default\' response when validating an undescribed response', function () {
+      var results = sway.getOperation('/user', 'post').validateResponse(201);
+
+      assert.deepEqual(results.errors, []);
+      assert.deepEqual(results.warnings, []);
     });
 
     describe('validate Content-Type', function () {
