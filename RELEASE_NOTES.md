@@ -1,5 +1,11 @@
 ## Release Notes
 
+### v0.5.2 (2015-11-11)
+
+* Added validator for empty path parameter declarations *(Issue #40)*
+* Fixed a bug with validating strings that were not `date` or `date-time` format *(Issue #41)*
+* Fixed a bug where passing a `Buffer` to `Operation#validateResposne` could result in unexpected schema validation failure *(Issue #42)*
+
 ### v0.5.1 (2015-11-03)
 
 * Updated `Operation#validateResponse` to use the `default` response when validating a response code that isn't defined
