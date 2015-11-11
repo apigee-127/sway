@@ -197,7 +197,7 @@ Performs validation of the Swagger API document(s).
   * [.getResponseSchema([code])](#Operation+getResponseSchema) ⇒ <code>object</code>
   * [.getResponseSample([code])](#Operation+getResponseSample) ⇒ <code>\*</code>
   * [.validateRequest(req)](#Operation+validateRequest) ⇒ <code>object</code>
-  * [.validateResponse(statusCode, headers, body)](#Operation+validateResponse) ⇒ <code>object</code>
+  * [.validateResponse(statusCode, headers, body, [encoding])](#Operation+validateResponse) ⇒ <code>object</code>
 
 <a name="new_Operation_new"></a>
 ### new Operation(api, pathObject, method, ptr, definition, consumes, produces)
@@ -307,7 +307,7 @@ property.
 | req | <code>object</code> | The http client request *(or equivalent)* |
 
 <a name="Operation+validateResponse"></a>
-### operation.validateResponse(statusCode, headers, body) ⇒ <code>object</code>
+### operation.validateResponse(statusCode, headers, body, [encoding]) ⇒ <code>object</code>
 Validates the response.
 
 **Note:** We are not using an `http.ServerResponse` or equivalent because to do so would require an opinionated
@@ -335,6 +335,7 @@ Validates the response.
 | statusCode | <code>number</code> | The response status code *(`undefined` will map to the `default` response)* |
 | headers | <code>object</code> | The response headers |
 | body | <code>\*</code> | The response body |
+| [encoding] | <code>string</code> | The encoding of the body when the body is a `Buffer` |
 
 <a name="ParameterValue"></a>
 ## ParameterValue

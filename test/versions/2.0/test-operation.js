@@ -857,6 +857,25 @@ describe('Operation (Swagger 2.0)', function () {
           assert.equal(results.errors.length, 0);
           assert.equal(results.warnings.length, 0);
         });
+
+        it('Buffer body', function () {
+          var results;
+          var value;
+
+          // Browsers do not have a 'Buffer' type so we basically skip this test
+          if (typeof window === 'undefined') {
+            value = new Buffer('OK');
+          } else {
+            value = 'OK';
+          }
+
+          results = sway.getOperation('/user/login', 'get').validateResponse(200, {
+            'content-type': 'application/json'
+          }, value);
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
       });
 
       describe('should return an error for an invalid response body', function () {
@@ -909,6 +928,48 @@ describe('Operation (Swagger 2.0)', function () {
               path: []
             }
           ]);
+        });
+
+        it('Buffer body', function (done) {
+          var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+          cSwaggerDoc.paths['/user/login'].get.responses['200'].schema.minLength = 3;
+
+          helpers.swaggerApi.create({
+            definition: cSwaggerDoc
+          })
+            .then(function (api) {
+              var results;
+              var value;
+
+              // Browsers do not have a 'Buffer' type so we basically skip this test
+              if (typeof window === 'undefined') {
+                value = new Buffer('OK');
+              } else {
+                value = 'OK';
+              }
+
+              results = api.getOperation('/user/login', 'get').validateResponse(200, {
+                'content-type': 'application/json'
+              }, value, 'utf-8');
+
+              assert.deepEqual(results.errors, [
+                {
+                  code: 'INVALID_RESPONSE_BODY',
+                  errors: [
+                    {
+                      code: 'MIN_LENGTH',
+                      message: 'String is too short (2 chars), minimum 3',
+                      path: []
+                    }
+                  ],
+                  message: 'Invalid body: String is too short (2 chars), minimum 3',
+                  path: []
+                }
+              ]);
+              assert.equal(results.warnings.length, 0);
+            })
+            .then(done, done);
         });
       });
     });
