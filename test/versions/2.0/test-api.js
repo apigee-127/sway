@@ -1009,6 +1009,29 @@ describe('SwaggerApi (Swagger 2.0)', function () {
         });
       });
 
+      it('path parameter in pattern is empty', function (done) {
+        var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+        cSwagger.paths['/invalid/{}'] = {};
+
+        helpers.swaggerApi.create({
+          definition: cSwagger
+        })
+          .then(function (api) {
+            var results = api.validate();
+
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'EMPTY_PATH_PARAMETER_DECLARATION',
+                message: 'Path parameter declaration cannot be empty: /invalid/{}',
+                path: ['paths', '/invalid/{}']
+              }
+            ]);
+          })
+          .then(done, done);
+      });
+
       it('missing path parameter declaration', function (done) {
         var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
