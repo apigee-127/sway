@@ -225,4 +225,57 @@ describe('issues (Swagger 2.0)', function () {
       })
       .then(done, done);
   });
+
+  it('Buffer value for object type (Issue #46)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.paths['/user/login'].get.responses['200'].schema = {
+      properties: {
+        message: {
+          type: 'string'
+        },
+        type: 'object'
+      }
+    };
+
+    helpers.swaggerApi.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        var rawValue = 'If-Match header required';
+        var results;
+        var value;
+
+        // Browsers do not have a 'Buffer' type so we basically skip this test
+        if (typeof window === 'undefined') {
+          value = new Buffer(rawValue);
+        } else {
+          value = rawValue;
+        }
+
+        results = api.getOperation('/user/login', 'get').validateResponse(200, {
+          'content-type': 'application/json'
+        }, value, 'utf-8');
+
+        // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
+        assert.deepEqual(results, {
+          errors: [
+            {
+              code: 'INVALID_RESPONSE_BODY',
+              errors: [
+                {
+                  code: 'INVALID_TYPE',
+                  message: 'Expected type object but found type string',
+                  path: []
+                }
+              ],
+              message: 'Invalid body: Expected type object but found type string',
+              path: []
+            }
+          ],
+          warnings: []
+        });
+      })
+      .then(done, done);
+  });
 });

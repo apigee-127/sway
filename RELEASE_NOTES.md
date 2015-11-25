@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v0.5.4 (2015-11-25)
+
+* Fixed bug in error reporting when `Buffer` was converted to a `String` and failed type conversion
+
 ### v0.5.3 (2015-11-25)
 
 * Fixed a bug with `String`->`Object` conversion resulting in unexpected response validation errors *(Issue #46)*
