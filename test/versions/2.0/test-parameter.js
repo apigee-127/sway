@@ -1007,8 +1007,7 @@ describe('Parameter (Swagger 2.0)', function () {
               });
 
               assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message,
-                           typeof window === 'undefined' ? 'Unexpected token i' : 'Unable to parse JSON string');
+              assert.equal(paramValue.error.message, 'Expected type object but found type string');
             });
           });
 

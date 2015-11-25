@@ -181,4 +181,48 @@ describe('issues (Swagger 2.0)', function () {
       })
       .then(done, done);
   });
+
+  it('string value for object type (Issue #46)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.paths['/user/login'].get.responses['200'].schema = {
+      properties: {
+        message: {
+          type: 'string'
+        },
+        type: 'object'
+      }
+    };
+
+    helpers.swaggerApi.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        var results;
+
+        results = api.getOperation('/user/login', 'get').validateResponse(200, {
+          'content-type': 'application/json'
+        }, 'If-Match header required', 'utf-8');
+
+        // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
+        assert.deepEqual(results, {
+          errors: [
+            {
+              code: 'INVALID_RESPONSE_BODY',
+              errors: [
+                {
+                  code: 'INVALID_TYPE',
+                  message: 'Expected type object but found type string',
+                  path: []
+                }
+              ],
+              message: 'Invalid body: Expected type object but found type string',
+              path: []
+            }
+          ],
+          warnings: []
+        });
+      })
+      .then(done, done);
+  });
 });

@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v0.5.3 (2015-11-25)
+
+* Fixed a bug with `String`->`Object` conversion resulting in unexpected response validation errors *(Issue #46)*
+
 ### v0.5.2 (2015-11-11)
 
 * Added validator for empty path parameter declarations *(Issue #40)*
