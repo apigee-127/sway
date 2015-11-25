@@ -672,14 +672,6 @@ describe('Parameter (Swagger 2.0)', function () {
               }).value, ['pending']);
             });
 
-            it('non-array, non-string request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
-                query: {
-                  status: 1 // We cannot use string because it would be processed by different logic
-                }
-              }).value, [1]);
-            });
-
             it('array request value', function () {
               assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
                 query: {
@@ -986,19 +978,29 @@ describe('Parameter (Swagger 2.0)', function () {
               }).value, pet);
             });
 
-            it('string request value', function () {
-              assert.deepEqual(cParam.getValue({
-                body: JSON.stringify(pet)
-              }).value, pet);
-            });
-
             it('invalid request value (non-string)', function () {
               var paramValue = cParam.getValue({
                 body: 1 // We cannot use string because it would be processed by different logic
               });
 
-              assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message, 'Expected type object but found type number');
+              assert.equal(paramValue.value, 1);
+              assert.equal(paramValue.error.code, 'SCHEMA_VALIDATION_FAILED');
+              assert.equal(paramValue.error.message, 'Value failed JSON Schema validation');
+              assert.ok(paramValue.error.failedValidation);
+              assert.deepEqual(paramValue.error.errors, [
+                {
+                  code: 'INVALID_TYPE',
+                  message: 'Expected type object but found type integer',
+                  path: []
+                }
+              ]);
+              assert.deepEqual(paramValue.error.path, [
+                'paths',
+                '/pet',
+                'post',
+                'parameters',
+                '0'
+              ]);
             });
 
             it('invalid request value (string)', function () {
@@ -1006,8 +1008,24 @@ describe('Parameter (Swagger 2.0)', function () {
                 body: 'invalid'
               });
 
-              assert.ok(_.isUndefined(paramValue.value));
-              assert.equal(paramValue.error.message, 'Expected type object but found type string');
+              assert.equal(paramValue.value, 'invalid');
+              assert.equal(paramValue.error.code, 'SCHEMA_VALIDATION_FAILED');
+              assert.equal(paramValue.error.message, 'Value failed JSON Schema validation');
+              assert.ok(paramValue.error.failedValidation);
+              assert.deepEqual(paramValue.error.errors, [
+                {
+                  code: 'INVALID_TYPE',
+                  message: 'Expected type object but found type string',
+                  path: []
+                }
+              ]);
+              assert.deepEqual(paramValue.error.path, [
+                'paths',
+                '/pet',
+                'post',
+                'parameters',
+                '0'
+              ]);
             });
           });
 
@@ -1235,59 +1253,6 @@ describe('Parameter (Swagger 2.0)', function () {
                 assert.equal(paramValue.error.message,  'Object didn\'t pass validation for format date-time: invalid');
               });
             });
-          });
-
-          it('invalid type', function (done) {
-            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
-
-            cSwagger.paths['/pet/findByStatus'].get.parameters[0].items.type = 'invalid';
-
-            helpers.swaggerApi.create({
-              definition: cSwagger
-            })
-              .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
-                  query: {
-                    status: [
-                      'one', 'two', 'three'
-                    ]
-                  }
-                });
-
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Invalid \'type\' value: invalid');
-              })
-              .then(done, done);
-          });
-
-          it('invalid type (undefined)', function (done) {
-            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
-
-            cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
-              {
-                type: 'string'
-              },
-              {
-                type: 'string'
-              }
-            ];
-
-            helpers.swaggerApi.create({
-              definition: cSwagger
-            })
-              .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
-                  query: {
-                    status: [
-                      'one', 'two', 'three' // The extra parameter will cause an 'undefined' schema
-                    ]
-                  }
-                });
-
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Invalid \'type\' value: undefined');
-              })
-              .then(done, done);
           });
 
           it('missing type', function (done) {

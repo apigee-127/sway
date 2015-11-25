@@ -189,9 +189,9 @@ describe('issues (Swagger 2.0)', function () {
       properties: {
         message: {
           type: 'string'
-        },
-        type: 'object'
-      }
+        }
+      },
+      type: 'object'
     };
 
     helpers.swaggerApi.create({
@@ -233,9 +233,9 @@ describe('issues (Swagger 2.0)', function () {
       properties: {
         message: {
           type: 'string'
-        },
-        type: 'object'
-      }
+        }
+      },
+      type: 'object'
     };
 
     helpers.swaggerApi.create({

@@ -1,5 +1,11 @@
 ## Release Notes
 
+### v0.6.0 (2015-11-25)
+
+* Remove logic to do `String` -> `Object` coercion
+* Remove logic to do type coercion when the expected type is unknown *(We use to assume that a missing `type` was of
+`type` `object`.  This is wrong per JSON Schema which allows a missing `type` and handles it specially.)*
+
 ### v0.5.4 (2015-11-25)
 
 * Fixed bug in error reporting when `Buffer` was converted to a `String` and failed type conversion

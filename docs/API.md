@@ -348,7 +348,7 @@ Validates the response.
 | parameterObject | <code>[Parameter](#Parameter)</code> | The Parameter object |
 | raw | <code>\*</code> | The original parameter value *(Does not take default values into account)* |
 | valid | <code>boolean</code> | Whether or not this parameter is valid based on its JSON Schema |
-| value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary)*                       or `undefined` in the event that processing the value is impossible (invalid types, etc.). |
+| value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary                       and possible)*.  This can the original value in the event that processing the value is                       impossible *(missing schema type)* or `undefined` if processing the value failed *(invalid                       types, etc.)*. |
 
 <a name="new_ParameterValue_new"></a>
 ### new ParameterValue(parameter, raw)
