@@ -1,6 +1,6 @@
 {
   "name": "sway",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
   "scripts": {
