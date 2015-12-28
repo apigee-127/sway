@@ -1,5 +1,16 @@
 ## Release Notes
 
+### v1.0.0 (TBD)
+
+* Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
+    * API Additions
+        * `Operation#getResponse`
+        * `Operation#getResponses`
+        * `Response#validateResponse`
+    * API Changes
+        * `Operation#getResponseExample` -> `Response#getExample`
+        * `Operation#getResponseSample` -> `Response#getSample`
+
 ### v0.6.0 (2015-11-25)
 
 * Remove logic to do `String` -> `Object` coercion

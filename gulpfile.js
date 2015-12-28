@@ -121,6 +121,16 @@ gulp.task('clean', function (done) {
   ], done);
 });
 
+gulp.task('docs', function () {
+  return gulp.src([
+                    './index.js',
+                    'lib/types/*.js'
+                  ])
+             .pipe($.concat('API.md'))
+             .pipe($.jsdoc2MD({'sort-by': ['category', 'name']}))
+             .pipe(gulp.dest('docs'));
+});
+
 gulp.task('lint', function () {
   return gulp.src([
     'index.js',
@@ -264,16 +274,6 @@ gulp.task('test-browser', ['browserify'], function () {
       });
     })
     .then(finisher, finisher);
-});
-
-gulp.task('docs', function () {
-  return gulp.src([
-    './index.js',
-    'lib/types/*.js'
-  ])
-    .pipe($.concat('API.md'))
-    .pipe($.jsdoc2MD())
-    .pipe(gulp.dest('docs'));
 });
 
 gulp.task('test', function (cb) {
