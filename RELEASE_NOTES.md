@@ -2,6 +2,7 @@
 
 ### v1.0.0 (TBD)
 
+* Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue 48)*'
 * Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
     * API Additions
         * `Operation#getResponse`

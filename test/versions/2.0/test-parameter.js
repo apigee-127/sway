@@ -664,6 +664,14 @@ describe('Parameter (Swagger 2.0)', function () {
               }).value, ['available', 'pending']);
             });
 
+            it('non-array JSON string request value', function () {
+              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                query: {
+                  status: '["pending"]'
+                }
+              }).value, ['pending']);
+            });
+
             it('non-array string request value', function () {
               assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
                 query: {
@@ -978,6 +986,12 @@ describe('Parameter (Swagger 2.0)', function () {
               }).value, pet);
             });
 
+            it('string request value', function () {
+              assert.deepEqual(cParam.getValue({
+                body: JSON.stringify(pet)
+              }).value, pet);
+            });
+
             it('invalid request value (non-string)', function () {
               var paramValue = cParam.getValue({
                 body: 1 // We cannot use string because it would be processed by different logic
@@ -1253,6 +1267,29 @@ describe('Parameter (Swagger 2.0)', function () {
                 assert.equal(paramValue.error.message,  'Object didn\'t pass validation for format date-time: invalid');
               });
             });
+          });
+
+          it('invalid type', function (done) {
+            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwagger.paths['/pet'].post.parameters[0].schema = {
+              type: 'invalid'
+            };
+
+            helpers.swaggerApi.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                var paramValue = api.getOperation('/pet', 'post').getParameters()[0].getValue({
+                  body: {}
+                });
+
+                assert.ok(!paramValue.valid)
+                assert.equal('Invalid \'type\' value: invalid', paramValue.error.message);
+                assert.deepEqual({}, paramValue.raw);
+                assert.ok(_.isUndefined(paramValue.value));
+              })
+              .then(done, done);
           });
 
           it('missing type', function (done) {
