@@ -45,29 +45,18 @@ var supportedVersions = {
  * @param {object|string} options.definition - The Swagger definition location or structure
  * @param {object} [options.jsonRefs] - The options to pass to json-refs
  * @param {validatorCallback[]} [options.customValidators] - The custom validators
- * @param {function} [callback] - Node.js error-first callback
  *
- * @returns {Promise} A promise is always returned even if you provide a callback but it is not required to be used
+ * @returns {Promise} the promise
  *
  * @example
- * // Example using promises
  * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
  *   .then(function (api) {
  *     console.log('Documentation URL: ', api.documentation);
  *   }, function (err) {
  *     console.error(err.stack);
  *   });
- *
- * @example
- * // Example using callbacks
- * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, function (err, api) {
- *   if (err) {
- *     console.error(err.stack);
- *   } else {
- *     console.log('Documentation URL: ', api.documentation);
- *   });
  */
-module.exports.create = function (options, callback) {
+module.exports.create = function (options) {
   var allTasks = Promise.resolve();
 
   // Validate arguments
@@ -85,8 +74,6 @@ module.exports.create = function (options, callback) {
         throw new TypeError('options.jsonRefs must be an object');
       } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
         throw new TypeError('options.customValidators must be an array');
-      } else if (!_.isUndefined(callback) && !_.isFunction(callback)) {
-        throw new TypeError('callback must be a function');
       }
 
       _.forEach(options.customValidators, function (validator, index) {
@@ -126,16 +113,6 @@ module.exports.create = function (options, callback) {
 
       return definition.createSwaggerApi(apiDefinition, options);
     });
-
-  // Use the callback if provided and it is a function
-  if (!_.isUndefined(callback) && _.isFunction(callback)) {
-    allTasks = allTasks
-      .then(function (swaggerApi) {
-        callback(undefined, swaggerApi);
-      }, function (err) {
-        callback(err);
-      });
-  }
 
   return allTasks;
 };

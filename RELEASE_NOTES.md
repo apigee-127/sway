@@ -11,6 +11,7 @@
     * API Changes
         * `Operation#getResponseExample` -> `Response#getExample`
         * `Operation#getResponseSample` -> `Response#getSample`
+* Removed callback support for `Sway#create` *(Issue 51)*
 
 ### v0.6.0 (2015-11-25)
 

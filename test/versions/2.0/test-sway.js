@@ -58,60 +58,26 @@ describe('sway (Swagger 2.0)', function () {
       };
     }
 
-    function validateCreateSwaggerApiCallback (options, done) {
-      return function (err, theApi) {
-        assert.ok(_.isUndefined(err));
-
-        validateCreateSwaggerApi(options)(theApi);
-
-        done();
+    it('should handle definition object', function (done) {
+      var options = {
+        definition: helpers.swaggerDoc
       };
-    }
 
-    describe('promises', function () {
-      it('should handle definition object', function (done) {
-        var options = {
-          definition: helpers.swaggerDoc
-        };
-
-        helpers.swaggerApi.create(options)
-          .then(validateCreateSwaggerApi(options))
-          .then(done, done);
-      });
-
-      it('should handle definition file location', function (done) {
-        var options = {
-          definition: helpers.swaggerDocPath
-        };
-
-        helpers.swaggerApi.create(options)
-          .then(validateCreateSwaggerApi(options))
-          .then(done, done);
-      });
-
-      // TODO: Add test for definition file URL (remote)
+      helpers.swaggerApi.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
     });
 
-    describe('callbacks', function () {
-      it('should handle definition object', function (done) {
-        var options = {
-          definition: helpers.swaggerDoc
-        };
+    it('should handle definition file location', function (done) {
+      var options = {
+        definition: helpers.swaggerDocPath
+      };
 
-        helpers.swaggerApi.create(options, validateCreateSwaggerApiCallback(options, done))
-          .catch(done);
-      });
-
-      it('should handle definition file location', function (done) {
-        var options = {
-          definition: helpers.swaggerDocPath
-        };
-
-        helpers.swaggerApi.create(options, validateCreateSwaggerApiCallback(options, done))
-          .catch(done);
-      });
-
-      // TODO: Add test for definition file URL (remote)
+      helpers.swaggerApi.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
     });
+
+    // TODO: Add test for definition file URL (remote)
   });
 });

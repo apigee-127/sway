@@ -15,7 +15,7 @@
 </dl>
 ## Functions
 <dl>
-<dt><a href="#create">create(options, [callback])</a> ⇒ <code>Promise</code></dt>
+<dt><a href="#create">create(options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Creates a SwaggerApi object from its Swagger definition(s).</p>
 </dd>
 </dl>
@@ -571,11 +571,11 @@ Performs validation of the Swagger API document(s).
 
                   Any other properties can be added to the error/warning objects as well but these must be there.  
 <a name="create"></a>
-## create(options, [callback]) ⇒ <code>Promise</code>
+## create(options) ⇒ <code>Promise</code>
 Creates a SwaggerApi object from its Swagger definition(s).
 
 **Kind**: global function  
-**Returns**: <code>Promise</code> - A promise is always returned even if you provide a callback but it is not required to be used  
+**Returns**: <code>Promise</code> - the promise  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -583,26 +583,14 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | options.definition | <code>object</code> &#124; <code>string</code> | The Swagger definition location or structure |
 | [options.jsonRefs] | <code>object</code> | The options to pass to json-refs |
 | [options.customValidators] | <code>[Array.&lt;validatorCallback&gt;](#validatorCallback)</code> | The custom validators |
-| [callback] | <code>function</code> | Node.js error-first callback |
 
 **Example**  
 ```js
-// Example using promises
 SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
   .then(function (api) {
     console.log('Documentation URL: ', api.documentation);
   }, function (err) {
     console.error(err.stack);
-  });
-```
-**Example**  
-```js
-// Example using callbacks
-SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'}, function (err, api) {
-  if (err) {
-    console.error(err.stack);
-  } else {
-    console.log('Documentation URL: ', api.documentation);
   });
 ```
 <a name="validatorCallback"></a>
