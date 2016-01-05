@@ -1,5 +1,4 @@
 ## Classes
-
 <dl>
 <dt><a href="#Operation">Operation</a></dt>
 <dd></dd>
@@ -14,23 +13,18 @@
 <dt><a href="#SwaggerApi">SwaggerApi</a></dt>
 <dd></dd>
 </dl>
-
 ## Functions
-
 <dl>
 <dt><a href="#create">create(options)</a> ⇒ <code>Promise</code></dt>
 <dd><p>Creates a SwaggerApi object from its Swagger definition(s).</p>
 </dd>
 </dl>
-
 ## Typedefs
-
 <dl>
 <dt><a href="#validatorCallback">validatorCallback</a> ⇒ <code>object</code></dt>
 <dd><p>Callback used for validation.</p>
 </dd>
 </dl>
-
 <a name="Operation"></a>
 ## Operation
 **Kind**: global class  
@@ -48,12 +42,12 @@
 
 
 * [Operation](#Operation)
-    * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_Operation_new)
-    * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
-    * [.getResponse([statusCode])](#Operation+getResponse) ⇒ <code>[Response](#Response)</code>
-    * [.getResponses()](#Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#Response)</code>
-    * [.validateRequest(req)](#Operation+validateRequest) ⇒ <code>object</code>
-    * [.validateResponse(statusCode, headers, body, [encoding])](#Operation+validateResponse) ⇒ <code>object</code>
+  * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_Operation_new)
+  * [.getParameters()](#Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
+  * [.getResponse([statusCode])](#Operation+getResponse) ⇒ <code>[Response](#Response)</code>
+  * [.getResponses()](#Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#Response)</code>
+  * [.validateRequest(req)](#Operation+validateRequest) ⇒ <code>object</code>
+  * [.validateResponse(statusCode, headers, body, [encoding])](#Operation+validateResponse) ⇒ <code>object</code>
 
 <a name="new_Operation_new"></a>
 ### new Operation(api, pathObject, method, ptr, definition, consumes, produces)
@@ -181,10 +175,10 @@ Validates the response.
 
 
 * [Parameter](#Parameter)
-    * [new Parameter(opOrPath, ptr, definition, schema)](#new_Parameter_new)
-    * [.getSample()](#Parameter+getSample) ⇒ <code>\*</code>
-    * [.getSchema()](#Parameter+getSchema) ⇒ <code>object</code>
-    * [.getValue(req)](#Parameter+getValue) ⇒ <code>[ParameterValue](#ParameterValue)</code>
+  * [new Parameter(opOrPath, ptr, definition, schema)](#new_Parameter_new)
+  * [.getSample()](#Parameter+getSample) ⇒ <code>\*</code>
+  * [.getSchema()](#Parameter+getSchema) ⇒ <code>object</code>
+  * [.getValue(req)](#Parameter+getValue) ⇒ <code>[ParameterValue](#ParameterValue)</code>
 
 <a name="new_Parameter_new"></a>
 ### new Parameter(opOrPath, ptr, definition, schema)
@@ -286,11 +280,11 @@ Object representing a parameter value.
 
 
 * [Path](#Path)
-    * [new Path(api, path, ptr, definition, regexp)](#new_Path_new)
-    * [.getOperation(method)](#Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-    * [.getOperations()](#Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-    * [.getOperationsByTag(tag)](#Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-    * [.getParameters()](#Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
+  * [new Path(api, path, ptr, definition, regexp)](#new_Path_new)
+  * [.getOperation(method)](#Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperations()](#Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperationsByTag(tag)](#Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getParameters()](#Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#Parameter)</code>
 
 <a name="new_Path_new"></a>
 ### new Path(api, path, ptr, definition, regexp)
@@ -359,10 +353,10 @@ Return the parameters for this path.
 
 
 * [Response](#Response)
-    * [new Response(operation, ptr, definition, statusCode)](#new_Response_new)
-    * [.getExample([mimeType])](#Response+getExample) ⇒ <code>string</code>
-    * [.getSample()](#Response+getSample) ⇒ <code>\*</code>
-    * [.validateResponse(headers, body, [encoding])](#Response+validateResponse) ⇒ <code>object</code>
+  * [new Response(operation, ptr, definition, statusCode)](#new_Response_new)
+  * [.getExample([mimeType])](#Response+getExample) ⇒ <code>string</code>
+  * [.getSample()](#Response+getSample) ⇒ <code>\*</code>
+  * [.validateResponse(headers, body, [encoding])](#Response+validateResponse) ⇒ <code>object</code>
 
 <a name="new_Response_new"></a>
 ### new Response(operation, ptr, definition, statusCode)
@@ -448,14 +442,14 @@ Validates the response.
 
 
 * [SwaggerApi](#SwaggerApi)
-    * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
-    * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
-    * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-    * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
-    * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
-    * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
-    * [.registerValidator(validator)](#SwaggerApi+registerValidator)
-    * [.validate()](#SwaggerApi+validate) ⇒ <code>object</code>
+  * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_SwaggerApi_new)
+  * [.getOperation(pathOrReq, [method])](#SwaggerApi+getOperation) ⇒ <code>[Operation](#Operation)</code>
+  * [.getOperations([path])](#SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getOperationsByTag([tag])](#SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#Operation)</code>
+  * [.getPath(pathOrReq)](#SwaggerApi+getPath) ⇒ <code>[Path](#Path)</code>
+  * [.getPaths()](#SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#Path)</code>
+  * [.registerValidator(validator)](#SwaggerApi+registerValidator)
+  * [.validate()](#SwaggerApi+validate) ⇒ <code>object</code>
 
 <a name="new_SwaggerApi_new"></a>
 ### new SwaggerApi(plugin, definition, resolved, references, options)

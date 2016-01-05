@@ -725,22 +725,42 @@ describe('Parameter (Swagger 2.0)', function () {
                   .then(done, done);
               });
 
-              it('multi', function (done) {
-                var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+              describe('multi', function () {
+                it('multiple values', function (done) {
+                  var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-                helpers.swaggerApi.create({
-                  definition: cSwagger
-                })
-                  .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
-                      query: {
-                        status: [
-                          'available', 'pending'
-                        ]
-                      }
-                    }).value, ['available', 'pending']);
+                  helpers.swaggerApi.create({
+                    definition: cSwagger
                   })
-                  .then(done, done);
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: [
+                            'available', 'pending'
+                          ]
+                        }
+                      }).value, ['available', 'pending']);
+                    })
+                    .then(done, done);
+                });
+
+                // This test is required to make sure that when the query string parser only sees one item that an
+                // array is still returned.
+                it('single value', function (done) {
+                  var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+                  helpers.swaggerApi.create({
+                    definition: cSwagger
+                  })
+                    .then(function (api) {
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                        query: {
+                          status: 'available'
+                        }
+                      }).value, ['available']);
+                    })
+                    .then(done, done);
+                });
               });
 
               it('pipes', function (done) {
