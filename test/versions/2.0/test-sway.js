@@ -55,6 +55,9 @@ describe('sway (Swagger 2.0)', function () {
         // Validate the operations (Simple tests for now, deeper testing is below)
         assert.ok(_.isArray(theApi.pathObjects));
         assert.ok(theApi.pathObjects.length > 0);
+        
+        // Validate the registration of customValidator on SwaggerApi
+        assert.deepEqual(theApi.customValidators, options.customValidators || [])
       };
     }
 
@@ -77,7 +80,25 @@ describe('sway (Swagger 2.0)', function () {
         .then(validateCreateSwaggerApi(options))
         .then(done, done);
     });
-
+    
+    it('should register customValidators', function (done) {
+      var options = {
+        definition: helpers.swaggerDoc,
+        customValidators: [
+          function validator1 () {
+            return {
+              errors: [],
+              warnings: []
+            };
+          }
+        ]
+      };
+      
+      helpers.swaggerApi.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
+    });
+    
     // TODO: Add test for definition file URL (remote)
   });
 });
