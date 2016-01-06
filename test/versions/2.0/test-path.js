@@ -48,7 +48,7 @@ describe('Path (Swagger 2.0)', function () {
 
     assert.deepEqual(pathObject.api, sway);
     assert.equal(pathObject.path, path);
-    assert.equal(pathObject.ptr, JsonRefs.pathToPointer(['paths', path]));
+    assert.equal(pathObject.ptr, JsonRefs.pathToPtr(['paths', path]));
     assert.deepEqual(pathObject.definition, sway.resolved.paths[path]);
 
     // Make sure they are of the proper type

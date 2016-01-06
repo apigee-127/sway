@@ -1405,7 +1405,8 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                   {
                     code: 'UNRESOLVABLE_REFERENCE',
                     message: 'Reference could not be resolved: #/definitions/Missing',
-                    path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']
+                    path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref'],
+                    reason: 'JSON Pointer points to missing location: #/definitions/Missing'
                   }
                 ]);
               })
@@ -1432,7 +1433,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
                 assert.equal(error.code, 'UNRESOLVABLE_REFERENCE');
                 assert.equal(error.message, 'Reference could not be resolved: fake.json');
                 assert.deepEqual(error.path, ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']);
-                assert.ok(_.has(error, 'err'));
+                assert.ok(_.has(error, 'reason'));
               })
               .then(done, done);
           });
