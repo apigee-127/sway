@@ -67,7 +67,7 @@ gulp.task('browserify', function () {
         });
 
         // Only include the 'en' faker.js locale
-        b.plugin(pathmodify(), {mods: [
+        b.plugin(pathmodify, {mods: [
           function (rec) {
             var alias;
 
