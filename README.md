@@ -36,14 +36,6 @@ The standalone binaries come in two flavors:
 * [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,400kb_, full source  and source maps
 * [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _636kb_, minified, compressed and no source map
 
-**Note:** I realize these browser binaries are not small.  For the most part, this is due to a library we are using for
-creating mock/sample parameters/responses.  [json-schema-faker](https://github.com/pateketrueke/json-schema-faker) uses
-[faker.js](https://github.com/Marak/faker.js) which ships with a number of locales, which we currently are not using.
-Attempts to package sway in a way to make it smaller led to a
-[json-schema-faker packaging issue](https://github.com/pateketrueke/json-schema-faker/issues/56) that is unresolved.  In
-the future, if we were to expose this local support we would need these locales in the binary anyways so at the end of
-the day I've marked this as unavoidable.
-
 ### Node.js
 
 Installation for Node.js applications can be done via [NPM][npm].

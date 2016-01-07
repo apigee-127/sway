@@ -39,14 +39,53 @@ var supportedVersions = {
 };
 
 /**
+ * A library for simpler [Swagger](http://swagger.io/) integrations.
+ *
+ * @module Sway
+ */
+
+/**
+ * Callback used for validation.
+ *
+ * @typedef {function} ValidatorCallback
+ *
+ * @param {SwaggerApi} api - The Swagger API object
+ *
+ * @returns {ValidationResults} The validation results.
+ */
+
+/**
+ * Validation error/warning object.
+ *
+ * @typedef {object} ValidationEntry
+ *
+ * @property {string} code - The code used to identify the error/warning
+ * @property {string} [error] - Whenever there is an upstream `Error` encountered, its message is here
+ * @property {ValidationEntry[]} [errors] - The nested error(s) encountered during validation
+ * @property {string[]} [lineage] - Contains the composition lineage for circular composition errors
+ * @property {string} message - The human readable description of the error/warning
+ * @property {string} [name] - The header name for header validation errors
+ * @property {string[]} path - The path to the location in the document where the error/warning occurred
+ */
+
+/**
+ * Validation results object.
+ *
+ * @typedef {object} ValidationResults
+ *
+ * @property {ValidationEntry[]} errors - The validation errors
+ * @property {ValidationEntry[]} warnings - The validation warnings
+ */
+
+/**
  * Creates a SwaggerApi object from its Swagger definition(s).
  *
  * @param {object} options - The options for loading the definition(s)
  * @param {object|string} options.definition - The Swagger definition location or structure
- * @param {object} [options.jsonRefs] - The options to pass to json-refs
- * @param {validatorCallback[]} [options.customValidators] - The custom validators
+ * @param {object} [options.jsonRefs] - *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
+ * @param {ValidatorCallback[]} [options.customValidators] - The custom validators
  *
- * @returns {Promise} the promise
+ * @returns {Promise} The promise
  *
  * @example
  * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
