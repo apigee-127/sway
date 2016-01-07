@@ -28,8 +28,8 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,048kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _592kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,0400kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _636kb_, minified, compressed and no source map
 
 **Note:** I realize these browser binaries are not small.  For the most part, this is due to a library we are using for
 creating mock/sample parameters/responses.  [json-schema-faker](https://github.com/pateketrueke/json-schema-faker) uses
