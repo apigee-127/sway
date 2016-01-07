@@ -41,7 +41,6 @@ var path = require('path');
 var pathmodify = require('pathmodify');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
-var testServer = require('./test/mock-server');
 
 var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
 
@@ -145,22 +144,7 @@ gulp.task('lint', function () {
 });
 
 gulp.task('test-node', function () {
-  var httpServer;
-
-  function cleanUp () {
-    try {
-      httpServer.close();
-    } catch (err2) {
-      if (err2.message.indexOf('Not running') === -1) {
-        console.error(err2.stack);
-      }
-    }
-  }
-
   return Promise.resolve()
-    .then(function () {
-      httpServer = testServer.createServer(require('http')).listen(44444);
-    })
     .then(function () {
       return new Promise(function (resolve, reject) {
         gulp.src([
@@ -176,12 +160,9 @@ gulp.task('test-node', function () {
             ])
               .pipe($.mocha({reporter: 'spec'}))
               .on('error', function (err) {
-                cleanUp();
-
                 reject(err);
               })
               .on('end', function () {
-                cleanUp();
                 displayCoverageReport(!runningAllTests);
 
                 resolve();
@@ -193,7 +174,6 @@ gulp.task('test-node', function () {
 
 gulp.task('test-browser', ['browserify'], function () {
   var basePath = './test/browser/';
-  var httpServer;
 
   function cleanUp () {
     // Clean up just in case
@@ -202,10 +182,6 @@ gulp.task('test-browser', ['browserify'], function () {
       basePath + 'sway-standalone.js',
       basePath + 'test-browser.js'
     ]);
-
-    if (httpServer) {
-      httpServer.close();
-    }
   }
 
   function finisher (err) {
@@ -241,9 +217,6 @@ gulp.task('test-browser', ['browserify'], function () {
             resolve();
           });
       });
-    })
-    .then(function () {
-      httpServer = testServer.createServer(require('http')).listen(44444);
     })
     .then(function () {
       return new Promise(function (resolve, reject) {

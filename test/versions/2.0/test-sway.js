@@ -29,6 +29,7 @@
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
+var tHelpers = require('../../helpers');
 
 // This should be broken out into a test framework that runs the same tests against the different version(s) of Swagger
 // we support but for now, only one version is supported so let's keep it simple.
@@ -55,7 +56,7 @@ describe('sway (Swagger 2.0)', function () {
         // Validate the operations (Simple tests for now, deeper testing is below)
         assert.ok(_.isArray(theApi.pathObjects));
         assert.ok(theApi.pathObjects.length > 0);
-        
+
         // Validate the registration of customValidator on SwaggerApi
         assert.deepEqual(theApi.customValidators, options.customValidators || [])
       };
@@ -73,14 +74,17 @@ describe('sway (Swagger 2.0)', function () {
 
     it('should handle definition file location', function (done) {
       var options = {
-        definition: helpers.swaggerDocPath
+        definition: helpers.swaggerDocPath,
+        jsonRefs: {
+          relativeBase: tHelpers.relativeBase
+        }
       };
 
       helpers.swaggerApi.create(options)
         .then(validateCreateSwaggerApi(options))
         .then(done, done);
     });
-    
+
     it('should register customValidators', function (done) {
       var options = {
         definition: helpers.swaggerDoc,
@@ -93,12 +97,12 @@ describe('sway (Swagger 2.0)', function () {
           }
         ]
       };
-      
+
       helpers.swaggerApi.create(options)
         .then(validateCreateSwaggerApi(options))
         .then(done, done);
     });
-    
+
     // TODO: Add test for definition file URL (remote)
   });
 });

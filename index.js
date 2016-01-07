@@ -25,6 +25,7 @@
 'use strict';
 
 var _ = require('lodash');
+var path = require('path');
 var pathLoader = require('path-loader');
 var YAML = require('js-yaml');
 
@@ -128,12 +129,19 @@ module.exports.create = function (options) {
   // Make a copy of the input options so as not to alter them
   options = _.cloneDeep(options);
 
-  // Retrieve the definition if it is a path/URL
+  // Retrieve the definition if it is a path/URL (The reason we do this here instead of using JsonRefs#resolveRefsAt is
+  // because we use this to identify which plugin we want to use.)
   allTasks = allTasks
     // Load the remote definition or return options.definition
     .then(function () {
       if (_.isString(options.definition)) {
-        return pathLoader.load(options.definition, options.jsonRefs || {}).then(YAML.safeLoad);
+        return pathLoader.load(options.jsonRefs && options.jsonRefs.relativeBase ?
+                                 path.join(options.jsonRefs.relativeBase, options.definition) :
+                                 options.definition,
+                               options.jsonRefs && options.jsonRefs.loaderOptions ?
+                                 options.jsonRefs.loaderOptions :
+                                 {})
+                         .then(YAML.safeLoad);
       } else {
         return options.definition;
       }

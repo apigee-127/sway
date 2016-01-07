@@ -25,12 +25,20 @@
 'use strict';
 
 var assert = require('assert');
+var path = require('path');
+
+var documentBase = path.join(__dirname, 'browser', 'documents');
+var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
 
 function fail (msg) {
   assert.fail(msg);
 }
 
+module.exports.documentBase = documentBase;
+
 module.exports.fail = fail;
+
+module.exports.relativeBase = relativeBase;
 
 module.exports.shouldHadFailed = function () {
   fail('The code above should had thrown an error');

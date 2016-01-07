@@ -20,7 +20,8 @@ module.exports = function (config) {
       {pattern: 'vendor/path-loader-min.js', watch: false, included: true},
       {pattern: 'vendor/json-refs-min.js', watch: false, included: true},
       {pattern: 'sway.js', watch: false, included: true},
-      {pattern: 'test-browser.js', watch: false, included: true}
+      {pattern: 'test-browser.js', watch: false, included: true},
+      {pattern: 'documents/**/*', watched: false, included: false, served: true}
     ],
     client: {
       mocha: {

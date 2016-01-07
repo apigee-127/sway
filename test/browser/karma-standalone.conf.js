@@ -12,7 +12,8 @@ module.exports = function (config) {
     frameworks: ['mocha'],
     files: [
       {pattern: 'sway-standalone.js', watch: false, included: true},
-      {pattern: 'test-browser.js', watch: false, included: true}
+      {pattern: 'test-browser.js', watch: false, included: true},
+      {pattern: 'documents/**/*', watched: false, included: false, served: true}
     ],
     client: {
       mocha: {

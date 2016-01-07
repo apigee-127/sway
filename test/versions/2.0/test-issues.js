@@ -66,7 +66,10 @@ describe('issues (Swagger 2.0)', function () {
 
   it('should support relative references (and to YAML files) (Issue 17)', function (done) {
     helpers.swaggerApi.create({
-      definition: 'http://localhost:44444/swagger-relative-refs.yaml'
+      definition: './2.0/swagger-relative-refs.yaml',
+      jsonRefs: {
+        relativeBase: tHelpers.relativeBase
+      }
     })
       .then(function () {
         assert.ok(_.isUndefined(sway.resolved.info.$ref));

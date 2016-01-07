@@ -31,10 +31,12 @@ var fs = require('fs');
 var path = require('path');
 var plugin = require('../../../lib/versions/2.0');
 var sHelpers = require('../../../lib/helpers'); // Helpers from Sway
+var tHelpers = require('../../helpers');
 var YAML = require('js-yaml');
 
 var swaggerApi = typeof window === 'undefined' ? require('../../..') : window.SwaggerApi;
-var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, '../../../samples/2.0/swagger.yaml'), 'utf8'));
+var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, '../../browser/documents/2.0/swagger.yaml'),
+                                               'utf8'));
 var swaggerDocValidator = sHelpers.createJSONValidator({
   formatValidators: require('../../../lib/versions/2.0/format-validators')
 });
@@ -57,7 +59,10 @@ function getSway (callback) {
     callback(sway);
   } else {
     swaggerApi.create({
-      definition: swaggerDoc
+      definition: swaggerDoc,
+      jsonRefs: {
+        relativeBase: tHelpers.relativeBase
+      }
     })
       .then(function (obj) {
         sway = obj;
@@ -75,6 +80,6 @@ module.exports = {
   plugin: plugin,
   swaggerApi: swaggerApi,
   swaggerDoc: swaggerDoc,
-  swaggerDocPath: 'http://localhost:44444/swagger.yaml',
+  swaggerDocPath: './2.0/swagger.yaml',
   swaggerDocValidator: swaggerDocValidator
 };
