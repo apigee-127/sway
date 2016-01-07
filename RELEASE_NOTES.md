@@ -2,20 +2,21 @@
 
 ### v1.0.0 (TBD)
 
+* Fixed a bug where loading `Sway#create` with a relative `options.definition` did not take
+`options.jsonRefs.relativeBase` into account for the initial load
 * Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue 48)*'
 * Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
     * API Additions
         * `Operation#getResponse`
         * `Operation#getResponses`
-        * `Response#validateResponse`
     * API Changes
         * `Operation#getResponseExample` -> `Response#getExample`
         * `Operation#getResponseSample` -> `Response#getSample`
 * Removed callback support for `Sway#create` *(Issue 51)*
+* Updated invalid/missing JSON References to be a structural validation errors like z-schema does
 
 ### v0.6.0 (2015-11-25)
 
-* Remove logic to do `String` -> `Object` coercion
 * Remove logic to do type coercion when the expected type is unknown *(We use to assume that a missing `type` was of
 `type` `object`.  This is wrong per JSON Schema which allows a missing `type` and handles it specially.)*
 

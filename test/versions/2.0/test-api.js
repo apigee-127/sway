@@ -1009,6 +1009,31 @@ describe('SwaggerApi (Swagger 2.0)', function () {
         });
       });
 
+      it('invalid JSON Reference', function (done) {
+        var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+        cSwagger.paths['/something'] = {
+          $ref: '/file[/].html'
+        };
+
+        helpers.swaggerApi.create({
+          definition: cSwagger
+        })
+          .then(function (api) {
+            var results = api.validate();
+
+            assert.deepEqual(results.warnings, []);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_REFERENCE',
+                message: 'URI is not strictly valid.',
+                path: ['paths', '/something', '$ref']
+              }
+            ]);
+          })
+          .then(done, done);
+      });
+
       it('path parameter in pattern is empty', function (done) {
         var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
