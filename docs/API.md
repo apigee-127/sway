@@ -11,7 +11,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
             * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>Array.&lt;Response&gt;</code>
             * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>ValidationResults</code>
-            * [.validateResponse(statusCode, headers, body, [encoding])](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
+            * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
         * [~Parameter](#module_Sway..Parameter)
             * [new Parameter(opOrPath, ptr, definition, schema)](#new_module_Sway..Parameter_new)
             * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
@@ -29,7 +29,8 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [new Response(operation, ptr, definition, statusCode)](#new_module_Sway..Response_new)
             * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
             * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
-            * [.validateResponse(headers, body, [encoding])](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
+            * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
+        * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
             * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_module_Sway..SwaggerApi_new)
             * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>Operation</code>
@@ -67,7 +68,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
     * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
     * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>Array.&lt;Response&gt;</code>
     * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>ValidationResults</code>
-    * [.validateResponse(statusCode, headers, body, [encoding])](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
+    * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..Operation_new"></a>
 #### new Operation(api, pathObject, method, ptr, definition, consumes, produces)
@@ -137,22 +138,15 @@ property.
 | req | <code>object</code> | The http client request *(or equivalent)* |
 
 <a name="module_Sway..Operation+validateResponse"></a>
-#### operation.validateResponse(statusCode, headers, body, [encoding]) ⇒ <code>ValidationResults</code>
+#### operation.validateResponse(res) ⇒ <code>ValidationResults</code>
 Validates the response.
-
-**Note:** We are not using an `http.ServerResponse` or equivalent because to do so would require an opinionated
-          interaction flow and we do not want to have to impose any restrictions.  We also do not validate the
-          `Content-Type` or body for void, 204 or 304 responses.
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>ValidationResults</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| statusCode | <code>number</code> | The response status code *(`undefined` will map to the `default` response)* |
-| headers | <code>object</code> | The response headers |
-| body | <code>\*</code> | The response body |
-| [encoding] | <code>string</code> | The encoding of the body when the body is a `Buffer` |
+| res | <code>ServerResponseWrapper</code> | The response or response like object |
 
 <a name="module_Sway..Parameter"></a>
 ### Sway~Parameter
@@ -350,7 +344,7 @@ Return the parameters for this path.
     * [new Response(operation, ptr, definition, statusCode)](#new_module_Sway..Response_new)
     * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
     * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
-    * [.validateResponse(headers, body, [encoding])](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
+    * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..Response_new"></a>
 #### new Response(operation, ptr, definition, statusCode)
@@ -387,21 +381,33 @@ Returns a sample value.
 **Kind**: instance method of <code>[Response](#module_Sway..Response)</code>  
 **Returns**: <code>\*</code> - The sample value for the response, which can be undefined if the response schema is not provided  
 <a name="module_Sway..Response+validateResponse"></a>
-#### response.validateResponse(headers, body, [encoding]) ⇒ <code>ValidationResults</code>
+#### response.validateResponse(res) ⇒ <code>ValidationResults</code>
 Validates the response.
-
-**Note:** We are not using an `http.ServerResponse` or equivalent because to do so would require an opinionated
-          interaction flow and we do not want to have to impose any restrictions.  We also do not validate the
-          `Content-Type` or body for void, 204 or 304 responses.
 
 **Kind**: instance method of <code>[Response](#module_Sway..Response)</code>  
 **Returns**: <code>ValidationResults</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| headers | <code>object</code> | The response headers |
-| body | <code>\*</code> | The response body |
-| [encoding] | <code>string</code> | The encoding of the body when the body is a `Buffer` |
+| res | <code>ServerResponseWrapper</code> | The response or response like object |
+
+<a name="module_Sway..ServerResponseWrapper"></a>
+### Sway~ServerResponseWrapper : <code>object</code>
+Server response wrapper.
+
+Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
+to gather the necessary parts of the response to perform validation, this object encapsulates the required response
+information to perform response validation.
+
+**Kind**: inner typedef of <code>[Sway](#module_Sway)</code>  
+**Properties**
+
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| body | <code>\*</code> |  | The response body |
+| encoding | <code>string</code> |  | The encoding of the body when the body is a `Buffer` |
+| headers | <code>object</code> |  | The response headers |
+| statusCode | <code>number</code> &#124; <code>string</code> | <code>default</code> | The response status code |
 
 <a name="module_Sway..SwaggerApi"></a>
 ### Sway~SwaggerApi

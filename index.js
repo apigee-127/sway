@@ -56,6 +56,21 @@ var supportedVersions = {
  */
 
 /**
+ * Server response wrapper.
+ *
+ * Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
+ * to gather the necessary parts of the response to perform validation, this object encapsulates the required response
+ * information to perform response validation.
+ *
+ * @typedef {object} ServerResponseWrapper
+ *
+ * @property {*} body - The response body
+ * @property {string} [encoding] - The encoding of the body when the body is a `Buffer`
+ * @property {object} headers - The response headers
+ * @property {number|string} [statusCode=default] - The response status code
+ */
+
+/**
  * Validation error/warning object.
  *
  * @typedef {object} ValidationEntry

@@ -258,30 +258,30 @@ describe('Operation (Swagger 2.0)', function () {
         delete cSwaggerDoc.paths['/pet'].post.consumes;
 
         helpers.swaggerApi.create({
-                                    definition: cSwaggerDoc
-                                  })
-               .then(function (api) {
-                 var operation = api.getOperation('/pet', 'post');
-                 var request = _.cloneDeep(baseRequest);
-                 var results;
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var operation = api.getOperation('/pet', 'post');
+            var request = _.cloneDeep(baseRequest);
+            var results;
 
-                 request.headers = {
-                   'content-type': 'application/x-yaml'
-                 };
+            request.headers = {
+              'content-type': 'application/x-yaml'
+            };
 
-                 results = operation.validateRequest(request);
+            results = operation.validateRequest(request);
 
-                 assert.equal(results.warnings.length, 0);
-                 assert.deepEqual(results.errors, [
-                   {
-                     code: 'INVALID_CONTENT_TYPE',
-                     message: 'Invalid Content-Type (application/x-yaml).  ' +
-                              'These are supported: application/json, application/xml',
-                     path: []
-                   }
-                 ]);
-               })
-               .then(done, done);
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                  'These are supported: application/json, application/xml',
+                path: []
+              }
+            ]);
+          })
+          .then(done, done);
       });
 
       it('should handle mime-type parameters (exact match)', function (done) {
@@ -291,22 +291,22 @@ describe('Operation (Swagger 2.0)', function () {
         cSwaggerDoc.paths['/pet'].post.consumes.push(mimeType);
 
         helpers.swaggerApi.create({
-                                    definition: cSwaggerDoc
-                                  })
-               .then(function (api) {
-                 var request = _.cloneDeep(baseRequest);
-                 var results;
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            var request = _.cloneDeep(baseRequest);
+            var results;
 
-                 request.headers = {
-                   'content-type': mimeType
-                 };
+            request.headers = {
+              'content-type': mimeType
+            };
 
-                 results = api.getOperation('/pet', 'post').validateRequest(request);
+            results = api.getOperation('/pet', 'post').validateRequest(request);
 
-                 assert.equal(results.warnings.length, 0);
-                 assert.equal(results.errors.length, 0);
-               })
-               .then(done, done);
+            assert.equal(results.warnings.length, 0);
+            assert.equal(results.errors.length, 0);
+          })
+          .then(done, done);
       });
     });
 
@@ -317,13 +317,13 @@ describe('Operation (Swagger 2.0)', function () {
       it('should return an error for invalid non-primitive parameters', function () {
         var operation = sway.getOperation('/pet', 'post');
         var results = operation.validateRequest({
-                                                  url: '/v2/pet',
-                                                  headers: {
-                                                    'content-type': 'application/json'
-                                                  },
-                                                  body: {},
-                                                  files: {}
-                                                });
+          url: '/v2/pet',
+          headers: {
+            'content-type': 'application/json'
+          },
+          body: {},
+          files: {}
+        });
 
         assert.equal(results.warnings.length, 0);
         assert.deepEqual(results.errors, [
@@ -352,13 +352,13 @@ describe('Operation (Swagger 2.0)', function () {
       it('should return an error for invalid primitive parameters', function () {
         var operation = sway.getOperation('/pet/{petId}/uploadImage', 'post');
         var results = operation.validateRequest({
-                                                  url: '/v2/pet/notANumber/uploadImage',
-                                                  headers: {
-                                                    'content-type': 'multipart/form-data'
-                                                  },
-                                                  body: {},
-                                                  files: {}
-                                                });
+          url: '/v2/pet/notANumber/uploadImage',
+          headers: {
+            'content-type': 'multipart/form-data'
+          },
+          body: {},
+          files: {}
+        });
 
         assert.equal(results.warnings.length, 0);
         assert.deepEqual(results.errors, [
@@ -382,15 +382,15 @@ describe('Operation (Swagger 2.0)', function () {
       it('should not return an error for valid parameters', function () {
         var operation = sway.getOperation('/pet/{petId}', 'post');
         var results = operation.validateRequest({
-                                                  url: '/v2/pet/1',
-                                                  headers: {
-                                                    'content-type': 'application/x-www-form-urlencoded'
-                                                  },
-                                                  body: {
-                                                    name: 'New Pet',
-                                                    status: 'available'
-                                                  }
-                                                });
+          url: '/v2/pet/1',
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          body: {
+            name: 'New Pet',
+            status: 'available'
+          }
+        });
 
         assert.equal(results.errors.length, 0);
         assert.equal(results.warnings.length, 0);
@@ -416,7 +416,9 @@ describe('Operation (Swagger 2.0)', function () {
       });
 
       it('provided value', function () {
-        var results = sway.getOperation('/pet/{petId}', 'post').validateResponse(201);
+        var results = sway.getOperation('/pet/{petId}', 'post').validateResponse({
+          statusCode: 201
+        });
 
         assert.deepEqual(results.warnings, []);
         assert.deepEqual(results.errors, [
@@ -430,7 +432,9 @@ describe('Operation (Swagger 2.0)', function () {
     });
 
     it('should return the \'default\' response when validating an undefined response', function () {
-      var results = sway.getOperation('/user', 'post').validateResponse(201);
+      var results = sway.getOperation('/user', 'post').validateResponse({
+        statusCode: 201
+      });
 
       assert.deepEqual(results.errors, []);
       assert.deepEqual(results.warnings, []);

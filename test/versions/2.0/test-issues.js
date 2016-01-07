@@ -203,9 +203,14 @@ describe('issues (Swagger 2.0)', function () {
       .then(function (api) {
         var results;
 
-        results = api.getOperation('/user/login', 'get').validateResponse(200, {
-          'content-type': 'application/json'
-        }, 'If-Match header required', 'utf-8');
+        results = api.getOperation('/user/login', 'get').validateResponse({
+          body: 'If-Match header required',
+          encoding: 'utf-8',
+          headers: {
+            'content-type': 'application/json'
+          },
+          statusCode: 200
+        });
 
         // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
         assert.deepEqual(results, {
@@ -256,9 +261,14 @@ describe('issues (Swagger 2.0)', function () {
           value = rawValue;
         }
 
-        results = api.getOperation('/user/login', 'get').validateResponse(200, {
-          'content-type': 'application/json'
-        }, value, 'utf-8');
+        results = api.getOperation('/user/login', 'get').validateResponse({
+          body: value,
+          encoding: 'utf-8',
+          headers: {
+            'content-type': 'application/json'
+          },
+          statusCode: 200
+        });
 
         // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
         assert.deepEqual(results, {
