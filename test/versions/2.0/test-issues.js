@@ -291,4 +291,49 @@ describe('issues (Swagger 2.0)', function () {
       })
       .then(done, done);
   });
+
+  it('should handle hierchical query parameters (Issue 39)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      name: 'page[limit]',
+        in: 'query',
+      description: 'The maximum number of records to return',
+      type: 'integer'
+    });
+    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      name: 'page[nested][offset]',
+        in: 'query',
+      description: 'The page',
+      type: 'integer'
+    });
+
+    helpers.swaggerApi.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        var req = {
+          query: {
+            page: {
+              limit: '100',
+              nested: {
+                offset: '1'
+              }
+            }
+          }
+        };
+        var paramCount = cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.length;
+        var pageLimitParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[paramCount - 2];
+        var pageLimitParamValue = pageLimitParam.getValue(req);
+        var pageOffsetParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[paramCount - 1];
+        var pageOffsetParamValue = pageOffsetParam.getValue(req);
+
+        assert.equal(pageLimitParamValue.raw, req.query.page.limit)
+        assert.equal(pageLimitParamValue.value, 100);
+
+        assert.equal(pageOffsetParamValue.raw, req.query.page.nested.offset);
+        assert.equal(pageOffsetParamValue.value, 1);
+      })
+      .then(done, done);    
+  });
 });

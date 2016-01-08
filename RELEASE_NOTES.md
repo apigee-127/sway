@@ -2,9 +2,10 @@
 
 ### v1.0.0 (TBD)
 
+* Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
 * Fixed a bug where loading `Sway#create` with a relative `options.definition` did not take
 `options.jsonRefs.relativeBase` into account for the initial load
-* Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue 48)*'
+* Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue #48)*'
 * Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
     * API Additions
         * `Operation#getResponse`
