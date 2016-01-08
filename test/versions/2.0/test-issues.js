@@ -120,7 +120,7 @@ describe('issues (Swagger 2.0)', function () {
     mockReq.url = '/pet/1';
 
     try {
-      sway.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue(mockReq);
+      sway.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue(mockReq);
     } catch (err) {
       tHelpers.shouldNotHadFailed();
     }
@@ -131,7 +131,7 @@ describe('issues (Swagger 2.0)', function () {
       originalname: 'swagger.yaml',
       mimetype: 'application/x-yaml'
     };
-    var paramValue = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameters()[2].getValue({
+    var paramValue = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
       url: '/pet/1/uploadImage',
       files: {
         file: mockFile
@@ -322,10 +322,9 @@ describe('issues (Swagger 2.0)', function () {
             }
           }
         };
-        var paramCount = cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.length;
-        var pageLimitParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[paramCount - 2];
+        var pageLimitParam = api.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
         var pageLimitParamValue = pageLimitParam.getValue(req);
-        var pageOffsetParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[paramCount - 1];
+        var pageOffsetParam = api.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
         var pageOffsetParamValue = pageOffsetParam.getValue(req);
 
         assert.equal(pageLimitParamValue.raw, req.query.page.limit)

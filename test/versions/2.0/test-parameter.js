@@ -66,7 +66,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
   describe('#getSchema', function () {
     it('should handle parameter with explicit schema definition (body parameter)', function () {
-      var schema = sway.getOperation('/pet', 'post').getParameters()[0].getSchema();
+      var schema = sway.getOperation('/pet', 'post').getParameter('body').getSchema();
 
       // Make sure the generated JSON Schema is identical to its referenced schema
       assert.deepEqual(schema, sway.resolved.definitions.Pet);
@@ -104,7 +104,7 @@ describe('Parameter (Swagger 2.0)', function () {
     });
 
     it('should handle parameter with schema-like definition (non-body parameter)', function () {
-      var schema = sway.getOperation('/pet/findByTags', 'get').getParameters()[0].getSchema();
+      var schema = sway.getOperation('/pet/findByTags', 'get').getParameter('tags').getSchema();
 
       // Make sure the generated JSON Schema is as expected
       assert.deepEqual(schema, {
@@ -147,7 +147,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
   describe('#getSample', function () {
     it('should handle parameter with explicit schema definition (body parameter)', function () {
-      var parameter = sway.getOperation('/pet', 'post').getParameters()[0];
+      var parameter = sway.getOperation('/pet', 'post').getParameter('body');
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
@@ -159,7 +159,7 @@ describe('Parameter (Swagger 2.0)', function () {
     });
 
     it('should handle parameter with schema-like definition (non-body parameter)', function () {
-      var parameter = sway.getOperation('/pet/findByTags', 'get').getParameters()[0];
+      var parameter = sway.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
@@ -177,7 +177,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet', 'post').getParameters()[0];
+          parameter = sway.getOperation('/pet', 'post').getParameter('body');
         });
 
         it('missing value', function () {
@@ -199,7 +199,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameters()[2];
+          parameter = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
         });
 
         it('missing req.files', function () {
@@ -231,7 +231,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'post').getParameters()[1];
+          parameter = sway.getOperation('/pet/{petId}', 'post').getParameter('name');
         });
 
         it('missing req.body', function () {
@@ -264,7 +264,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'delete').getParameters()[1];
+          parameter = sway.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
         });
 
         it('missing req.headers', function () {
@@ -310,7 +310,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'post').getParameters()[0];
+          parameter = sway.getOperation('/pet/{petId}', 'post').getParameter('petId');
         });
 
         it('missing req.url', function () {
@@ -399,7 +399,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/findByStatus', 'get').getParameters()[0];
+          parameter = sway.getOperation('/pet/findByStatus', 'get').getParameter('status');
         });
 
         it('missing req.query', function () {
@@ -439,7 +439,7 @@ describe('Parameter (Swagger 2.0)', function () {
         })
           .then(function (api) {
             try {
-              api.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue({});
+              api.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({});
 
               tHelpers.shouldHadFailed();
             } catch (err) {
@@ -451,7 +451,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
       it('missing request', function () {
         try {
-          sway.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue();
+          sway.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
 
           tHelpers.shouldHadFailed();
         } catch (err) {
@@ -465,7 +465,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'get').getParameters()[0];
+          parameter = sway.getOperation('/pet/{petId}', 'get').getParameter('petId');
         });
 
         it('never processed', function () {
@@ -505,7 +505,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {}
                 }).value, ['available', undefined]);
               })
@@ -519,7 +519,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {}
                 }).value, ['available']);
               })
@@ -533,7 +533,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.equal(api.getOperation('/pet/{petId}', 'delete').getParameters()[1].getValue({
+                assert.equal(api.getOperation('/pet/{petId}', 'delete').getParameter('api_key').getValue({
                   headers: {}
                 }).value, '');
               })
@@ -556,7 +556,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {}
                 }).value));
               })
@@ -572,7 +572,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {}
                 }).value));
               })
@@ -586,7 +586,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                assert.ok(_.isUndefined(api.getOperation('/pet/{petId}', 'get').getParameters()[0].getValue({
+                assert.ok(_.isUndefined(api.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({
                   url: '/v2/pet'
                 }).value));
               })
@@ -608,7 +608,7 @@ describe('Parameter (Swagger 2.0)', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              var optionalValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+              var optionalValue = api.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
                 query: {}
               });
 
@@ -643,7 +643,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 definition: cSwagger
               })
                 .then(function (api) {
-                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {
                       status: [
                         'one', 'two'
@@ -655,7 +655,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('items object', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: [
                     'available', 'pending'
@@ -665,7 +665,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('non-array JSON string request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: '["pending"]'
                 }
@@ -673,7 +673,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('non-array string request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: 'pending'
                 }
@@ -681,7 +681,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('array request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: ['available', 'pending']
                 }
@@ -698,7 +698,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: 'available,pending'
                       }
@@ -716,7 +716,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: 'available,pending'
                       }
@@ -733,7 +733,7 @@ describe('Parameter (Swagger 2.0)', function () {
                     definition: cSwagger
                   })
                     .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: [
                             'available', 'pending'
@@ -753,7 +753,7 @@ describe('Parameter (Swagger 2.0)', function () {
                     definition: cSwagger
                   })
                     .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available'
                         }
@@ -772,7 +772,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: 'available|pending'
                       }
@@ -790,7 +790,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: 'available pending'
                       }
@@ -808,7 +808,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: 'available\tpending'
                       }
@@ -827,7 +827,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 })
                   .then(function (api) {
                     var paramValue = api.getOperation('/pet/findByStatus', 'get')
-                          .getParameters()[0]
+                          .getParameter('status')
                           .getValue({
                             query: {
                               status: '1invalid2invalid3'
@@ -867,7 +867,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 definition: cSwagger
               })
                 .then(function (api) {
-                  cParam = api.getOperation('/pet/available', 'get').getParameters()[0];
+                  cParam = api.getOperation('/pet/available', 'get').getParameter('status');
                 })
                 .then(done, done);
             });
@@ -931,7 +931,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 definition: cSwagger
               })
                 .then(function (api) {
-                  cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameters()[1];
+                  cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                 })
                 .then(done, done);
             });
@@ -976,7 +976,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 .then(function (api) {
                   var paramValue = api
                         .getOperation('/pet/{petId}/friends', 'get')
-                        .getParameters()[1]
+                        .getParameter('limit')
                         .getValue({
                           query: {
                             limit: '2something'
@@ -997,7 +997,7 @@ describe('Parameter (Swagger 2.0)', function () {
             var cParam;
 
             before(function () {
-              cParam = sway.getOperation('/pet', 'post').getParameters()[0];
+              cParam = sway.getOperation('/pet', 'post').getParameter('body');
             });
 
             it('object request value', function () {
@@ -1088,7 +1088,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 definition: cSwagger
               })
                 .then(function (api) {
-                  cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameters()[1];
+                  cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                 })
                 .then(done, done);
             });
@@ -1132,7 +1132,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 .then(function (api) {
                   var paramValue = api
                         .getOperation('/pet/{petId}/friends', 'get')
-                        .getParameters()[1]
+                        .getParameter('limit')
                         .getValue({
                           query: {
                             limit: '2something'
@@ -1150,7 +1150,7 @@ describe('Parameter (Swagger 2.0)', function () {
             var cParam;
 
             before(function () {
-              cParam = sway.getOperation('/pet/{petId}', 'post').getParameters()[1];
+              cParam = sway.getOperation('/pet/{petId}', 'post').getParameter('name');
             });
 
             it('string request value', function () {
@@ -1191,7 +1191,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    cParam = api.getOperation('/pet/{petId}', 'get').getParameters()[1];
+                    cParam = api.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                   })
                   .then(done, done);
               });
@@ -1249,7 +1249,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   definition: cSwagger
                 })
                   .then(function (api) {
-                    cParam = api.getOperation('/pet/{petId}', 'get').getParameters()[1];
+                    cParam = api.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                   })
                   .then(done, done);
               });
@@ -1300,7 +1300,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet', 'post').getParameters()[0].getValue({
+                var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue({
                   body: {}
                 });
 
@@ -1321,7 +1321,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwagger
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet', 'post').getParameters()[0].getValue({
+                var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue({
                   body: {}
                 });
 
@@ -1336,7 +1336,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
     describe('validation', function () {
       it('missing required value (with default)', function () {
-        var paramValue = sway.getOperation('/pet/findByStatus', 'get').getParameters()[0].getValue({
+        var paramValue = sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
           query: {}
         });
 
@@ -1346,7 +1346,7 @@ describe('Parameter (Swagger 2.0)', function () {
       });
 
       it('missing required value (without default)', function () {
-        var paramValue = sway.getOperation('/pet/findByTags', 'get').getParameters()[0].getValue({
+        var paramValue = sway.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
           query: {}
         });
         var error = paramValue.error;
@@ -1374,7 +1374,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwaggerDoc
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                   query: {
                     limit: ''
                   }
@@ -1403,7 +1403,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwaggerDoc
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                   query: {
                     limit: ''
                   }
@@ -1432,7 +1432,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwaggerDoc
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                   query: {
                     limit: ''
                   }
@@ -1461,7 +1461,7 @@ describe('Parameter (Swagger 2.0)', function () {
               definition: cSwaggerDoc
             })
               .then(function (api) {
-                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                   query: {
                     limit: ''
                   }
@@ -1481,7 +1481,7 @@ describe('Parameter (Swagger 2.0)', function () {
           name: 'Sparky',
           photoUrls: []
         };
-        var paramValue = sway.getOperation('/pet', 'post').getParameters()[0].getValue({
+        var paramValue = sway.getOperation('/pet', 'post').getParameter('body').getValue({
           body: pet
         });
 
@@ -1491,7 +1491,7 @@ describe('Parameter (Swagger 2.0)', function () {
       });
 
       it('provided value fails JSON Schema validation', function () {
-        var paramValue = sway.getOperation('/pet', 'post').getParameters()[0].getValue({
+        var paramValue = sway.getOperation('/pet', 'post').getParameter('body').getValue({
           body: {}
         });
         var error = paramValue.error;

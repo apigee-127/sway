@@ -174,6 +174,35 @@ describe('Operation (Swagger 2.0)', function () {
            .then(done, done);
   });
 
+  describe('#getParameter', function () {
+    it('should return the proper response', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.paths['/pet/{petId}'].get.parameters = [
+        {
+          description: 'This is a duplicate name but different location',
+          name: 'petId',
+          in: 'query',
+          type: 'string'
+        }
+      ];
+
+      helpers.swaggerApi.create({definition: cSwagger})
+        .then(function (api) {
+          var operation = api.getOperation('/pet/{petId}', 'get');
+
+          assert.ok(_.isUndefined(operation.getParameter()));
+          assert.ok(_.isUndefined(operation.getParameter('missing')));
+          assert.ok(_.isUndefined(operation.getParameter('petId', 'header')));
+          assert.deepEqual(operation.getParameter('petId').definition,
+                           cSwagger.paths['/pet/{petId}'].parameters[0]);
+          assert.deepEqual(operation.getParameter('petId', 'query').definition,
+                           cSwagger.paths['/pet/{petId}'].get.parameters[0]);
+        })
+        .then(done, done);
+    });
+  });
+
   // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
   describe('#getParameters', function () {
     it('should return the proper parameter objects', function () {

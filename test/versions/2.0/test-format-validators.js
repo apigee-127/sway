@@ -74,8 +74,8 @@ describe('format validators (Swagger 2.0)', function () {
   });
 
   describe('int32', function () {
-    var badParam;
-    var goodParam;
+    var badParamValue;
+    var goodParamValue;
 
     before(function (done) {
       var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
@@ -90,12 +90,12 @@ describe('format validators (Swagger 2.0)', function () {
       // Test the format validator using parameter validation
       helpers.swaggerApi.create({definition: cSwaggerDoc})
         .then(function (api) {
-          badParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+            badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
               int32: 1.1
             }
           });
-          goodParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+          goodParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
               int32: 1
             }
@@ -105,11 +105,11 @@ describe('format validators (Swagger 2.0)', function () {
     });
 
     it('bad value', function () {
-      var error = badParam.error;
+      var error = badParamValue.error;
 
-      assert.ok(!badParam.valid);
-      assert.ok(!_.isUndefined(badParam.value));
-      assert.equal(badParam.raw, 1.1);
+      assert.ok(!badParamValue.valid);
+      assert.ok(!_.isUndefined(badParamValue.value));
+      assert.equal(badParamValue.raw, 1.1);
       assert.equal(error.message, 'Value failed JSON Schema validation');
       assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
       assert.ok(error.failedValidation);
@@ -123,13 +123,13 @@ describe('format validators (Swagger 2.0)', function () {
     });
 
     it('good value', function () {
-      assert.ok(goodParam.valid);
+      assert.ok(goodParamValue.valid);
     });
   });
 
   describe('int64', function () {
-    var badParam;
-    var goodParam;
+    var badParamValue;
+    var goodParamValue;
 
     before(function (done) {
       var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
@@ -144,12 +144,12 @@ describe('format validators (Swagger 2.0)', function () {
       // Test the format validator using parameter validation
       helpers.swaggerApi.create({definition: cSwaggerDoc})
         .then(function (api) {
-          badParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+          badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
               int64: 1.1
             }
           });
-          goodParam = api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getValue({
+          goodParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
               int64: 1
             }
@@ -159,11 +159,11 @@ describe('format validators (Swagger 2.0)', function () {
     });
 
     it('bad value', function () {
-      var error = badParam.error;
+      var error = badParamValue.error;
 
-      assert.ok(!badParam.valid);
-      assert.ok(!_.isUndefined(badParam.value));
-      assert.equal(badParam.raw, 1.1);
+      assert.ok(!badParamValue.valid);
+      assert.ok(!_.isUndefined(badParamValue.value));
+      assert.equal(badParamValue.raw, 1.1);
       assert.equal(error.message, 'Value failed JSON Schema validation');
       assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
       assert.ok(error.failedValidation);
@@ -177,7 +177,7 @@ describe('format validators (Swagger 2.0)', function () {
     });
 
     it('good value', function () {
-      assert.ok(goodParam.valid);
+      assert.ok(goodParamValue.valid);
     });
   });
 });

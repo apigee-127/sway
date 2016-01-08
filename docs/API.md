@@ -7,6 +7,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
     * _inner_
         * [~Operation](#module_Sway..Operation)
             * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_module_Sway..Operation_new)
+            * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>Parameter</code>
             * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
             * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
             * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>Array.&lt;Response&gt;</code>
@@ -64,6 +65,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 * [~Operation](#module_Sway..Operation)
     * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_module_Sway..Operation_new)
+    * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>Parameter</code>
     * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
     * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
     * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>Array.&lt;Response&gt;</code>
@@ -89,6 +91,18 @@ The Swagger Operation object.
 | definition | <code>object</code> | The operation definition |
 | consumes | <code>Array.&lt;string&gt;</code> | The mime types this operation consumes |
 | produces | <code>Array.&lt;string&gt;</code> | The mime types this operation produces |
+
+<a name="module_Sway..Operation+getParameter"></a>
+#### operation.getParameter(name, [location]) ⇒ <code>Parameter</code>
+Returns the parameter with the provided name and location when provided.
+
+**Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
+**Returns**: <code>Parameter</code> - The parameter matching the location and name combination or `undefined` if there is no match.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the parameter |
+| [location] | <code>string</code> | The location *(`in`)* of the parameter *(Used for disambiguation)* |
 
 <a name="module_Sway..Operation+getParameters"></a>
 #### operation.getParameters() ⇒ <code>Array.&lt;Parameter&gt;</code>

@@ -45,7 +45,7 @@ describe('format generators (Swagger 2.0)', function () {
       definition: cSwaggerDoc
     })
       .then(function (api) {
-        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getSample()));
+        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
       })
       .then(done, done);
   });
@@ -64,7 +64,7 @@ describe('format generators (Swagger 2.0)', function () {
       definition: cSwaggerDoc
     })
       .then(function (api) {
-        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameters()[1].getSample()));
+        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
       })
       .then(done, done);
   });

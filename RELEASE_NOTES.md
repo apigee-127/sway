@@ -2,6 +2,7 @@
 
 ### v1.0.0 (TBD)
 
+* Added `Operation#getParameter(name, [location])` *(Issue #56)*
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
 * Fixed a bug where loading `Sway#create` with a relative `options.definition` did not take
 `options.jsonRefs.relativeBase` into account for the initial load
