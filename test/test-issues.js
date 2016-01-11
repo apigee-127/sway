@@ -28,15 +28,15 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var helpers = require('./helpers'); // Helpers for this suite of tests
-var tHelpers = require('../../helpers'); // Helpers for tests
+var helpers = require('./helpers');
+var Sway = helpers.getSway();
 
-describe('issues (Swagger 2.0)', function () {
-  var sway;
+describe('issues', function () {
+  var swaggerApi;
 
   before(function (done) {
-    helpers.getSway(function (api) {
-      sway = api;
+    helpers.getSwaggerApi(function (api) {
+      swaggerApi = api;
 
       done();
     });
@@ -47,16 +47,16 @@ describe('issues (Swagger 2.0)', function () {
 
     cSwagger.paths['/pet/{petId}'].get = null;
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwagger
     })
       .then(function () {
-        tHelpers.shouldHadFailed();
+        helpers.shouldHadFailed();
       })
       .catch(function (err) {
         var errorMessages = [
-          'Cannot read property \'parameters\' of null', // Node.js
-          '\'null\' is not an object (evaluating \'operation.parameters\')' // PhantomJS (browser)
+          'Cannot read property \'consumes\' of null', // Node.js
+          '\'null\' is not an object (evaluating \'definition.consumes\')' // PhantomJS (browser)
         ];
 
         assert.ok(errorMessages.indexOf(err.message) > -1);
@@ -65,21 +65,18 @@ describe('issues (Swagger 2.0)', function () {
   });
 
   it('should support relative references (and to YAML files) (Issue 17)', function (done) {
-    helpers.swaggerApi.create({
-      definition: './2.0/swagger-relative-refs.yaml',
-      jsonRefs: {
-        relativeBase: tHelpers.relativeBase
-      }
+    Sway.create({
+      definition: helpers.swaggerDocRelativeRefsPath
     })
       .then(function () {
-        assert.ok(_.isUndefined(sway.resolved.info.$ref));
-        assert.ok(Object.keys(sway.resolved.definitions).length > 1);
-        assert.ok(Object.keys(sway.resolved.paths).length > 1);
-        assert.equal(sway.resolved.info.title, 'Swagger Petstore');
-        assert.ok(_.isPlainObject(sway.resolved.definitions.Pet));
-        assert.ok(_.isPlainObject(sway.resolved.paths['/pet/{petId}'].get));
+        assert.ok(_.isUndefined(swaggerApi.definitionAllResolved.info.$ref));
+        assert.ok(Object.keys(swaggerApi.definitionAllResolved.definitions).length > 1);
+        assert.ok(Object.keys(swaggerApi.definitionAllResolved.paths).length > 1);
+        assert.equal(swaggerApi.definitionAllResolved.info.title, 'Swagger Petstore');
+        assert.ok(_.isPlainObject(swaggerApi.definitionAllResolved.definitions.Pet));
+        assert.ok(_.isPlainObject(swaggerApi.definitionAllResolved.paths['/pet/{petId}'].get));
 
-        _.each(sway.references, function (entry) {
+        _.each(swaggerApi.references, function (entry) {
           assert.ok(typeof entry.missing === 'undefined');
         });
       })
@@ -91,7 +88,7 @@ describe('issues (Swagger 2.0)', function () {
 
     cSwaggerDoc.definitions.Pet.properties.name.format = 'unknown';
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -105,7 +102,7 @@ describe('issues (Swagger 2.0)', function () {
 
     cSwaggerDoc.definitions.Pet.properties.default = {type: 'string'};
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -120,9 +117,9 @@ describe('issues (Swagger 2.0)', function () {
     mockReq.url = '/pet/1';
 
     try {
-      sway.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue(mockReq);
+      swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue(mockReq);
     } catch (err) {
-      tHelpers.shouldNotHadFailed();
+      helpers.shouldNotHadFailed();
     }
   });
 
@@ -131,7 +128,7 @@ describe('issues (Swagger 2.0)', function () {
       originalname: 'swagger.yaml',
       mimetype: 'application/x-yaml'
     };
-    var paramValue = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
+    var paramValue = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
       url: '/pet/1/uploadImage',
       files: {
         file: mockFile
@@ -176,7 +173,7 @@ describe('issues (Swagger 2.0)', function () {
       ]
     };
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -197,7 +194,7 @@ describe('issues (Swagger 2.0)', function () {
       type: 'object'
     };
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -246,7 +243,7 @@ describe('issues (Swagger 2.0)', function () {
       type: 'object'
     };
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -308,7 +305,7 @@ describe('issues (Swagger 2.0)', function () {
       type: 'integer'
     });
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {

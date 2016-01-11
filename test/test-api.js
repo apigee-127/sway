@@ -28,32 +28,43 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var helpers = require('./helpers'); // Helpers for this suite of tests
-var tHelpers = require('../../helpers'); // Helpers for tests
+var helpers = require('./helpers');
+var sHelpers = require('../lib/helpers');
+var Sway = helpers.getSway();
 
-describe('SwaggerApi (Swagger 2.0)', function () {
-  var sway;
+function getOperationCount (pathDef) {
+  var count = 0;
+
+  _.each(pathDef, function (operation, method) {
+    if (sHelpers.supportedHttpMethods.indexOf(method) > -1) {
+      count += 1;
+    }
+  });
+
+  return count;
+}
+
+describe('SwaggerApi', function () {
+  var swaggerApi;
 
   before(function (done) {
-    helpers.getSway(function (api) {
-      sway = api;
+    helpers.getSwaggerApi(function (api) {
+      swaggerApi = api;
 
       done();
     });
   });
 
   beforeEach(function () {
-    sway.customValidators = [];
-    sway.errors = [];
-    sway.warnings = [];
+    swaggerApi.customValidators = [];
   });
 
   describe('#getOperations', function () {
-    it('should return return all operations', function () {
-      var operations = sway.getOperations();
+    it('should return all operations', function () {
+      var operations = swaggerApi.getOperations();
 
-      assert.equal(operations.length, _.reduce(sway.definition.paths, function (count, path) {
-        count += helpers.getOperationCount(path);
+      assert.equal(operations.length, _.reduce(swaggerApi.definition.paths, function (count, path) {
+        count += getOperationCount(path);
 
         return count;
       }, 0));
@@ -62,53 +73,53 @@ describe('SwaggerApi (Swagger 2.0)', function () {
     });
 
     it('should return return all operations for the given path', function () {
-      var operations = sway.getOperations('/pet/{petId}');
+      var operations = swaggerApi.getOperations('/pet/{petId}');
 
-      assert.ok(sway.getOperations().length > operations.length);
-      assert.equal(operations.length, helpers.getOperationCount(sway.definition.paths['/pet/{petId}']));
+      assert.ok(swaggerApi.getOperations().length > operations.length);
+      assert.equal(operations.length, getOperationCount(swaggerApi.definition.paths['/pet/{petId}']));
     });
 
     it('should return return no operations for a missing path', function () {
-      assert.equal(sway.getOperations('/some/fake/path').length, 0);
+      assert.equal(swaggerApi.getOperations('/some/fake/path').length, 0);
     });
   });
 
   describe('#getOperation', function () {
     describe('path + method', function () {
       it('should return the expected operation', function () {
-        var operation = sway.getOperation('/pet/{petId}', 'get');
+        var operation = swaggerApi.getOperation('/pet/{petId}', 'get');
 
         assert.ok(!_.isUndefined(operation));
       });
 
       it('should return no operation for missing path', function () {
-        assert.ok(_.isUndefined(sway.getOperation('/petz/{petId}', 'get')));
+        assert.ok(_.isUndefined(swaggerApi.getOperation('/petz/{petId}', 'get')));
       });
 
       it('should return no operation for missing method', function () {
-        assert.ok(_.isUndefined(sway.getOperation('/pet/{petId}', 'head')));
+        assert.ok(_.isUndefined(swaggerApi.getOperation('/pet/{petId}', 'head')));
       });
     });
 
     describe('http.ClientRequest (or similar)', function () {
       it('should return the expected operation', function () {
-        assert.ok(!_.isUndefined(sway.getOperation({
+        assert.ok(!_.isUndefined(swaggerApi.getOperation({
           method: 'GET',
-          url: sway.basePath + '/pet/1'
+          url: swaggerApi.basePath + '/pet/1'
         })));
       });
 
       it('should return no operation for missing path', function () {
-        assert.ok(_.isUndefined(sway.getOperation({
+        assert.ok(_.isUndefined(swaggerApi.getOperation({
           method: 'GET',
-          url: sway.basePath + '/petz/1'
+          url: swaggerApi.basePath + '/petz/1'
         })));
       });
 
       it('should return no operation for missing method', function () {
-        assert.ok(_.isUndefined(sway.getOperation({
+        assert.ok(_.isUndefined(swaggerApi.getOperation({
           method: 'HEAD',
-          url: sway.basePath + '/pet/1'
+          url: swaggerApi.basePath + '/pet/1'
         })));
       });
     });
@@ -116,42 +127,42 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
   describe('#getOperationsByTag', function () {
     it('should return no operation for incorrect tag', function () {
-      var operations = sway.getOperationsByTag('incorrect tag');
+      var operations = swaggerApi.getOperationsByTag('incorrect tag');
 
       assert.equal(operations.length, 0);
     });
 
     it('should return all operations for the given tag', function () {
-      var operations = sway.getOperationsByTag('store');
+      var operations = swaggerApi.getOperationsByTag('store');
 
       assert.equal(operations.length,
-                   helpers.getOperationCount(sway.definition.paths['/store/inventory']) +
-                   helpers.getOperationCount(sway.definition.paths['/store/order']) +
-                   helpers.getOperationCount(sway.definition.paths['/store/order/{orderId}']));
+                   getOperationCount(swaggerApi.definition.paths['/store/inventory']) +
+                   getOperationCount(swaggerApi.definition.paths['/store/order']) +
+                   getOperationCount(swaggerApi.definition.paths['/store/order/{orderId}']));
     });
   });
 
   describe('#getPath', function () {
     describe('path', function () {
       it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(sway.getPath('/pet/{petId}')));
+        assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}')));
       });
 
       it('should return no path object', function () {
-        assert.ok(_.isUndefined(sway.getPath('/petz/{petId}')));
+        assert.ok(_.isUndefined(swaggerApi.getPath('/petz/{petId}')));
       });
     });
 
     describe('http.ClientRequest (or similar)', function () {
       it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(sway.getPath({
-          url: sway.basePath + '/pet/1'
+        assert.ok(!_.isUndefined(swaggerApi.getPath({
+          url: swaggerApi.basePath + '/pet/1'
         })));
       });
 
       it('should return no path object', function () {
-        assert.ok(_.isUndefined(sway.getPath({
-          url: sway.basePath + '/petz/1'
+        assert.ok(_.isUndefined(swaggerApi.getPath({
+          url: swaggerApi.basePath + '/petz/1'
         })));
       });
     });
@@ -159,7 +170,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
   describe('#getPaths', function () {
     it('should return the expected path objects', function () {
-      assert.equal(sway.getPaths().length, Object.keys(sway.resolved.paths).length);
+      assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionAllResolved.paths).length);
     });
   });
 
@@ -172,9 +183,9 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
       _.forEach(scenarios, function (scenario) {
         try {
-          sway.registerValidator.apply(sway, scenario[0]);
+          swaggerApi.registerValidator.apply(swaggerApi, scenario[0]);
 
-          tHelpers.shouldHadFailed();
+          helpers.shouldHadFailed();
         } catch (err) {
           assert.equal(scenario[1], err.message);
         }
@@ -182,7 +193,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
     });
 
     it('should add validator to list of validators', function () {
-      var results = sway.validate();
+      var results = swaggerApi.validate();
       var expectedErrors = [
         'error'
       ];
@@ -193,14 +204,14 @@ describe('SwaggerApi (Swagger 2.0)', function () {
       assert.deepEqual(results.errors, []);
       assert.deepEqual(results.warnings, []);
 
-      sway.registerValidator(function () {
+      swaggerApi.registerValidator(function () {
         return {
           errors: expectedErrors,
           warnings: expectedWarnings
         };
       });
 
-      results = sway.validate();
+      results = swaggerApi.validate();
 
       assert.deepEqual(results.errors, expectedErrors);
       assert.deepEqual(results.warnings, expectedWarnings);
@@ -209,7 +220,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
   describe('#validate', function () {
     it('should return zero errors/warnings for a valid document', function () {
-      var results = sway.validate();
+      var results = swaggerApi.validate();
 
       assert.deepEqual(results.errors, []);
       assert.deepEqual(results.warnings, []);
@@ -221,7 +232,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         delete cSwagger.paths;
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -241,7 +252,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
       describe('array type missing required items property', function () {
         function validateBrokenArray (cSwagger, path, done) {
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -510,7 +521,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               additionalProperties: errorSchema
             };
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -759,7 +770,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             ]
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -809,7 +820,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             ]
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -855,7 +866,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             ]
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -884,7 +895,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             }
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -910,7 +921,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             default: 123
           });
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -934,7 +945,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           cSwagger.definitions.Pet.properties.name.default = 123;
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -963,7 +974,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           cSwagger.paths['/pet/findByStatus'].get.parameters.push(cParam);
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -990,7 +1001,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           cSwagger.paths['/pet/{petId}'].parameters.push(cParam);
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1016,7 +1027,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           $ref: '/file[/].html'
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1039,7 +1050,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/invalid/{}'] = {};
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1070,7 +1081,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           }
         ];
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1093,7 +1104,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet/{petId}'].parameters = [];
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1126,7 +1137,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet/{notPetId}'] = {};
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1150,7 +1161,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet'].put.operationId = operationId;
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1176,7 +1187,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet'].post.parameters.push(dBodyParam);
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1205,7 +1216,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           type: 'string'
         });
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1239,7 +1250,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           delete cSwagger.definitions.Pet.properties;
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1262,7 +1273,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           delete cSwagger.definitions.Pet.properties.name;
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1287,7 +1298,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           cSwagger.definitions.Missing = {};
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1316,7 +1327,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             }
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1343,7 +1354,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
             }
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1370,7 +1381,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               in: 'header'
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1393,7 +1404,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
           cSwagger.securityDefinitions.petstore_auth.scopes.missing = 'I am missing';
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -1419,7 +1430,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
             cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1443,7 +1454,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
             cSwagger.paths['/pet'].post.parameters[0].schema.$ref = 'fake.json';
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1472,7 +1483,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               missing: []
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1497,7 +1508,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               missing: []
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1522,7 +1533,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
             cSwagger.security[0].petstore_auth.push('missing');
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1549,7 +1560,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
               ]
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1584,7 +1595,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet'].post.parameters[0] = {};
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1600,7 +1611,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           broken: {}
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1614,7 +1625,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet'].post.responses.default = {};
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1631,7 +1642,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           schema: []
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1648,7 +1659,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           additionalProperties: []
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1670,7 +1681,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           }
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1684,7 +1695,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
 
         cSwagger.securityDefinitions.broken = {};
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
@@ -1706,7 +1717,7 @@ describe('SwaggerApi (Swagger 2.0)', function () {
           }
         };
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {

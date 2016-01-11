@@ -29,15 +29,15 @@
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers'); // Helpers for this suite of tests
-var sHelpers = require('../../../lib/helpers'); // Helpers from Sway
-var tHelpers = require('../../helpers'); // Helpers for test
+var sHelpers = require('../lib/helpers'); // Helpers from Sway
+var Sway = helpers.getSway();
 
-describe('Parameter (Swagger 2.0)', function () {
-  var sway;
+describe('Parameter', function () {
+  var swaggerApi;
 
   before(function (done) {
-    helpers.getSway(function (api) {
-      sway = api;
+    helpers.getSwaggerApi(function (api) {
+      swaggerApi = api;
 
       done();
     });
@@ -45,9 +45,9 @@ describe('Parameter (Swagger 2.0)', function () {
 
   it('should have proper structure', function () {
     var path = '/pet/{petId}';
-    var pathDef = sway.resolved.paths[path];
+    var pathDef = swaggerApi.definitionAllResolved.paths[path];
 
-    _.each(sway.getOperation(path, 'post').getParameters(), function (parameter, index) {
+    _.each(swaggerApi.getOperation(path, 'post').getParameters(), function (parameter, index) {
       var ptr = '#/paths/~1pet~1{petId}/';
       var def;
 
@@ -66,10 +66,10 @@ describe('Parameter (Swagger 2.0)', function () {
 
   describe('#getSchema', function () {
     it('should handle parameter with explicit schema definition (body parameter)', function () {
-      var schema = sway.getOperation('/pet', 'post').getParameter('body').getSchema();
+      var schema = swaggerApi.getOperation('/pet', 'post').getParameter('body').getSchema();
 
       // Make sure the generated JSON Schema is identical to its referenced schema
-      assert.deepEqual(schema, sway.resolved.definitions.Pet);
+      assert.deepEqual(schema, swaggerApi.definitionAllResolved.definitions.Pet);
 
       // Make sure the generated JSON Schema validates an invalid object properly
       try {
@@ -99,12 +99,12 @@ describe('Parameter (Swagger 2.0)', function () {
           name: 'Test Pet'
         });
       } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
+        helpers.shouldNotHadFailed(err);
       }
     });
 
     it('should handle parameter with schema-like definition (non-body parameter)', function () {
-      var schema = sway.getOperation('/pet/findByTags', 'get').getParameter('tags').getSchema();
+      var schema = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').getSchema();
 
       // Make sure the generated JSON Schema is as expected
       assert.deepEqual(schema, {
@@ -140,33 +140,33 @@ describe('Parameter (Swagger 2.0)', function () {
           'tag3'
         ]);
       } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
+        helpers.shouldNotHadFailed(err);
       }
     });
   });
 
   describe('#getSample', function () {
     it('should handle parameter with explicit schema definition (body parameter)', function () {
-      var parameter = sway.getOperation('/pet', 'post').getParameter('body');
+      var parameter = swaggerApi.getOperation('/pet', 'post').getParameter('body');
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
                                        parameter.getSchema(),
                                        parameter.getSample());
       } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
+        helpers.shouldNotHadFailed(err);
       }
     });
 
     it('should handle parameter with schema-like definition (non-body parameter)', function () {
-      var parameter = sway.getOperation('/pet/findByTags', 'get').getParameter('tags');
+      var parameter = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
                                       parameter.getSchema(),
                                       parameter.getSample());
       } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
+        helpers.shouldNotHadFailed(err);
       }
     });
   });
@@ -177,7 +177,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet', 'post').getParameter('body');
+          parameter = swaggerApi.getOperation('/pet', 'post').getParameter('body');
         });
 
         it('missing value', function () {
@@ -199,14 +199,14 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
+          parameter = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
         });
 
         it('missing req.files', function () {
           try {
             parameter.getValue({});
 
-            tHelpers.shouldHadFailed();
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'req.files must be provided for \'formData\' parameters of type \'file\'');
           }
@@ -231,14 +231,14 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'post').getParameter('name');
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('name');
         });
 
         it('missing req.body', function () {
           try {
             parameter.getValue({});
 
-            tHelpers.shouldHadFailed();
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'req.body must be provided for \'formData\' parameters');
           }
@@ -264,14 +264,14 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
         });
 
         it('missing req.headers', function () {
           try {
             parameter.getValue({});
 
-            tHelpers.shouldHadFailed();
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'req.headers must be provided for \'header\' parameters');
           }
@@ -310,14 +310,14 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'post').getParameter('petId');
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('petId');
         });
 
         it('missing req.url', function () {
           try {
             parameter.getValue({});
 
-            tHelpers.shouldHadFailed();
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'req.url must be provided for \'path\' parameters');
           }
@@ -362,7 +362,7 @@ describe('Parameter (Swagger 2.0)', function () {
             }
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -399,14 +399,14 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/findByStatus', 'get').getParameter('status');
+          parameter = swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status');
         });
 
         it('missing req.query', function () {
           try {
             parameter.getValue({});
 
-            tHelpers.shouldHadFailed();
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'req.query must be provided for \'query\' parameters');
           }
@@ -434,14 +434,14 @@ describe('Parameter (Swagger 2.0)', function () {
 
         cSwagger.paths['/pet/{petId}'].parameters[0].in = 'invalid';
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwagger
         })
           .then(function (api) {
             try {
               api.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({});
 
-              tHelpers.shouldHadFailed();
+              helpers.shouldHadFailed();
             } catch (err) {
               assert.equal(err.message, 'Invalid \'in\' value: invalid');
             }
@@ -451,9 +451,9 @@ describe('Parameter (Swagger 2.0)', function () {
 
       it('missing request', function () {
         try {
-          sway.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
+          swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
 
-          tHelpers.shouldHadFailed();
+          helpers.shouldHadFailed();
         } catch (err) {
           assert.equal(err.message, 'req is required');
         }
@@ -465,7 +465,7 @@ describe('Parameter (Swagger 2.0)', function () {
         var parameter;
 
         before(function () {
-          parameter = sway.getOperation('/pet/{petId}', 'get').getParameter('petId');
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId');
         });
 
         it('never processed', function () {
@@ -501,7 +501,7 @@ describe('Parameter (Swagger 2.0)', function () {
               }
             ];
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -515,7 +515,7 @@ describe('Parameter (Swagger 2.0)', function () {
           it('provided (array items object)', function (done) {
             var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -529,7 +529,7 @@ describe('Parameter (Swagger 2.0)', function () {
           it('provided (non-array)', function (done) {
             var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -552,7 +552,7 @@ describe('Parameter (Swagger 2.0)', function () {
               }
             ];
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -568,7 +568,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
             delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].items.default;
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -582,7 +582,7 @@ describe('Parameter (Swagger 2.0)', function () {
           it('missing (non-array)', function (done) {
             var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -604,7 +604,7 @@ describe('Parameter (Swagger 2.0)', function () {
             required: false
           });
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwagger
           })
             .then(function (api) {
@@ -639,7 +639,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               ];
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -655,7 +655,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('items object', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+              assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: [
                     'available', 'pending'
@@ -665,7 +665,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('non-array JSON string request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+              assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: '["pending"]'
                 }
@@ -673,7 +673,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('non-array string request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+              assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: 'pending'
                 }
@@ -681,7 +681,7 @@ describe('Parameter (Swagger 2.0)', function () {
             });
 
             it('array request value', function () {
-              assert.deepEqual(sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+              assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: ['available', 'pending']
                 }
@@ -694,7 +694,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -712,7 +712,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -729,7 +729,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 it('multiple values', function (done) {
                   var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-                  helpers.swaggerApi.create({
+                  Sway.create({
                     definition: cSwagger
                   })
                     .then(function (api) {
@@ -749,7 +749,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 it('single value', function (done) {
                   var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
-                  helpers.swaggerApi.create({
+                  Sway.create({
                     definition: cSwagger
                   })
                     .then(function (api) {
@@ -768,7 +768,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -786,7 +786,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -804,7 +804,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -822,7 +822,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
                 cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -863,7 +863,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               };
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -927,7 +927,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               };
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -970,7 +970,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               };
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -997,7 +997,7 @@ describe('Parameter (Swagger 2.0)', function () {
             var cParam;
 
             before(function () {
-              cParam = sway.getOperation('/pet', 'post').getParameter('body');
+              cParam = swaggerApi.getOperation('/pet', 'post').getParameter('body');
             });
 
             it('object request value', function () {
@@ -1084,7 +1084,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               };
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -1126,7 +1126,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 }
               };
 
-              helpers.swaggerApi.create({
+              Sway.create({
                 definition: cSwagger
               })
                 .then(function (api) {
@@ -1150,7 +1150,7 @@ describe('Parameter (Swagger 2.0)', function () {
             var cParam;
 
             before(function () {
-              cParam = sway.getOperation('/pet/{petId}', 'post').getParameter('name');
+              cParam = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('name');
             });
 
             it('string request value', function () {
@@ -1187,7 +1187,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   format: 'date'
                 });
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -1245,7 +1245,7 @@ describe('Parameter (Swagger 2.0)', function () {
                   format: 'date-time'
                 });
 
-                helpers.swaggerApi.create({
+                Sway.create({
                   definition: cSwagger
                 })
                   .then(function (api) {
@@ -1296,7 +1296,7 @@ describe('Parameter (Swagger 2.0)', function () {
               type: 'invalid'
             };
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1317,7 +1317,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
             cSwagger.paths['/pet'].post.parameters[0].schema = {};
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwagger
             })
               .then(function (api) {
@@ -1336,7 +1336,7 @@ describe('Parameter (Swagger 2.0)', function () {
 
     describe('validation', function () {
       it('missing required value (with default)', function () {
-        var paramValue = sway.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+        var paramValue = swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
           query: {}
         });
 
@@ -1346,7 +1346,7 @@ describe('Parameter (Swagger 2.0)', function () {
       });
 
       it('missing required value (without default)', function () {
-        var paramValue = sway.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
+        var paramValue = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
           query: {}
         });
         var error = paramValue.error;
@@ -1370,7 +1370,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 in: 'query'
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwaggerDoc
             })
               .then(function (api) {
@@ -1399,7 +1399,7 @@ describe('Parameter (Swagger 2.0)', function () {
               allowEmptyValue: true
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwaggerDoc
             })
               .then(function (api) {
@@ -1428,7 +1428,7 @@ describe('Parameter (Swagger 2.0)', function () {
                 in: 'query'
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwaggerDoc
             })
               .then(function (api) {
@@ -1457,7 +1457,7 @@ describe('Parameter (Swagger 2.0)', function () {
               allowEmptyValue: true
             });
 
-            helpers.swaggerApi.create({
+            Sway.create({
               definition: cSwaggerDoc
             })
               .then(function (api) {
@@ -1481,7 +1481,7 @@ describe('Parameter (Swagger 2.0)', function () {
           name: 'Sparky',
           photoUrls: []
         };
-        var paramValue = sway.getOperation('/pet', 'post').getParameter('body').getValue({
+        var paramValue = swaggerApi.getOperation('/pet', 'post').getParameter('body').getValue({
           body: pet
         });
 
@@ -1491,7 +1491,7 @@ describe('Parameter (Swagger 2.0)', function () {
       });
 
       it('provided value fails JSON Schema validation', function () {
-        var paramValue = sway.getOperation('/pet', 'post').getParameter('body').getValue({
+        var paramValue = swaggerApi.getOperation('/pet', 'post').getParameter('body').getValue({
           body: {}
         });
         var error = paramValue.error;

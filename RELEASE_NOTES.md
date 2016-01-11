@@ -15,6 +15,7 @@
         * `Operation#getResponseExample` -> `Response#getExample`
         * `Operation#getResponseSample` -> `Response#getSample`
 * Removed callback support for `Sway#create` *(Issue 51)*
+* Removed plugin support *(Issue #55)*
 * Updated invalid/missing JSON References to be a structural validation errors like z-schema does
 
 ### v0.6.0 (2015-11-25)

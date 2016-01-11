@@ -1,4 +1,11 @@
-A library that simplifies [Swagger][swagger] integrations.
+A library that simplifies [Swagger][swagger] integrations.  This library handles the minutiae of loading Swagger
+documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
+a rich set of APIs for things like Swagger document validation, request/response validation, etc.  For more details on
+the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
+
+Sway will always be built around the latest stable release of Swagger, which happens to be version `2.0` right now.
+This means that its APIs and object model will be specific to that version of Swagger and supporting any other versions
+of Swagger will require a conversion step prior to using Sway.
 
 ## Project Badges
 
@@ -33,8 +40,8 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,400kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _636kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,484kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _644kb_, minified, compressed and no source map
 
 ### Node.js
 

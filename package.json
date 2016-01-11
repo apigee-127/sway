@@ -31,10 +31,11 @@
   ],
   "devDependencies": {
     "brfs": "^1.4.2",
-    "browserify": "^12.0.1",
+    "browserify": "^13.0.0",
     "connect": "^3.4.0",
     "del": "^2.2.0",
     "exposify": "^0.5.0",
+    "glob": "^6.0.4",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
     "gulp-eslint": "^1.1.1",
@@ -59,14 +60,12 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "glob": "^6.0.3",
     "js-base64": "^2.1.9",
-    "js-yaml": "^3.4.6",
-    "json-refs": "^2.0.2",
+    "js-yaml": "^3.5.1",
+    "json-refs": "^2.0.3",
     "json-schema-faker": "^0.2.6",
     "lodash": "^3.10.1",
     "native-promise-only": "^0.8.1",
-    "path-loader": "^1.0.1",
     "path-to-regexp": "^1.2.1",
     "z-schema": "^3.16.1"
   }

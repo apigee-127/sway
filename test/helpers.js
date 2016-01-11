@@ -1,3 +1,5 @@
+/* eslint-env browser, mocha */
+
 /*
  * The MIT License (MIT)
  *
@@ -25,10 +27,17 @@
 'use strict';
 
 var assert = require('assert');
+var fs = require('fs');
+var helpers = require('../lib/helpers');
 var path = require('path');
+var Sway = typeof window === 'undefined' ? require('..') : window.Sway;
+var YAML = require('js-yaml');
 
 var documentBase = path.join(__dirname, 'browser', 'documents');
 var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
+var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
+var swaggerDocValidator = helpers.getJSONSchemaValidator();
+var swaggerApi
 
 function fail (msg) {
   assert.fail(msg);
@@ -38,7 +47,26 @@ module.exports.documentBase = documentBase;
 
 module.exports.fail = fail;
 
-module.exports.relativeBase = relativeBase;
+module.exports.getSwaggerApi = function (callback) {
+  if (swaggerApi) {
+    callback(swaggerApi);
+  } else {
+    Sway.create({
+      definition: swaggerDoc
+    })
+      .then(function (obj) {
+        swaggerApi = obj;
+
+        callback(swaggerApi);
+      }, function (err) {
+        callback(err);
+      });
+  }
+};
+
+module.exports.getSway = function () {
+  return Sway;
+};
 
 module.exports.shouldHadFailed = function () {
   fail('The code above should had thrown an error');
@@ -49,3 +77,11 @@ module.exports.shouldNotHadFailed = function (err) {
 
   fail('The code above should not had thrown an error');
 };
+
+module.exports.swaggerDoc = swaggerDoc;
+
+module.exports.swaggerDocPath = path.join(relativeBase, './2.0/swagger.yaml');
+
+module.exports.swaggerDocRelativeRefsPath = path.join(relativeBase, './2.0/swagger-relative-refs.yaml');
+
+module.exports.swaggerDocValidator = swaggerDocValidator;

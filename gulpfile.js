@@ -62,7 +62,7 @@ gulp.task('browserify', function () {
       return new Promise(function (resolve, reject) {
         var b = browserify('./index.js', {
           debug: useDebug,
-          standalone: 'SwaggerApi'
+          standalone: 'Sway'
         });
 
         // Only include the 'en' faker.js locale
@@ -83,8 +83,7 @@ gulp.task('browserify', function () {
           exposify.config = {
             'json-refs': 'JsonRefs',
             'js-yaml': 'jsyaml',
-            'lodash': '_',
-            'path-loader': 'PathLoader'
+            'lodash': '_'
           };
 
           b.transform('exposify');
@@ -122,12 +121,12 @@ gulp.task('clean', function (done) {
 
 gulp.task('docs', function () {
   return gulp.src([
-                    './index.js',
-                    'lib/types/*.js'
-                  ])
-             .pipe($.concat('API.md'))
-             .pipe($.jsdoc2MD({'sort-by': ['category', 'name']}))
-             .pipe(gulp.dest('docs'));
+    './index.js',
+    'lib/types/*.js'
+  ])
+    .pipe($.concat('API.md'))
+    .pipe($.jsdoc2MD({'sort-by': ['category', 'name']}))
+    .pipe(gulp.dest('docs'));
 });
 
 gulp.task('lint', function () {

@@ -24,10 +24,9 @@
     "test"
   ],
   "dependencies": {
-    "js-yaml": "~3.4.6",
-    "json-refs": "~2.0.2",
+    "js-yaml": "~3.5.1",
+    "json-refs": "~2.0.3",
     "lodash": "~3.10.1",
-    "path-loader": "*",
     "visionmedia-debug": "~2.2.0",
     "z-schema": "~3.16.1",
     "js-base64": "~2.1.9"

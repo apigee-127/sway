@@ -28,14 +28,15 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var helpers = require('./helpers'); // Helpers for this suite of tests
+var helpers = require('./helpers');
+var Sway = helpers.getSway();
 
-describe('Operation (Swagger 2.0)', function () {
-  var sway;
+describe('Operation', function () {
+  var swaggerApi;
 
   before(function (done) {
-    helpers.getSway(function (api) {
-      sway = api;
+    helpers.getSwaggerApi(function (api) {
+      swaggerApi = api;
 
       done();
     });
@@ -44,9 +45,9 @@ describe('Operation (Swagger 2.0)', function () {
   it('should handle composite parameters', function () {
     var method = 'post';
     var path = '/pet/{petId}';
-    var operation = sway.getOperation(path, method);
-    var pathDef = sway.resolved.paths[path];
-    var operationDef = sway.resolved.paths[path][method];
+    var operation = swaggerApi.getOperation(path, method);
+    var pathDef = swaggerApi.definitionAllResolved.paths[path];
+    var operationDef = swaggerApi.definitionAllResolved.paths[path][method];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
@@ -79,8 +80,8 @@ describe('Operation (Swagger 2.0)', function () {
   it('should handle explicit parameters', function () {
     var method = 'post';
     var path = '/pet/{petId}/uploadImage';
-    var operation = sway.getOperation(path, method);
-    var pathDef = sway.resolved.paths[path];
+    var operation = swaggerApi.getOperation(path, method);
+    var pathDef = swaggerApi.definitionAllResolved.paths[path];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
@@ -103,7 +104,7 @@ describe('Operation (Swagger 2.0)', function () {
   });
 
   it('should handle composite security', function () {
-    var operation = sway.getOperation('/pet/{petId}', 'get');
+    var operation = swaggerApi.getOperation('/pet/{petId}', 'get');
 
     assert.deepEqual(operation.security, [
       {
@@ -114,12 +115,12 @@ describe('Operation (Swagger 2.0)', function () {
       }
     ]);
     assert.deepEqual(operation.securityDefinitions, {
-      'petstore_auth': sway.resolved.securityDefinitions.petstore_auth
+      'petstore_auth': swaggerApi.definitionAllResolved.securityDefinitions.petstore_auth
     });
   });
 
   it('should handle explicit parameters', function () {
-    assert.deepEqual(sway.getOperation('/user/{username}', 'get').security, [
+    assert.deepEqual(swaggerApi.getOperation('/user/{username}', 'get').security, [
       {
         'api_key': []
       }
@@ -147,7 +148,7 @@ describe('Operation (Swagger 2.0)', function () {
   }
 
   it('should create proper regexp (with basePath)', function () {
-    validateRegExps(sway, sway.basePath);
+    validateRegExps(swaggerApi, swaggerApi.basePath);
   });
 
   it('should create proper regexp (with basePath ending in slash)', function (done) {
@@ -155,7 +156,7 @@ describe('Operation (Swagger 2.0)', function () {
 
     cSwagger.basePath = '/';
 
-    helpers.swaggerApi.create({definition: cSwagger})
+    Sway.create({definition: cSwagger})
            .then(function (api) {
              validateRegExps(api, '');
            })
@@ -167,7 +168,7 @@ describe('Operation (Swagger 2.0)', function () {
 
     delete cSwagger.basePath;
 
-    helpers.swaggerApi.create({definition: cSwagger})
+    Sway.create({definition: cSwagger})
            .then(function (api) {
              validateRegExps(api, '');
            })
@@ -187,14 +188,14 @@ describe('Operation (Swagger 2.0)', function () {
         }
       ];
 
-      helpers.swaggerApi.create({definition: cSwagger})
+      Sway.create({definition: cSwagger})
         .then(function (api) {
           var operation = api.getOperation('/pet/{petId}', 'get');
 
           assert.ok(_.isUndefined(operation.getParameter()));
           assert.ok(_.isUndefined(operation.getParameter('missing')));
           assert.ok(_.isUndefined(operation.getParameter('petId', 'header')));
-          assert.deepEqual(operation.getParameter('petId').definition,
+          assert.deepEqual(operation.getParameter('petId', 'path').definition,
                            cSwagger.paths['/pet/{petId}'].parameters[0]);
           assert.deepEqual(operation.getParameter('petId', 'query').definition,
                            cSwagger.paths['/pet/{petId}'].get.parameters[0]);
@@ -206,7 +207,7 @@ describe('Operation (Swagger 2.0)', function () {
   // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
   describe('#getParameters', function () {
     it('should return the proper parameter objects', function () {
-      var operation = sway.getOperation('/pet/{petId}', 'post');
+      var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
 
       assert.deepEqual(operation.getParameters(), operation.parameterObjects);
     });
@@ -226,7 +227,7 @@ describe('Operation (Swagger 2.0)', function () {
         var operation;
 
         before(function () {
-          operation = sway.getOperation('/pet', 'post');
+          operation = swaggerApi.getOperation('/pet', 'post');
         });
 
         it('should return an error for an unsupported value', function () {
@@ -286,7 +287,7 @@ describe('Operation (Swagger 2.0)', function () {
 
         delete cSwaggerDoc.paths['/pet'].post.consumes;
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwaggerDoc
         })
           .then(function (api) {
@@ -319,7 +320,7 @@ describe('Operation (Swagger 2.0)', function () {
 
         cSwaggerDoc.paths['/pet'].post.consumes.push(mimeType);
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwaggerDoc
         })
           .then(function (api) {
@@ -344,7 +345,7 @@ describe('Operation (Swagger 2.0)', function () {
       // ParameterValue's validation and which is heavily tested elsewhere.
 
       it('should return an error for invalid non-primitive parameters', function () {
-        var operation = sway.getOperation('/pet', 'post');
+        var operation = swaggerApi.getOperation('/pet', 'post');
         var results = operation.validateRequest({
           url: '/v2/pet',
           headers: {
@@ -379,7 +380,7 @@ describe('Operation (Swagger 2.0)', function () {
       });
 
       it('should return an error for invalid primitive parameters', function () {
-        var operation = sway.getOperation('/pet/{petId}/uploadImage', 'post');
+        var operation = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post');
         var results = operation.validateRequest({
           url: '/v2/pet/notANumber/uploadImage',
           headers: {
@@ -409,7 +410,7 @@ describe('Operation (Swagger 2.0)', function () {
       });
 
       it('should not return an error for valid parameters', function () {
-        var operation = sway.getOperation('/pet/{petId}', 'post');
+        var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
         var results = operation.validateRequest({
           url: '/v2/pet/1',
           headers: {
@@ -432,7 +433,7 @@ describe('Operation (Swagger 2.0)', function () {
     // is in test-response.js.
     describe('should return an error for undefined response', function () {
       it('undefined value but no default', function () {
-        var results = sway.getOperation('/pet', 'post').validateResponse();
+        var results = swaggerApi.getOperation('/pet', 'post').validateResponse();
 
         assert.deepEqual(results.warnings, []);
         assert.deepEqual(results.errors, [
@@ -445,7 +446,7 @@ describe('Operation (Swagger 2.0)', function () {
       });
 
       it('provided value', function () {
-        var results = sway.getOperation('/pet/{petId}', 'post').validateResponse({
+        var results = swaggerApi.getOperation('/pet/{petId}', 'post').validateResponse({
           statusCode: 201
         });
 
@@ -461,7 +462,7 @@ describe('Operation (Swagger 2.0)', function () {
     });
 
     it('should return the \'default\' response when validating an undefined response', function () {
-      var results = sway.getOperation('/user', 'post').validateResponse({
+      var results = swaggerApi.getOperation('/user', 'post').validateResponse({
         statusCode: 201
       });
 

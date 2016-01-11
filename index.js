@@ -25,8 +25,9 @@
 'use strict';
 
 var _ = require('lodash');
-var path = require('path');
-var pathLoader = require('path-loader');
+var helpers = require('./lib/helpers');
+var JsonRefs = require('json-refs');
+var SwaggerApi = require('./lib/types/api');
 var YAML = require('js-yaml');
 
 // Load promises polyfill if necessary
@@ -34,10 +35,6 @@ var YAML = require('js-yaml');
 if (typeof Promise === 'undefined') {
   require('native-promise-only');
 }
-
-var supportedVersions = {
-  '2.0': require('./lib/versions/2.0/')
-};
 
 /**
  * A library for simpler [Swagger](http://swagger.io/) integrations.
@@ -113,6 +110,7 @@ var supportedVersions = {
  */
 module.exports.create = function (options) {
   var allTasks = Promise.resolve();
+  var cOptions;
 
   // Validate arguments
   allTasks = allTasks.then(function () {
@@ -142,38 +140,89 @@ module.exports.create = function (options) {
   });
 
   // Make a copy of the input options so as not to alter them
-  options = _.cloneDeep(options);
+  cOptions = _.cloneDeep(options);
 
-  // Retrieve the definition if it is a path/URL (The reason we do this here instead of using JsonRefs#resolveRefsAt is
-  // because we use this to identify which plugin we want to use.)
+  // 
   allTasks = allTasks
-    // Load the remote definition or return options.definition
+    // Resolve relative/remote references
     .then(function () {
-      if (_.isString(options.definition)) {
-        return pathLoader.load(options.jsonRefs && options.jsonRefs.relativeBase ?
-                                 path.join(options.jsonRefs.relativeBase, options.definition) :
-                                 options.definition,
-                               options.jsonRefs && options.jsonRefs.loaderOptions ?
-                                 options.jsonRefs.loaderOptions :
-                                 {})
-                         .then(YAML.safeLoad);
+      // Prepare the json-refs options
+      if (_.isUndefined(cOptions.jsonRefs)) {
+        cOptions.jsonRefs = {};
+      }
+
+      // Include invalid reference information
+      cOptions.jsonRefs.includeInvalid = true;
+
+      // Resolve only relative/remote references
+      cOptions.jsonRefs.filter = ['relative', 'remote'];
+
+      // Update the json-refs options to process YAML
+      if (_.isUndefined(cOptions.jsonRefs.loaderOptions)) {
+        cOptions.jsonRefs.loaderOptions = {};
+      }
+
+      if (_.isUndefined(cOptions.jsonRefs.loaderOptions.processContent)) {
+        cOptions.jsonRefs.loaderOptions.processContent = function (res, cb) {
+          cb(undefined, YAML.safeLoad(res.text));
+        };
+      }
+
+      // Call the appropriate json-refs API
+      if (_.isString(cOptions.definition)) {
+        return JsonRefs.resolveRefsAt(cOptions.definition, cOptions.jsonRefs);
       } else {
-        return options.definition;
+        return JsonRefs.resolveRefs(cOptions.definition, cOptions.jsonRefs);
       }
-    });
+    })
+    // Resolve local references and merge results
+    .then(function (remoteResults) {
+      // Resolve all references (Should only resolve locals now since the remote references are resolved)
+      delete cOptions.jsonRefs.filter;
 
-  // Process the Swagger definition (if possible)
-  allTasks = allTasks
-    .then(function (apiDefinition) {
-      var definition = _.find(supportedVersions, function (pDefinition) {
-        return pDefinition.canProcess(apiDefinition);
-      });
+      return JsonRefs.resolveRefs(remoteResults.resolved, cOptions.jsonRefs)
+        .then(function (results) {
+          return {
+            // The original Swagger definition
+            definition: _.isString(cOptions.definition) ? remoteResults.value : cOptions.definition,
+            // The original Swagger definition with its remote references resolved
+            definitionRemotesResolved: remoteResults.resolved,
+            // The original Swagger definition with all its references resolved
+            definitionAllResolved: results.resolved,
+            // Merge the local reference details with the remote reference details
+            refs: _.reduce(results.refs, function (allRefs, refDetails, refPtr) {
+              var refPath = JsonRefs.pathFromPtr(refPtr);
 
-      if (_.isUndefined(definition)) {
-        throw new TypeError('Unable to identify the Swagger version or the Swagger version is unsupported');
-      }
+              if (!_.has(allRefs, refPtr)) {
+                if (_.has(remoteResults.resolved, refPath)) {
+                  refDetails.value = _.get(remoteResults.resolved, refPath);
+                } else {
+                  refDetails.missing = true;
+                  refDetails.type = 'invalid';
+                }
 
-      return definition.createSwaggerApi(apiDefinition, options);
+                allRefs[refPtr] = refDetails;
+              }
+
+              return allRefs;
+            }, remoteResults.refs)
+          }
+        });
+    })
+    // Process the Swagger document and return the API
+    .then(function (results) {
+      // We need to remove all circular objects as z-schema does not work with them:
+      //   https://github.com/zaggino/z-schema/issues/137
+      helpers.removeCirculars(results.definition);
+      helpers.removeCirculars(results.definitionRemotesResolved);
+      helpers.removeCirculars(results.definitionAllResolved);
+
+      // Create object model
+      return new SwaggerApi(results.definition,
+                            results.definitionRemotesResolved,
+                            results.definitionAllResolved,
+                            results.refs,
+                            options);
     });
 
   return allTasks;

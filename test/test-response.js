@@ -28,17 +28,17 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var helpers = require('./helpers'); // Helpers for this suite of tests
-var sHelpers = require('../../../lib/helpers'); // Helpers from Sway
-var tHelpers = require('../../helpers'); // Helpers for tests
+var helpers = require('./helpers');
+var sHelpers = require('../lib/helpers');
+var Sway = helpers.getSway();
 var YAML = require('js-yaml');
 
-describe('Response (Swagger 2.0', function () {
-  var sway;
+describe('Response', function () {
+  var swaggerApi;
 
   before(function (done) {
-    helpers.getSway(function (api) {
-      sway = api;
+    helpers.getSwaggerApi(function (api) {
+      swaggerApi = api;
 
       done();
     });
@@ -74,7 +74,7 @@ describe('Response (Swagger 2.0', function () {
       };
       cSwaggerDoc.paths['/pet/{petId}'].get.responses['200'].examples = examples;
 
-      helpers.swaggerApi.create({
+      Sway.create({
         definition: cSwaggerDoc
       })
         .then(function (api) {
@@ -103,23 +103,23 @@ describe('Response (Swagger 2.0', function () {
 
   describe('#getSample', function () {
     it('should return sample for default response when no code is provided', function () {
-      assert.ok(_.isUndefined(sway.getOperation('/user', 'post').getResponse().getSample()));
+      assert.ok(_.isUndefined(swaggerApi.getOperation('/user', 'post').getResponse().getSample()));
     });
 
     it('should return sample for the requested response code', function () {
-      var operation = sway.getOperation('/pet/{petId}', 'get');
+      var operation = swaggerApi.getOperation('/pet/{petId}', 'get');
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
                                        operation.getResponse(200).definition.schema,
                                        operation.getResponse(200).getSample());
       } catch (err) {
-        tHelpers.shouldNotHadFailed(err);
+        helpers.shouldNotHadFailed(err);
       }
     });
 
     it('should return undefined for void response', function () {
-      assert.ok(_.isUndefined(sway.getOperation('/pet', 'post').getResponse(405).getSample()));
+      assert.ok(_.isUndefined(swaggerApi.getOperation('/pet', 'post').getResponse(405).getSample()));
     });
   });
 
@@ -150,7 +150,7 @@ describe('Response (Swagger 2.0', function () {
             }
           };
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwaggerDoc
           })
             .then(function (api) {
@@ -161,7 +161,7 @@ describe('Response (Swagger 2.0', function () {
 
         describe('unsupported value', function () {
           it('should return an error for a provided value', function () {
-            var results = sway.getOperation('/pet/{petId}', 'get').validateResponse({
+            var results = swaggerApi.getOperation('/pet/{petId}', 'get').validateResponse({
               body: validPet,
               headers: {
                 'content-type': 'application/x-yaml'
@@ -181,7 +181,7 @@ describe('Response (Swagger 2.0', function () {
           });
 
           it('should not return an error for a void response', function () {
-            var results = sway.getOperation('/user', 'post').validateResponse({
+            var results = swaggerApi.getOperation('/user', 'post').validateResponse({
               headers: {
                 'content-type': 'application/x-yaml'
               }
@@ -219,7 +219,7 @@ describe('Response (Swagger 2.0', function () {
         });
 
         it('should not return an error for a supported value', function () {
-          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse({
+          var results = swaggerApi.getOperation('/pet/{petId}', 'get').validateResponse({
             body: validPet,
             headers: {
               'content-type': 'application/json'
@@ -233,7 +233,7 @@ describe('Response (Swagger 2.0', function () {
 
         describe('undefined value', function () {
           it('should return an error when not a void/204/304 response', function () {
-            var results = sway.getOperation('/pet/{petId}', 'get').validateResponse({
+            var results = swaggerApi.getOperation('/pet/{petId}', 'get').validateResponse({
               body: validPet,
               statusCode: 200
             });
@@ -290,7 +290,7 @@ describe('Response (Swagger 2.0', function () {
 
         delete cSwaggerDoc.paths['/pet/{petId}'].get.produces;
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwaggerDoc
         })
           .then(function (api) {
@@ -321,7 +321,7 @@ describe('Response (Swagger 2.0', function () {
 
         cSwaggerDoc.paths['/pet/{petId}'].get.produces.push(mimeType);
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwaggerDoc
         })
           .then(function (api) {
@@ -346,7 +346,7 @@ describe('Response (Swagger 2.0', function () {
 
         cSwaggerDoc.paths['/user/login'].get.responses['200'].headers['X-Rate-Limit'].maximum = 5;
 
-        helpers.swaggerApi.create({
+        Sway.create({
           definition: cSwaggerDoc
         })
           .then(function (api) {
@@ -381,7 +381,7 @@ describe('Response (Swagger 2.0', function () {
       });
 
       it('should return errors for invalid headers (type)', function () {
-        var results = sway.getOperation('/user/login', 'get').validateResponse({
+        var results = swaggerApi.getOperation('/user/login', 'get').validateResponse({
           body: 'OK',
           headers: {
             'content-type': 'application/json',
@@ -423,7 +423,7 @@ describe('Response (Swagger 2.0', function () {
       });
 
       it('should not return errors for valid headers', function () {
-        var results = sway.getOperation('/user/login', 'get').validateResponse({
+        var results = swaggerApi.getOperation('/user/login', 'get').validateResponse({
           body: 'OK',
           headers: {
             'content-type': 'application/json',
@@ -441,7 +441,7 @@ describe('Response (Swagger 2.0', function () {
     describe('validate body', function () {
       describe('should not return an error for a valid response body', function () {
         it('empty body for void response', function () {
-          var results = sway.getOperation('/pet', 'post').validateResponse({
+          var results = swaggerApi.getOperation('/pet', 'post').validateResponse({
             statusCode: 405
           });
 
@@ -450,7 +450,7 @@ describe('Response (Swagger 2.0', function () {
         });
 
         it('non-empty body for void response', function () {
-          var results = sway.getOperation('/pet', 'post').validateResponse({
+          var results = swaggerApi.getOperation('/pet', 'post').validateResponse({
             body: 'Bad Request',
             statusCode: 405
           });
@@ -460,7 +460,7 @@ describe('Response (Swagger 2.0', function () {
         });
 
         it('primitive body', function () {
-          var results = sway.getOperation('/user/login', 'get').validateResponse({
+          var results = swaggerApi.getOperation('/user/login', 'get').validateResponse({
             body: 'OK',
             headers: {
               'content-type': 'application/json',
@@ -475,7 +475,7 @@ describe('Response (Swagger 2.0', function () {
         });
 
         it('complex body', function () {
-          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse({
+          var results = swaggerApi.getOperation('/pet/{petId}', 'get').validateResponse({
             body: {
               name: 'First Pet',
               photoUrls: []
@@ -501,7 +501,7 @@ describe('Response (Swagger 2.0', function () {
             value = 'OK';
           }
 
-          results = sway.getOperation('/user/login', 'get').validateResponse({
+          results = swaggerApi.getOperation('/user/login', 'get').validateResponse({
             body: value,
             headers: {
               'content-type': 'application/json'
@@ -516,7 +516,7 @@ describe('Response (Swagger 2.0', function () {
 
       describe('should return an error for an invalid response body', function () {
         it('primitive body', function () {
-          var results = sway.getOperation('/user/login', 'get').validateResponse({
+          var results = swaggerApi.getOperation('/user/login', 'get').validateResponse({
             body: {},
             headers: {
               'content-type': 'application/json',
@@ -544,7 +544,7 @@ describe('Response (Swagger 2.0', function () {
         });
 
         it('complex body', function () {
-          var results = sway.getOperation('/pet/{petId}', 'get').validateResponse({
+          var results = swaggerApi.getOperation('/pet/{petId}', 'get').validateResponse({
             body: {},
             headers: {
               'content-type': 'application/json'
@@ -579,7 +579,7 @@ describe('Response (Swagger 2.0', function () {
 
           cSwaggerDoc.paths['/user/login'].get.responses['200'].schema.minLength = 3;
 
-          helpers.swaggerApi.create({
+          Sway.create({
             definition: cSwaggerDoc
           })
             .then(function (api) {

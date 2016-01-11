@@ -28,24 +28,50 @@
 
 var _ = require('lodash');
 var assert = require('assert');
-var swaggerApi = typeof window === 'undefined' ? require('..') : window.SwaggerApi;
+var helpers = require('./helpers');
+var Sway = helpers.getSway();
 
 var invalidCreateScenarios = [
   [[], 'options is required'],
   [['wrongType'], 'options must be an object'],
   [[{}], 'options.definition is required'],
   [[{definition: false}], 'options.definition must be either an object or a string'],
-  [[{definition: {}}], 'Unable to identify the Swagger version or the Swagger version is unsupported'],
   [[{definition: {}, jsonRefs: 'wrongType'}], 'options.jsonRefs must be an object'],
   [[{definition: {}, customValidators: 'wrongType'}], 'options.customValidators must be an array'],
   [[{definition: {}, customValidators: ['wrongType']}], 'options.customValidators at index 0 must be a function']
 ];
 
-describe('sway (General)', function () {
+describe('sway', function () {
   describe('sway#create', function () {
+    function validateCreateSwaggerApi (options) {
+      return function (theApi) {
+        assert.deepEqual(theApi.definition, helpers.swaggerDoc);
+        assert.equal(theApi.documentation, 'https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md');
+        assert.deepEqual(theApi.options, options);
+        assert.equal(theApi.version, '2.0');
+
+        // Make sure all references were found
+        _.forEach(theApi.references, function (details) {
+          assert.ok(!_.has(details, 'missing'));
+        });
+
+        // Validate the merging of the Swagger definition properties and the SwaggerApi properties
+        _.forEach(helpers.swaggerDoc, function (val, key) {
+          assert.deepEqual(theApi[key], val);
+        });
+
+        // Validate the operations (Simple tests for now, deeper testing is below)
+        assert.ok(_.isArray(theApi.pathObjects));
+        assert.ok(theApi.pathObjects.length > 0);
+
+        // Validate the registration of customValidator on SwaggerApi
+        assert.deepEqual(theApi.customValidators, options.customValidators || [])
+      };
+    }
+
     it('should always return a promise', function () {
-      assert.ok(swaggerApi.create({}) instanceof Promise);
-      assert.ok(swaggerApi.create({}, function () {}) instanceof Promise);
+      assert.ok(Sway.create({}) instanceof Promise);
+      assert.ok(Sway.create({}, function () {}) instanceof Promise);
     });
 
     it('should return proper error', function (done) {
@@ -55,9 +81,9 @@ describe('sway (General)', function () {
         allTests = allTests
           .then(function () {
             return new Promise(function (resolve, reject) {
-              swaggerApi.create.apply(swaggerApi, scenario[0])
+              Sway.create.apply(Sway, scenario[0])
                 .then(function () {
-                  reject(new Error('swaggerApi.create should had failed (Test #' + index + ')'));
+                  reject(new Error('Sway#create should had failed (Test #' + index + ')'));
                 }, function (err) {
                   try {
                     assert.ok(err instanceof TypeError);
@@ -74,5 +100,45 @@ describe('sway (General)', function () {
 
       allTests.then(done, done);
     });
+
+    it('should handle definition object', function (done) {
+      var options = {
+        definition: helpers.swaggerDoc
+      };
+
+      Sway.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
+    });
+
+    it('should handle definition file location', function (done) {
+      var options = {
+        definition: helpers.swaggerDocPath
+      };
+
+      Sway.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
+    });
+
+    it('should register customValidators', function (done) {
+      var options = {
+        definition: helpers.swaggerDoc,
+        customValidators: [
+          function validator1 () {
+            return {
+              errors: [],
+              warnings: []
+            };
+          }
+        ]
+      };
+
+      Sway.create(options)
+        .then(validateCreateSwaggerApi(options))
+        .then(done, done);
+    });
+
+    // TODO: Add test for definition file URL (remote)
   });
 });

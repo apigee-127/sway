@@ -6,7 +6,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 * [Sway](#module_Sway)
     * _inner_
         * [~Operation](#module_Sway..Operation)
-            * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_module_Sway..Operation_new)
+            * [new Operation(pathObject, method, definition, pathToDefinition)](#new_module_Sway..Operation_new)
             * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>Parameter</code>
             * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
             * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
@@ -14,26 +14,26 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>ValidationResults</code>
             * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
         * [~Parameter](#module_Sway..Parameter)
-            * [new Parameter(opOrPath, ptr, definition, schema)](#new_module_Sway..Parameter_new)
+            * [new Parameter(opOrPathObject, definition, pathToDefinition)](#new_module_Sway..Parameter_new)
             * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
             * [.getSchema()](#module_Sway..Parameter+getSchema) ⇒ <code>object</code>
             * [.getValue(req)](#module_Sway..Parameter+getValue) ⇒ <code>ParameterValue</code>
         * [~ParameterValue](#module_Sway..ParameterValue)
-            * [new ParameterValue(parameter, raw)](#new_module_Sway..ParameterValue_new)
+            * [new ParameterValue(parameterObject, raw)](#new_module_Sway..ParameterValue_new)
         * [~Path](#module_Sway..Path)
-            * [new Path(api, path, ptr, definition, regexp)](#new_module_Sway..Path_new)
+            * [new Path(api, path, definition, pathToDefinition)](#new_module_Sway..Path_new)
             * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>Array.&lt;Operation&gt;</code>
             * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
             * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
             * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
         * [~Response](#module_Sway..Response)
-            * [new Response(operation, ptr, definition, statusCode)](#new_module_Sway..Response_new)
+            * [new Response(operationObject, statusCode, definition, pathToDefinition)](#new_module_Sway..Response_new)
             * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
             * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
             * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
         * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
-            * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_module_Sway..SwaggerApi_new)
+            * [new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)](#new_module_Sway..SwaggerApi_new)
             * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>Operation</code>
             * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
             * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
@@ -54,17 +54,17 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| api | <code>SwaggerApi</code> | The Swagger API object |
 | definition | <code>object</code> | The operation definition |
 | method | <code>string</code> | The HTTP method for this operation |
 | pathObject | <code>Path</code> | The Path object |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
 | parameterObjects | <code>Array.&lt;Parameter&gt;</code> | The Parameter objects |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | securityDefinitions | <code>object</code> | The security definitions used by this operation |
 
 
 * [~Operation](#module_Sway..Operation)
-    * [new Operation(api, pathObject, method, ptr, definition, consumes, produces)](#new_module_Sway..Operation_new)
+    * [new Operation(pathObject, method, definition, pathToDefinition)](#new_module_Sway..Operation_new)
     * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>Parameter</code>
     * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
     * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>Response</code>
@@ -73,7 +73,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
     * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..Operation_new"></a>
-#### new Operation(api, pathObject, method, ptr, definition, consumes, produces)
+#### new Operation(pathObject, method, definition, pathToDefinition)
 The Swagger Operation object.
 
 **Note:** Do not use directly.
@@ -84,13 +84,10 @@ The Swagger Operation object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| api | <code>SwaggerApi</code> | The Swagger API object |
 | pathObject | <code>Path</code> | The Path object |
 | method | <code>string</code> | The operation method |
-| ptr | <code>string</code> | The JSON Pointer to the operation |
 | definition | <code>object</code> | The operation definition |
-| consumes | <code>Array.&lt;string&gt;</code> | The mime types this operation consumes |
-| produces | <code>Array.&lt;string&gt;</code> | The mime types this operation produces |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
 
 <a name="module_Sway..Operation+getParameter"></a>
 #### operation.getParameter(name, [location]) ⇒ <code>Parameter</code>
@@ -169,21 +166,22 @@ Validates the response.
 
 | Name | Type | Description |
 | --- | --- | --- |
+| computedSchema | <code>object</code> | The computed JSON Schema for the parameter |
 | definition | <code>object</code> | The parameter definition |
-| operationObject | <code>Operation</code> | The Operation object (Can be undefined for path-level parameters) |
-| pathObject | <code>Path</code> | The Path object |
+| operationObject | <code>Operation</code> | The `Operation` object the parameter belongs to *(Can be undefined for path-level parameters)* |
+| pathObject | <code>Path</code> | The `Path` object the parameter belongs t |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 | ptr | <code>string</code> | The JSON Pointer to the parameter definition |
-| schema | <code>object</code> | The JSON Schema for the parameter |
 
 
 * [~Parameter](#module_Sway..Parameter)
-    * [new Parameter(opOrPath, ptr, definition, schema)](#new_module_Sway..Parameter_new)
+    * [new Parameter(opOrPathObject, definition, pathToDefinition)](#new_module_Sway..Parameter_new)
     * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
     * [.getSchema()](#module_Sway..Parameter+getSchema) ⇒ <code>object</code>
     * [.getValue(req)](#module_Sway..Parameter+getValue) ⇒ <code>ParameterValue</code>
 
 <a name="new_module_Sway..Parameter_new"></a>
-#### new Parameter(opOrPath, ptr, definition, schema)
+#### new Parameter(opOrPathObject, definition, pathToDefinition)
 The Swagger Parameter object.
 
 **Note:** Do not use directly.
@@ -194,10 +192,9 @@ object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| opOrPath | <code>Operation</code> &#124; <code>Path</code> | The Operation or Path object |
-| ptr | <code>string</code> | The JSON Pointer to the parameter |
+| opOrPathObject | <code>Operation</code> &#124; <code>Path</code> | The `Operation` or `Path` object |
 | definition | <code>object</code> | The parameter definition |
-| schema | <code>object</code> | The JSON Schema for the parameter |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 
 <a name="module_Sway..Parameter+getSample"></a>
 #### parameter.getSample() ⇒ <code>\*</code>
@@ -254,7 +251,7 @@ property.
 | value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary                       and possible)*.  This can the original value in the event that processing the value is                       impossible *(missing schema type)* or `undefined` if processing the value failed *(invalid                       types, etc.)*. |
 
 <a name="new_module_Sway..ParameterValue_new"></a>
-#### new ParameterValue(parameter, raw)
+#### new ParameterValue(parameterObject, raw)
 Object representing a parameter value.
 
 **Note:** Do not use directly.
@@ -262,7 +259,7 @@ Object representing a parameter value.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| parameter | <code>Parameter</code> | The Parameter Object |
+| parameterObject | <code>Parameter</code> | The Parameter Object |
 | raw | <code>\*</code> | The original/raw value |
 
 <a name="module_Sway..Path"></a>
@@ -274,22 +271,23 @@ Object representing a parameter value.
 | --- | --- | --- |
 | api | <code>SwaggerApi</code> | The Swagger API object |
 | definition | <code>object</code> | The path definition |
-| operationObjects | <code>Array.&lt;Operation&gt;</code> | The operation objects |
-| parameterObjects | <code>Array.&lt;Parameter&gt;</code> | The path-level parameter objects |
+| operationObjects | <code>Array.&lt;Operation&gt;</code> | The `Operation` objects |
+| parameterObjects | <code>Array.&lt;Parameter&gt;</code> | The path-level `Parameter` objects |
 | path | <code>string</code> | The path string |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 | ptr | <code>ptr</code> | The JSON Pointer to the path |
-| regexp | <code>regexp</code> | The regexp used to match request paths against this path |
+| regexp | <code>regexp</code> | The `RegExp` used to match request paths against this path |
 
 
 * [~Path](#module_Sway..Path)
-    * [new Path(api, path, ptr, definition, regexp)](#new_module_Sway..Path_new)
+    * [new Path(api, path, definition, pathToDefinition)](#new_module_Sway..Path_new)
     * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>Array.&lt;Operation&gt;</code>
     * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
     * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
     * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>Array.&lt;Parameter&gt;</code>
 
 <a name="new_module_Sway..Path_new"></a>
-#### new Path(api, path, ptr, definition, regexp)
+#### new Path(api, path, definition, pathToDefinition)
 The Path object.
 
 **Note:** Do not use directly.
@@ -302,9 +300,8 @@ The Path object.
 | --- | --- | --- |
 | api | <code>SwaggerApi</code> | The Swagger API object |
 | path | <code>string</code> | The path string |
-| ptr | <code>ptr</code> | The JSON Pointer to the path |
 | definition | <code>object</code> | The path definition |
-| regexp | <code>regexp</code> | The regexp used to match request paths against this path |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
 <a name="module_Sway..Path+getOperation"></a>
 #### path.getOperation(method) ⇒ <code>Array.&lt;Operation&gt;</code>
@@ -350,18 +347,19 @@ Return the parameters for this path.
 | --- | --- | --- |
 | definition | <code>object</code> | The response definition |
 | operationObject | <code>Operation</code> | The Operation object |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 | ptr | <code>string</code> | The JSON Pointer to the response definition |
 | statusCode | <code>string</code> | The status code |
 
 
 * [~Response](#module_Sway..Response)
-    * [new Response(operation, ptr, definition, statusCode)](#new_module_Sway..Response_new)
+    * [new Response(operationObject, statusCode, definition, pathToDefinition)](#new_module_Sway..Response_new)
     * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
     * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
     * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..Response_new"></a>
-#### new Response(operation, ptr, definition, statusCode)
+#### new Response(operationObject, statusCode, definition, pathToDefinition)
 The Swagger Response object.
 
 **Note:** Do not use directly.
@@ -372,10 +370,10 @@ object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| operation | <code>Operation</code> | The Operation object |
-| ptr | <code>string</code> | The JSON Pointer to the response |
-| definition | <code>object</code> | The parameter definition |
+| operationObject | <code>Operation</code> | The `Operation` object |
 | statusCode | <code>string</code> | The status code |
+| definition | <code>object</code> | The parameter definition |
+| pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
 <a name="module_Sway..Response+getExample"></a>
 #### response.getExample([mimeType]) ⇒ <code>string</code>
@@ -431,17 +429,18 @@ information to perform response validation.
 | Name | Type | Description |
 | --- | --- | --- |
 | customValidators | <code>Array.&lt;ValidatorCallback&gt;</code> | The array of custom validators |
-| definition | <code>object</code> | The API definition |
+| definition | <code>object</code> | The original Swagger definition |
+| definitionRemotesResolved | <code>obejct</code> | The Swagger definition with all of its remote references resolved |
+| definitionAllResolved | <code>object</code> | The Swagger definition with all of its references resolved |
 | documentation | <code>string</code> | The URL to the Swagger documentation |
 | pathObjects | <code>Array.&lt;Path&gt;</code> | The unique path objects |
 | options | <code>object</code> | The options passed to the constructor |
 | references | <code>object</code> | The reference metadata *(See [JsonRefs~ResolvedRefDetails](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..ResolvedRefDetails))* |
-| resolved | <code>object</code> | The fully resolved API definition |
 | version | <code>string</code> | The Swagger API version |
 
 
 * [~SwaggerApi](#module_Sway..SwaggerApi)
-    * [new SwaggerApi(plugin, definition, resolved, references, options)](#new_module_Sway..SwaggerApi_new)
+    * [new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)](#new_module_Sway..SwaggerApi_new)
     * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>Operation</code>
     * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
     * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
@@ -451,7 +450,7 @@ information to perform response validation.
     * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..SwaggerApi_new"></a>
-#### new SwaggerApi(plugin, definition, resolved, references, options)
+#### new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)
 The Swagger API object.
 
 **Note:** Do not use directly.
@@ -462,12 +461,11 @@ The Swagger API object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| plugin | <code>object</code> | The Swagger version plugin |
-| definition | <code>object</code> | The Swagger definition |
-| resolved | <code>object</code> | The fully resolved Swagger definition |
+| definition | <code>object</code> | The original Swagger definition |
+| definitionRemotesResolved | <code>obejct</code> | The Swagger definition with all of its remote references resolved |
+| definitionAllResolved | <code>object</code> | The Swagger definition with all of its references resolved |
 | references | <code>object</code> | The location and resolution of the resolved references in the Swagger definition |
 | options | <code>object</code> | The options passed to swaggerApi.create |
-| [options.customValidators] | <code>ValidatorCallback</code> | The custom validators |
 
 <a name="module_Sway..SwaggerApi+getOperation"></a>
 #### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>Operation</code>

@@ -29,8 +29,9 @@
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
+var Sway = helpers.getSway();
 
-describe('format validators (Swagger 2.0)', function () {
+describe('format validators', function () {
   it('always truthy', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
@@ -66,7 +67,7 @@ describe('format validators (Swagger 2.0)', function () {
       default: 'somepassword'
     });
 
-    helpers.swaggerApi.create({definition: cSwaggerDoc})
+    Sway.create({definition: cSwaggerDoc})
       .then(function (api) {
         assert.ok(api.validate());
       })
@@ -88,7 +89,7 @@ describe('format validators (Swagger 2.0)', function () {
       });
 
       // Test the format validator using parameter validation
-      helpers.swaggerApi.create({definition: cSwaggerDoc})
+      Sway.create({definition: cSwaggerDoc})
         .then(function (api) {
             badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
@@ -142,7 +143,7 @@ describe('format validators (Swagger 2.0)', function () {
       });
 
       // Test the format validator using parameter validation
-      helpers.swaggerApi.create({definition: cSwaggerDoc})
+      Sway.create({definition: cSwaggerDoc})
         .then(function (api) {
           badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {

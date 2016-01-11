@@ -1,9 +1,11 @@
-A library that simplifies [Swagger][swagger] integrations.  The APIs provided attempt to solve common
-problems when working with Swagger definitions, like loading a Swagger definition.  _(For example: You might want to compose
-a Swagger definition programmatically or you might want to load a Swagger definition from the filesystem...or some URL.)_
+A library that simplifies [Swagger][swagger] integrations.  This library handles the minutiae of loading Swagger
+documents *(local and remote)*, resolving references *(local and remote)*, building an object model and providing you
+with a rich set of APIs for things like Swagger document validation, request/response validation, etc.  For more details
+on the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
 
-What you will find below is information on how to install sway based on your environment.  You will also
-find detailed information about how to use the provided APIs.
+Sway will always be built around the latest stable release of Swagger, which happens to be version `2.0` right now.
+This means that its APIs and object model will be specific to that version of Swagger and supporting any other versions
+of Swagger will require a conversion step prior to using Sway.
 
 # Disclaimer
 
@@ -28,8 +30,8 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,0400kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _636kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,484kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _644kb_, minified, compressed and no source map
 
 ### Node.js
 
@@ -43,14 +45,10 @@ npm install sway --save
 
 The sway project's API documentation can be found here: https://github.com/apigee-127/sway/blob/master/docs/API.md
 
-## Swagger Versions
+## Swagger Resources
 
-sway uses [The Factory Method Pattern][factory-method-pattern] to create the `SwaggerApi` object you see
-documented in the API documentation above.  The core API is concrete but how each version of Swagger generates the
-`SwaggerApi` object and its business logic is Swagger version dependent.  That being said, below are the supported
-versions of Swagger and their documentation:
-
-* [2.0][version-2.0-documentation]
+* Specification Documentation: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
+* JSON Schema: https://github.com/swagger-api/swagger-spec/blob/master/schemas/v2.0/schema.json
 
 ## Swagger Validation
 
@@ -67,37 +65,27 @@ situations where the existing JSON Schema for Swagger is broken or not as strict
 no other validation will occur.  But once the structural validation happens, `Semantic Validation` and
 `Custom Validation` will happen.
 
-## Dependencies
+### Semantic Validation
 
-Below is the list of projects being used by sway and the purpose(s) they are used for:
-
-* [debug][debug]: Used for producing useful debugging information
-* [js-base64][js-base64]: Used for generating mock/sample data for the `byte` format
-* [js-yaml][js-yaml]: Used for parsing YAML Swagger files
-* [json-refs][json-refs]: Used for dereferncing JSON References in Swagger files
-* [json-schema-faker][json-schema-faker]: Used for generating mock/sample values from JSON Schemas
-* [lodash-compat][lodash-compat]: Used for browser compatibility and miscellaneous utilities _(We use `lodash-compat`
-instead of `lodash` for compatibility with IE8 and IE9.  We will likely change this but the reasons behind it were the
-Swagger project itself has JavaScript libraries that support IE8+ and we wanted to support the same level of browsers
-they did just in case they wanted to use these libraries.)_
-* [native-promise-only][native-promise-only]: Used to shim in [Promises][promises] support
-* [path-loader][path-loader]: Used to load Swagger files from the local filesystem and remote URLs
-* [path-to-regexp][path-to-regexp]: Used to create `RegExp` objects from Swagger paths
-* [z-schema][z-schema]: Used for JSON Schema validation
+| Description | Type  |
+| :---------  | :---: |
+| Operations cannot have both a `body` parameter and a `formData` parameter | Error |
+| Operations must have only one `body` parameter | Error |
+| Operations must have unique *(`name` + `in` combination)* parameters | Error |
+| Operations must have unique `operationId` | Error |
+| Path parameters declared in the path string need matching parameter definitions *(Either at the path-level or the operation)* | Error |
+| Path parameter declarations do not allow empty names *(`/path/{}` is not valid)* | Error |
+| Path parameters definition *(Either at the path-level or the operation)* need matching paramater declarations | Error |
+| Path strings must be *(equivalently)* different *(Example: `/pet/{petId}` and `/pet/{petId2}` are equivalently the same and would generate an error)* | Error |
+| Paths must have unique *(`name` + `in` combination)* parameters | Error |
+| Referenceable definitions should be *used* by being referenced in the appropriate way | Warning |
+| References must point to existing documents or document fragments | Error |
+| The `default` property for [Schema Objects][schema-object], or schema-like objects *(non-body parameters)*, must validate against the respective JSON Schema | Error |
+| Circular composition/inheritance for [Schema Objects][schema-object] is not allowed *(You can have circular references everywhere except in composition/inheritance.)* | Error |
+| The `items` property for [Schema Objects][schema-object], or schema-like objects *(non-body parameters)*, is required when `type` is set to `array` _(See [swagger-api/swagger-spec/issues/174](https://github.com/swagger-api/swagger-spec/issues/174))_ | Error |
+| The `required` properties for a [Schema Object][schema-object] must be defined in the object or one of its ancestors | Error |
 
 [bower]: http://bower.io/
-[debug]: https://www.npmjs.com/package/debug
-[factory-method-pattern]: https://en.wikipedia.org/wiki/Factory_method_pattern
-[js-base64]: https://www.npmjs.com/package/js-base64
-[js-yaml]: https://www.npmjs.com/package/js-yaml
-[json-refs]: https://www.npmjs.com/package/json-refs
-[json-schema-faker]: https://www.npmjs.com/package/json-schema-faker
-[lodash-compat]: https://www.npmjs.com/package/lodash-compat
-[native-promise-only]: https://www.npmjs.com/package/native-promise-only
 [npm]: https://www.npmjs.org/
-[path-loader]: https://www.npmjs.com/package/path-loader
-[path-to-regexp]: https://github.com/pillarjs/path-to-regexp
-[promises]: https://www.promisejs.org/
-[version-2.0-documentation]: https://github.com/apigee-127/sway/blob/master/docs/versions/2.0.md
+[schema-object]: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schemaObject
 [swagger]: http://swagger.io
-[z-schema]: https://www.npmjs.com/package/z-schema

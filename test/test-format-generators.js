@@ -29,8 +29,9 @@
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
+var Sway = helpers.getSway();
 
-describe('format generators (Swagger 2.0)', function () {
+describe('format generators', function () {
   it('byte', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
@@ -41,7 +42,7 @@ describe('format generators (Swagger 2.0)', function () {
       format: 'byte'
     });
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
@@ -60,7 +61,7 @@ describe('format generators (Swagger 2.0)', function () {
       format: 'password'
     });
 
-    helpers.swaggerApi.create({
+    Sway.create({
       definition: cSwaggerDoc
     })
       .then(function (api) {
