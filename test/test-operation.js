@@ -46,8 +46,8 @@ describe('Operation', function () {
     var method = 'post';
     var path = '/pet/{petId}';
     var operation = swaggerApi.getOperation(path, method);
-    var pathDef = swaggerApi.definitionAllResolved.paths[path];
-    var operationDef = swaggerApi.definitionAllResolved.paths[path][method];
+    var pathDef = swaggerApi.definitionFullyResolved.paths[path];
+    var operationDef = swaggerApi.definitionFullyResolved.paths[path][method];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
@@ -81,7 +81,7 @@ describe('Operation', function () {
     var method = 'post';
     var path = '/pet/{petId}/uploadImage';
     var operation = swaggerApi.getOperation(path, method);
-    var pathDef = swaggerApi.definitionAllResolved.paths[path];
+    var pathDef = swaggerApi.definitionFullyResolved.paths[path];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
@@ -115,7 +115,7 @@ describe('Operation', function () {
       }
     ]);
     assert.deepEqual(operation.securityDefinitions, {
-      'petstore_auth': swaggerApi.definitionAllResolved.securityDefinitions.petstore_auth
+      'petstore_auth': swaggerApi.definitionFullyResolved.securityDefinitions.petstore_auth
     });
   });
 

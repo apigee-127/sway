@@ -69,12 +69,12 @@ describe('issues', function () {
       definition: helpers.swaggerDocRelativeRefsPath
     })
       .then(function () {
-        assert.ok(_.isUndefined(swaggerApi.definitionAllResolved.info.$ref));
-        assert.ok(Object.keys(swaggerApi.definitionAllResolved.definitions).length > 1);
-        assert.ok(Object.keys(swaggerApi.definitionAllResolved.paths).length > 1);
-        assert.equal(swaggerApi.definitionAllResolved.info.title, 'Swagger Petstore');
-        assert.ok(_.isPlainObject(swaggerApi.definitionAllResolved.definitions.Pet));
-        assert.ok(_.isPlainObject(swaggerApi.definitionAllResolved.paths['/pet/{petId}'].get));
+        assert.ok(_.isUndefined(swaggerApi.definitionFullyResolved.info.$ref));
+        assert.ok(Object.keys(swaggerApi.definitionFullyResolved.definitions).length > 1);
+        assert.ok(Object.keys(swaggerApi.definitionFullyResolved.paths).length > 1);
+        assert.equal(swaggerApi.definitionFullyResolved.info.title, 'Swagger Petstore');
+        assert.ok(_.isPlainObject(swaggerApi.definitionFullyResolved.definitions.Pet));
+        assert.ok(_.isPlainObject(swaggerApi.definitionFullyResolved.paths['/pet/{petId}'].get));
 
         _.each(swaggerApi.references, function (entry) {
           assert.ok(typeof entry.missing === 'undefined');

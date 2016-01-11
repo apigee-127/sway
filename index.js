@@ -103,7 +103,7 @@ if (typeof Promise === 'undefined') {
  * @example
  * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
  *   .then(function (api) {
- *     console.log('Documentation URL: ', api.documentation);
+ *     console.log('Documentation URL: ', api.documentationUrl);
  *   }, function (err) {
  *     console.error(err.stack);
  *   });
@@ -188,7 +188,7 @@ module.exports.create = function (options) {
             // The original Swagger definition with its remote references resolved
             definitionRemotesResolved: remoteResults.resolved,
             // The original Swagger definition with all its references resolved
-            definitionAllResolved: results.resolved,
+            definitionFullyResolved: results.resolved,
             // Merge the local reference details with the remote reference details
             refs: _.reduce(results.refs, function (allRefs, refDetails, refPtr) {
               var refPath = JsonRefs.pathFromPtr(refPtr);
@@ -215,12 +215,12 @@ module.exports.create = function (options) {
       //   https://github.com/zaggino/z-schema/issues/137
       helpers.removeCirculars(results.definition);
       helpers.removeCirculars(results.definitionRemotesResolved);
-      helpers.removeCirculars(results.definitionAllResolved);
+      helpers.removeCirculars(results.definitionFullyResolved);
 
       // Create object model
       return new SwaggerApi(results.definition,
                             results.definitionRemotesResolved,
-                            results.definitionAllResolved,
+                            results.definitionFullyResolved,
                             results.refs,
                             options);
     });

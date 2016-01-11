@@ -46,7 +46,8 @@ describe('sway', function () {
     function validateCreateSwaggerApi (options) {
       return function (theApi) {
         assert.deepEqual(theApi.definition, helpers.swaggerDoc);
-        assert.equal(theApi.documentation, 'https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md');
+        assert.equal(theApi.documentationUrl,
+                     'https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md');
         assert.deepEqual(theApi.options, options);
         assert.equal(theApi.version, '2.0');
 

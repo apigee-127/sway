@@ -45,7 +45,7 @@ describe('Parameter', function () {
 
   it('should have proper structure', function () {
     var path = '/pet/{petId}';
-    var pathDef = swaggerApi.definitionAllResolved.paths[path];
+    var pathDef = swaggerApi.definitionFullyResolved.paths[path];
 
     _.each(swaggerApi.getOperation(path, 'post').getParameters(), function (parameter, index) {
       var ptr = '#/paths/~1pet~1{petId}/';
@@ -69,7 +69,7 @@ describe('Parameter', function () {
       var schema = swaggerApi.getOperation('/pet', 'post').getParameter('body').getSchema();
 
       // Make sure the generated JSON Schema is identical to its referenced schema
-      assert.deepEqual(schema, swaggerApi.definitionAllResolved.definitions.Pet);
+      assert.deepEqual(schema, swaggerApi.definitionFullyResolved.definitions.Pet);
 
       // Make sure the generated JSON Schema validates an invalid object properly
       try {

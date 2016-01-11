@@ -33,7 +33,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>ValidationResults</code>
         * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
-            * [new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)](#new_module_Sway..SwaggerApi_new)
+            * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
             * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>Operation</code>
             * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
             * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
@@ -430,9 +430,9 @@ information to perform response validation.
 | --- | --- | --- |
 | customValidators | <code>Array.&lt;ValidatorCallback&gt;</code> | The array of custom validators |
 | definition | <code>object</code> | The original Swagger definition |
-| definitionRemotesResolved | <code>obejct</code> | The Swagger definition with all of its remote references resolved |
-| definitionAllResolved | <code>object</code> | The Swagger definition with all of its references resolved |
-| documentation | <code>string</code> | The URL to the Swagger documentation |
+| definitionRemotesResolved | <code>object</code> | The Swagger definition with only its remote references resolved *(This means that all local references are left as-is and are unresolved.)* |
+| definitionFullyResolved | <code>object</code> | The Swagger definition with all of its references resolved *(This means that all resolvable references are resulted.  The only unresolved references in this document are invalid references and references that point to missing locations.)* |
+| documentationUrl | <code>string</code> | The URL to the Swagger documentation |
 | pathObjects | <code>Array.&lt;Path&gt;</code> | The unique path objects |
 | options | <code>object</code> | The options passed to the constructor |
 | references | <code>object</code> | The reference metadata *(See [JsonRefs~ResolvedRefDetails](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..ResolvedRefDetails))* |
@@ -440,7 +440,7 @@ information to perform response validation.
 
 
 * [~SwaggerApi](#module_Sway..SwaggerApi)
-    * [new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)](#new_module_Sway..SwaggerApi_new)
+    * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
     * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>Operation</code>
     * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>Array.&lt;Operation&gt;</code>
     * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;Operation&gt;</code>
@@ -450,7 +450,7 @@ information to perform response validation.
     * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>ValidationResults</code>
 
 <a name="new_module_Sway..SwaggerApi_new"></a>
-#### new SwaggerApi(definition, definitionRemotesResolved, definitionAllResolved, references, options)
+#### new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)
 The Swagger API object.
 
 **Note:** Do not use directly.
@@ -462,8 +462,8 @@ The Swagger API object.
 | Param | Type | Description |
 | --- | --- | --- |
 | definition | <code>object</code> | The original Swagger definition |
-| definitionRemotesResolved | <code>obejct</code> | The Swagger definition with all of its remote references resolved |
-| definitionAllResolved | <code>object</code> | The Swagger definition with all of its references resolved |
+| definitionRemotesResolved | <code>object</code> | The Swagger definition with all of its remote references resolved |
+| definitionFullyResolved | <code>object</code> | The Swagger definition with all of its references resolved |
 | references | <code>object</code> | The location and resolution of the resolved references in the Swagger definition |
 | options | <code>object</code> | The options passed to swaggerApi.create |
 
@@ -610,7 +610,7 @@ Creates a SwaggerApi object from its Swagger definition(s).
 ```js
 SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
   .then(function (api) {
-    console.log('Documentation URL: ', api.documentation);
+    console.log('Documentation URL: ', api.documentationUrl);
   }, function (err) {
     console.error(err.stack);
   });

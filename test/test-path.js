@@ -50,7 +50,7 @@ describe('Path', function () {
     assert.deepEqual(pathObject.api, swaggerApi);
     assert.equal(pathObject.path, path);
     assert.equal(pathObject.ptr, JsonRefs.pathToPtr(['paths', path]));
-    assert.deepEqual(pathObject.definition, swaggerApi.definitionAllResolved.paths[path]);
+    assert.deepEqual(pathObject.definition, swaggerApi.definitionFullyResolved.paths[path]);
 
     // Make sure they are of the proper type
     assert.ok(pathObject.regexp instanceof RegExp);
@@ -60,8 +60,8 @@ describe('Path', function () {
     assert.equal('petId', pathObject.regexp.keys[0].name);
 
     // Make sure they match the expected URLs
-    assert.ok(_.isArray(pathObject.regexp.exec(swaggerApi.definitionAllResolved.basePath + '/pet/1')));
-    assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionAllResolved.basePath + '/pets/1')));
+    assert.ok(_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pet/1')));
+    assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pets/1')));
   });
 
   describe('#getOperation', function () {

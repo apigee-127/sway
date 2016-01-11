@@ -170,7 +170,7 @@ describe('SwaggerApi', function () {
 
   describe('#getPaths', function () {
     it('should return the expected path objects', function () {
-      assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionAllResolved.paths).length);
+      assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionFullyResolved.paths).length);
     });
   });
 
