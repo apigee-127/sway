@@ -2,10 +2,13 @@
 
 ### v1.0.0 (TBD)
 
-* Added `Operation#getParameter(name, [location])` *(Issue #56)*
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
-* Fixed a bug where loading `Sway#create` with a relative `options.definition` did not take
-`options.jsonRefs.relativeBase` into account for the initial load
+* Added `Operation#getParameter(name, [location])` *(Issue #56)*
+* Added `SwaggerApi.definitionRemotesResolved` *(Object containing the Swagger document with all of its remote
+references resolved)*
+* Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
+* Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
+into account for the initial load
 * Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue #48)*'
 * Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
     * API Additions
@@ -16,7 +19,11 @@
         * `Operation#getResponseSample` -> `Response#getSample`
 * Removed callback support for `Sway#create` *(Issue 51)*
 * Removed plugin support *(Issue #55)*
+* Removed `Parameter#getSchema` and `Parameter.computedSchema` in favor of using `Parameter.schema` for consistency
+* Removed `SwaggerApi.resolved` in favor of `SwaggerApi.definitionFullyResolved` *(Object containing the Swagger
+with all references fully resolved)*
 * Updated invalid/missing JSON References to be a structural validation errors like z-schema does
+* Various changes to all constructors in `lib/types` *(Should have no impact since these are technically internal)*
 
 ### v0.6.0 (2015-11-25)
 
