@@ -47,9 +47,9 @@ if (typeof Promise === 'undefined') {
  *
  * @typedef {function} ValidatorCallback
  *
- * @param {SwaggerApi} api - The Swagger API object
+ * @param {module:Sway~SwaggerApi} api - The Swagger API object
  *
- * @returns {ValidationResults} The validation results.
+ * @returns {module:Sway~ValidationResults} The validation results
  */
 
 /**
@@ -86,8 +86,8 @@ if (typeof Promise === 'undefined') {
  *
  * @typedef {object} ValidationResults
  *
- * @property {ValidationEntry[]} errors - The validation errors
- * @property {ValidationEntry[]} warnings - The validation warnings
+ * @property {module:Sway~ValidationEntry[]} errors - The validation errors
+ * @property {module:Sway~ValidationEntry[]} warnings - The validation warnings
  */
 
 /**
@@ -96,7 +96,7 @@ if (typeof Promise === 'undefined') {
  * @param {object} options - The options for loading the definition(s)
  * @param {object|string} options.definition - The Swagger definition location or structure
  * @param {object} [options.jsonRefs] - *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
- * @param {ValidatorCallback[]} [options.customValidators] - The custom validators
+ * @param {module:Sway~ValidatorCallback[]} [options.customValidators] - The custom validators
  *
  * @returns {Promise} The promise
  *

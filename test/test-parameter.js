@@ -66,7 +66,7 @@ describe('Parameter', function () {
 
   describe('#getSchema', function () {
     it('should handle parameter with explicit schema definition (body parameter)', function () {
-      var schema = swaggerApi.getOperation('/pet', 'post').getParameter('body').getSchema();
+      var schema = swaggerApi.getOperation('/pet', 'post').getParameter('body').schema;
 
       // Make sure the generated JSON Schema is identical to its referenced schema
       assert.deepEqual(schema, swaggerApi.definitionFullyResolved.definitions.Pet);
@@ -104,7 +104,7 @@ describe('Parameter', function () {
     });
 
     it('should handle parameter with schema-like definition (non-body parameter)', function () {
-      var schema = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').getSchema();
+      var schema = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
 
       // Make sure the generated JSON Schema is as expected
       assert.deepEqual(schema, {
@@ -151,7 +151,7 @@ describe('Parameter', function () {
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
-                                       parameter.getSchema(),
+                                       parameter.schema,
                                        parameter.getSample());
       } catch (err) {
         helpers.shouldNotHadFailed(err);
@@ -163,7 +163,7 @@ describe('Parameter', function () {
 
       try {
         sHelpers.validateAgainstSchema(helpers.swaggerDocValidator,
-                                      parameter.getSchema(),
+                                      parameter.schema,
                                       parameter.getSample());
       } catch (err) {
         helpers.shouldNotHadFailed(err);
