@@ -9,15 +9,34 @@
   <script>
     localStorage.debug = 'sway:*';
 
-    SwaggerApi
+    Sway
       .create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
       .then(function (theApi) {
-        document.body.innerHTML += '<div>';
-        document.body.innerHTML += '<ul>';
-        document.body.innerHTML += '<li><strong>Swagger Version:&nbsp;' + theApi.version + '</strong></li>';
-        document.body.innerHTML += '<li><strong>Specification:&nbsp;<a href="' + theApi.documentation + '">' + theApi.documentation + '</a></li>';
-        document.body.innerHTML += '</ul>';
-        document.body.innerHTML += '</div>';
+        var html = '';
+        
+        html += '<div>';
+        html += '<ul>';
+        html += '<li><strong>Swagger Version:</strong>&nbsp;' + theApi.version + '</li>';
+        html += '<li><strong>Specification:</strong>&nbsp;<a href="' + theApi.documentationUrl + '">' + theApi.documentationUrl + '</a></li>';
+        html += '</ul>';
+        html += '</div>';
+        html += '<div>';
+        html += '<h3>Identified API Operations</h3>';
+        html += '<ul>';
+        theApi.getPaths().forEach(function (path) {
+          html += '  <li><strong>' + path.path + '</strong>';
+          html += '    <ul>';
+          path.getOperations().forEach(function (operation) {
+            html += '      <li>' + operation.method.toUpperCase() + (operation.description ? ' <em>(' + operation.description + ')</em>' : '') + '</li>';
+          });
+          html += '    </ul>';
+          html += '  </li>';
+        });
+        html += '</ul>';
+        html += '</div>';
+
+        document.body.innerHTML = html;
+        console.log(html)
       }, function (err) {
         document.body.innerHTML += '<p><strong>Failed to Process</strong></p><span>' + err.message + '</span>';
       });

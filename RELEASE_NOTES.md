@@ -6,6 +6,7 @@
 * Added `Operation#getParameter(name, [location])` *(Issue #56)*
 * Added `SwaggerApi.definitionRemotesResolved` *(Object containing the Swagger document with all of its remote
 references resolved)*
+* Changed object exported in the browser from `SwaggerApi` to `Sway`
 * Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
 * Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
 into account for the initial load
