@@ -46,32 +46,14 @@ describe('Operation', function () {
     var method = 'post';
     var path = '/pet/{petId}';
     var operation = swaggerApi.getOperation(path, method);
-    var pathDef = swaggerApi.definitionFullyResolved.paths[path];
-    var operationDef = swaggerApi.definitionFullyResolved.paths[path][method];
+    var pathDef = swaggerApi.definitionFullyResolved.paths['/pet/{petId}'];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
     assert.equal(operation.ptr, '#/paths/~1pet~1{petId}/' + method);
 
     _.each(operation.definition, function (val, key) {
-      if (key === 'parameters') {
-        assert.deepEqual(val, [
-          pathDef.parameters[0],
-          operationDef.parameters[0],
-          operationDef.parameters[1]
-        ]);
-      } else if (key === 'security') {
-        assert.deepEqual(val, [
-          {
-            'petstore_auth': [
-              'read:pets',
-              'write:pets'
-            ]
-          }
-        ]);
-      } else {
-        assert.deepEqual(val, pathDef[method][key]);
-      }
+      assert.deepEqual(val, pathDef[method][key]);
     });
 
     assert.equal(operation.parameterObjects.length, 3);
@@ -81,7 +63,8 @@ describe('Operation', function () {
     var method = 'post';
     var path = '/pet/{petId}/uploadImage';
     var operation = swaggerApi.getOperation(path, method);
-    var pathDef = swaggerApi.definitionFullyResolved.paths[path];
+    var pathDef = swaggerApi.definitionRemotesResolved.paths[path];
+    var pathDefFullyResolved = swaggerApi.definitionFullyResolved.paths[path];
 
     assert.equal(operation.pathObject.path, path);
     assert.equal(operation.method, method);
@@ -101,21 +84,20 @@ describe('Operation', function () {
         assert.deepEqual(val, pathDef[method][key]);
       }
     });
-  });
 
-  it('should handle composite security', function () {
-    var operation = swaggerApi.getOperation('/pet/{petId}', 'get');
-
-    assert.deepEqual(operation.security, [
-      {
-        'petstore_auth': [
-          'read:pets',
-          'write:pets'
-        ]
+    _.each(operation.definitionFullyResolved, function (val, key) {
+      if (key === 'security') {
+        assert.deepEqual(val, [
+          {
+            'petstore_auth': [
+              'read:pets',
+              'write:pets'
+            ]
+          }
+        ]);
+      } else {
+        assert.deepEqual(val, pathDefFullyResolved[method][key]);
       }
-    ]);
-    assert.deepEqual(operation.securityDefinitions, {
-      'petstore_auth': swaggerApi.definitionFullyResolved.securityDefinitions.petstore_auth
     });
   });
 
@@ -210,6 +192,18 @@ describe('Operation', function () {
       var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
 
       assert.deepEqual(operation.getParameters(), operation.parameterObjects);
+    });
+  });
+
+  describe('#getSecurity', function () {
+    it('should return the proper parameter objects', function () {
+      var op1 = swaggerApi.getOperation('/pet/{petId}', 'post');
+      var op2 = swaggerApi.getOperation('/store/inventory', 'get');
+
+      assert.notDeepEqual(op1.getSecurity, op1.security);
+      assert.deepEqual(op1.getSecurity(), swaggerApi.definition.security);
+
+      assert.deepEqual(op2.getSecurity(), op2.security);
     });
   });
 

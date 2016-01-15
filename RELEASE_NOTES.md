@@ -4,9 +4,13 @@
 
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
 * Added `Operation#getParameter(name, [location])` *(Issue #56)*
+* Added `Operation#getSecurity` to gather the _composite security_ for an operation *(The previous approach was to
+overwrite `Operation.security` with the computed value but this could be confusing)*
 * Added `SwaggerApi.definitionRemotesResolved` *(Object containing the Swagger document with all of its remote
 references resolved)*
 * Changed object exported in the browser from `SwaggerApi` to `Sway`
+* Changed the `definition` property for `Operation`, `Parameter`, `Path` and `Response` to now be
+`definitionFullyResolved` and now the `definition` property is the original, non-dereferenced value
 * Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
 * Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
 into account for the initial load
@@ -20,6 +24,10 @@ into account for the initial load
         * `Operation#getResponseSample` -> `Response#getSample`
 * Removed callback support for `Sway#create` *(Issue 51)*
 * Removed plugin support *(Issue #55)*
+* Removed approach that would overwrite `Operation.parameters` with the _composite parameters_ *(The previous approach
+would set `Operation.parameters` to include all parameter definitions, even ones defined at the path level.  This could
+be confusing.  `Operation.parameterObjects`, `Operation#getParameters` and `Operation#getParameter` already solve the
+need to have a _composite view_ for operation parameters.)*
 * Removed `Parameter#getSchema` and `Parameter.computedSchema` in favor of using `Parameter.schema` for consistency
 * Removed `SwaggerApi.resolved` in favor of `SwaggerApi.definitionFullyResolved` *(Object containing the Swagger
 with all references fully resolved)*

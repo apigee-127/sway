@@ -50,7 +50,8 @@ describe('Path', function () {
     assert.deepEqual(pathObject.api, swaggerApi);
     assert.equal(pathObject.path, path);
     assert.equal(pathObject.ptr, JsonRefs.pathToPtr(['paths', path]));
-    assert.deepEqual(pathObject.definition, swaggerApi.definitionFullyResolved.paths[path]);
+    assert.deepEqual(pathObject.definition, swaggerApi.definitionRemotesResolved.paths[path]);
+    assert.deepEqual(pathObject.definitionFullyResolved, swaggerApi.definitionFullyResolved.paths[path]);
 
     // Make sure they are of the proper type
     assert.ok(pathObject.regexp instanceof RegExp);

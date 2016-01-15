@@ -6,27 +6,28 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 * [Sway](#module_Sway)
     * _inner_
         * [~Operation](#module_Sway..Operation)
-            * [new Operation(pathObject, method, definition, pathToDefinition)](#new_module_Sway..Operation_new)
+            * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Operation_new)
             * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>[Parameter](#module_Sway..Parameter)</code>
             * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
             * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>[Response](#module_Sway..Response)</code>
             * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_Sway..Response)</code>
+            * [.getSecurity()](#module_Sway..Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
             * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
             * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~Parameter](#module_Sway..Parameter)
-            * [new Parameter(opOrPathObject, definition, pathToDefinition)](#new_module_Sway..Parameter_new)
+            * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Parameter_new)
             * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
             * [.getValue(req)](#module_Sway..Parameter+getValue) ⇒ <code>[ParameterValue](#module_Sway..ParameterValue)</code>
         * [~ParameterValue](#module_Sway..ParameterValue)
             * [new ParameterValue(parameterObject, raw)](#new_module_Sway..ParameterValue_new)
         * [~Path](#module_Sway..Path)
-            * [new Path(api, path, definition, pathToDefinition)](#new_module_Sway..Path_new)
+            * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
             * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
         * [~Response](#module_Sway..Response)
-            * [new Response(operationObject, statusCode, definition, pathToDefinition)](#new_module_Sway..Response_new)
+            * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Response_new)
             * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
             * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
             * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
@@ -53,7 +54,8 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The operation definition |
+| definition | <code>object</code> | The operation definition *(The raw operation definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
 | method | <code>string</code> | The HTTP method for this operation |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The `Path` object |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
@@ -63,16 +65,17 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 
 * [~Operation](#module_Sway..Operation)
-    * [new Operation(pathObject, method, definition, pathToDefinition)](#new_module_Sway..Operation_new)
+    * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Operation_new)
     * [.getParameter(name, [location])](#module_Sway..Operation+getParameter) ⇒ <code>[Parameter](#module_Sway..Parameter)</code>
     * [.getParameters()](#module_Sway..Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
     * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>[Response](#module_Sway..Response)</code>
     * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_Sway..Response)</code>
+    * [.getSecurity()](#module_Sway..Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
     * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
     * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
 <a name="new_module_Sway..Operation_new"></a>
-#### new Operation(pathObject, method, definition, pathToDefinition)
+#### new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)
 The Swagger Operation object.
 
 **Note:** Do not use directly.
@@ -85,7 +88,8 @@ The Swagger Operation object.
 | --- | --- | --- |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The Path object |
 | method | <code>string</code> | The operation method |
-| definition | <code>object</code> | The operation definition |
+| definition | <code>object</code> | The operation definition *(The raw operation definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
 
 <a name="module_Sway..Operation+getParameter"></a>
@@ -124,6 +128,16 @@ Returns all responses for the operation.
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>[Array.&lt;Response&gt;](#module_Sway..Response)</code> - All `Response` objects for the operation  
+<a name="module_Sway..Operation+getSecurity"></a>
+#### operation.getSecurity() ⇒ <code>Array.&lt;object&gt;</code>
+Returns the composite security definitions for this operation.
+
+The difference between this API and `this.security` is that `this.security` is the raw `security` value for the
+operation where as this API will return the global `security` value when available and this operation's security
+is undefined.
+
+**Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
+**Returns**: <code>Array.&lt;object&gt;</code> - The security for this operation  
 <a name="module_Sway..Operation+validateRequest"></a>
 #### operation.validateRequest(req) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 Validates the request.
@@ -166,7 +180,8 @@ Validates the response.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The parameter definition |
+| definition | <code>object</code> | The parameter definition *(The raw parameter definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The `Operation` object the parameter belongs to *(Can be `undefined` for path-level parameters)* |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The `Path` object the parameter belongs t |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
@@ -175,12 +190,12 @@ Validates the response.
 
 
 * [~Parameter](#module_Sway..Parameter)
-    * [new Parameter(opOrPathObject, definition, pathToDefinition)](#new_module_Sway..Parameter_new)
+    * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Parameter_new)
     * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
     * [.getValue(req)](#module_Sway..Parameter+getValue) ⇒ <code>[ParameterValue](#module_Sway..ParameterValue)</code>
 
 <a name="new_module_Sway..Parameter_new"></a>
-#### new Parameter(opOrPathObject, definition, pathToDefinition)
+#### new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)
 The Swagger Parameter object.
 
 **Note:** Do not use directly.
@@ -192,7 +207,8 @@ object.
 | Param | Type | Description |
 | --- | --- | --- |
 | opOrPathObject | <code>[Operation](#module_Sway..Operation)</code> &#124; <code>[Path](#module_Sway..Path)</code> | The `Operation` or `Path` object |
-| definition | <code>object</code> | The parameter definition |
+| definition | <code>object</code> | The parameter definition *(The raw parameter definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 
 <a name="module_Sway..Parameter+getSample"></a>
@@ -261,7 +277,8 @@ Object representing a parameter value.
 | Name | Type | Description |
 | --- | --- | --- |
 | api | <code>[SwaggerApi](#module_Sway..SwaggerApi)</code> | The `SwaggerApi` object |
-| definition | <code>object</code> | The path definition |
+| definition | <code>object</code> | The path definition *(The raw path definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
 | operationObjects | <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> | The `Operation` objects |
 | parameterObjects | <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code> | The path-level `Parameter` objects |
 | path | <code>string</code> | The path string |
@@ -271,14 +288,14 @@ Object representing a parameter value.
 
 
 * [~Path](#module_Sway..Path)
-    * [new Path(api, path, definition, pathToDefinition)](#new_module_Sway..Path_new)
+    * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
     * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
 
 <a name="new_module_Sway..Path_new"></a>
-#### new Path(api, path, definition, pathToDefinition)
+#### new Path(api, path, definition, definitionFullyResolved, pathToDefinition)
 The Path object.
 
 **Note:** Do not use directly.
@@ -292,6 +309,7 @@ The Path object.
 | api | <code>[SwaggerApi](#module_Sway..SwaggerApi)</code> | The `SwaggerApi` object |
 | path | <code>string</code> | The path string |
 | definition | <code>object</code> | The path definition |
+| definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
 <a name="module_Sway..Path+getOperation"></a>
@@ -336,7 +354,8 @@ Return the parameters for this path.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The response definition |
+| definition | <code>object</code> | The response definition *(The raw responsedefinition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The Operation object |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 | ptr | <code>string</code> | The JSON Pointer to the response definition |
@@ -344,13 +363,13 @@ Return the parameters for this path.
 
 
 * [~Response](#module_Sway..Response)
-    * [new Response(operationObject, statusCode, definition, pathToDefinition)](#new_module_Sway..Response_new)
+    * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Response_new)
     * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
     * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
     * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
 <a name="new_module_Sway..Response_new"></a>
-#### new Response(operationObject, statusCode, definition, pathToDefinition)
+#### new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)
 The Swagger Response object.
 
 **Note:** Do not use directly.
@@ -363,7 +382,8 @@ The Swagger Response object.
 | --- | --- | --- |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The `Operation` object |
 | statusCode | <code>string</code> | The status code |
-| definition | <code>object</code> | The parameter definition |
+| definition | <code>object</code> | The response definition *(The raw response definition **after** remote references were resolved)* |
+| definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
 <a name="module_Sway..Response+getExample"></a>
