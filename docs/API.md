@@ -54,7 +54,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The operation definition *(The raw operation definition **after** remote references were                                 resolved)* |
+| definition | <code>object</code> | The operation definition *(The raw operation definition __after__ remote references were                                 resolved)* |
 | definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
 | method | <code>string</code> | The HTTP method for this operation |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The `Path` object |
@@ -88,7 +88,7 @@ The Swagger Operation object.
 | --- | --- | --- |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The Path object |
 | method | <code>string</code> | The operation method |
-| definition | <code>object</code> | The operation definition *(The raw operation definition **after** remote references were                              resolved)* |
+| definition | <code>object</code> | The operation definition *(The raw operation definition __after__ remote references were                              resolved)* |
 | definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
 
@@ -180,7 +180,7 @@ Validates the response.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The parameter definition *(The raw parameter definition **after** remote references                                 were resolved)* |
+| definition | <code>object</code> | The parameter definition *(The raw parameter definition __after__ remote references                                 were resolved)* |
 | definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The `Operation` object the parameter belongs to *(Can be                                                     `undefined` for path-level parameters)* |
 | pathObject | <code>[Path](#module_Sway..Path)</code> | The `Path` object the parameter belongs to |
@@ -207,7 +207,7 @@ object.
 | Param | Type | Description |
 | --- | --- | --- |
 | opOrPathObject | <code>[Operation](#module_Sway..Operation)</code> &#124; <code>[Path](#module_Sway..Path)</code> | The `Operation` or `Path` object |
-| definition | <code>object</code> | The parameter definition *(The raw parameter definition **after** remote references were                              resolved)* |
+| definition | <code>object</code> | The parameter definition *(The raw parameter definition __after__ remote references were                              resolved)* |
 | definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 
@@ -277,7 +277,7 @@ Object representing a parameter value.
 | Name | Type | Description |
 | --- | --- | --- |
 | api | <code>[SwaggerApi](#module_Sway..SwaggerApi)</code> | The `SwaggerApi` object |
-| definition | <code>object</code> | The path definition *(The raw path definition **after** remote references were                                 resolved)* |
+| definition | <code>object</code> | The path definition *(The raw path definition __after__ remote references were                                 resolved)* |
 | definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
 | operationObjects | <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> | The `Operation` objects |
 | parameterObjects | <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code> | The path-level `Parameter` objects |
@@ -308,7 +308,7 @@ The Path object.
 | --- | --- | --- |
 | api | <code>[SwaggerApi](#module_Sway..SwaggerApi)</code> | The `SwaggerApi` object |
 | path | <code>string</code> | The path string |
-| definition | <code>object</code> | The path definition *(The raw path definition **after** remote references were                              resolved)* |
+| definition | <code>object</code> | The path definition *(The raw path definition __after__ remote references were                              resolved)* |
 | definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
@@ -354,7 +354,7 @@ Return the parameters for this path.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| definition | <code>object</code> | The response definition *(The raw responsedefinition **after** remote references were                                 resolved)* |
+| definition | <code>object</code> | The response definition *(The raw responsedefinition __after__ remote references were                                 resolved)* |
 | definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The Operation object |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
@@ -382,7 +382,7 @@ The Swagger Response object.
 | --- | --- | --- |
 | operationObject | <code>[Operation](#module_Sway..Operation)</code> | The `Operation` object |
 | statusCode | <code>string</code> | The status code |
-| definition | <code>object</code> | The response definition *(The raw response definition **after** remote references were                              resolved)* |
+| definition | <code>object</code> | The response definition *(The raw response definition __after__ remote references were                              resolved)* |
 | definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 
