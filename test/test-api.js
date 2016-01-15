@@ -1581,6 +1581,31 @@ describe('SwaggerApi', function () {
       });
     });
 
+    it('should return warnings for JsonRefs warnings', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.paths['/pet'].post.parameters[0].schema.extraField = 'This is an extra field';
+
+      Sway.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          var results =  api.validate();
+
+          assert.deepEqual(results, {
+            errors: [],
+            warnings: [
+              {
+                code: 'EXTRA_REFERENCE_PROPERTIES',
+                message: 'Extra JSON Reference properties will be ignored: extraField',
+                path: ['paths', '/pet', 'post', 'parameters', '0', 'schema']
+              }
+            ]
+          });
+        })
+        .then(done, done);
+    });
+
     describe('human readable errors for invalid schema', function () {
       function validateError (api, defType) {
         var results = api.validate();
