@@ -18,6 +18,7 @@
         html += '<ul>';
         html += '<li><strong>Swagger Version:</strong>&nbsp;' + theApi.version + '</li>';
         html += '<li><strong>Specification:</strong>&nbsp;<a href="' + theApi.documentationUrl + '">' + theApi.documentationUrl + '</a></li>';
+        html += '<li><strong>Valid:</strong>&nbsp;' + (theApi.validate().errors.length === 0) + '</li>';
         html += '</ul>';
         html += '</div>';
         html += '<div>';
@@ -36,7 +37,6 @@
         html += '</div>';
 
         document.body.innerHTML = html;
-        console.log(html)
       }, function (err) {
         document.body.innerHTML += '<p><strong>Failed to Process</strong></p><span>' + err.message + '</span>';
       });
