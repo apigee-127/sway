@@ -62,7 +62,7 @@
     "debug": "^2.2.0",
     "js-base64": "^2.1.9",
     "js-yaml": "^3.5.1",
-    "json-refs": "^2.0.3",
+    "json-refs": "^2.0.4",
     "json-schema-faker": "^0.2.6",
     "lodash": "^3.10.1",
     "native-promise-only": "^0.8.1",

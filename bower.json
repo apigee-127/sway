@@ -25,7 +25,7 @@
   ],
   "dependencies": {
     "js-yaml": "~3.5.1",
-    "json-refs": "~2.0.3",
+    "json-refs": "~2.0.4",
     "lodash": "~3.10.1",
     "visionmedia-debug": "~2.2.0",
     "z-schema": "~3.16.1",
