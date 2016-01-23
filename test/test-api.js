@@ -1024,7 +1024,7 @@ describe('SwaggerApi', function () {
         var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
         cSwagger.paths['/something'] = {
-          $ref: '/file[/].html'
+          $ref: 'http://:8080'
         };
 
         Sway.create({
@@ -1037,7 +1037,7 @@ describe('SwaggerApi', function () {
             assert.deepEqual(results.errors, [
               {
                 code: 'INVALID_REFERENCE',
-                message: 'URI is not strictly valid.',
+                message: 'HTTP URIs must have a host.',
                 path: ['paths', '/something', '$ref']
               }
             ]);
