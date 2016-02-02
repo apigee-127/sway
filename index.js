@@ -180,7 +180,7 @@ module.exports.create = function (options) {
       // Resolve all references (Should only resolve locals now since the remote references are resolved)
       delete cOptions.jsonRefs.filter;
 
-      return JsonRefs.resolveRefs(remoteResults.resolved, cOptions.jsonRefs)
+      return JsonRefs.resolveRefs(remoteResults.value || cOptions.definition, cOptions.jsonRefs)
         .then(function (results) {
           return {
             // The original Swagger definition
@@ -190,22 +190,7 @@ module.exports.create = function (options) {
             // The original Swagger definition with all its references resolved
             definitionFullyResolved: results.resolved,
             // Merge the local reference details with the remote reference details
-            refs: _.reduce(results.refs, function (allRefs, refDetails, refPtr) {
-              var refPath = JsonRefs.pathFromPtr(refPtr);
-
-              if (!_.has(allRefs, refPtr)) {
-                if (_.has(remoteResults.resolved, refPath)) {
-                  refDetails.value = _.get(remoteResults.resolved, refPath);
-                } else {
-                  refDetails.missing = true;
-                  refDetails.type = 'invalid';
-                }
-
-                allRefs[refPtr] = refDetails;
-              }
-
-              return allRefs;
-            }, remoteResults.refs)
+            refs: results.refs
           }
         });
     })

@@ -780,15 +780,15 @@ describe('SwaggerApi', function () {
               assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/A'],
-                  message: 'Schema object inherits from itself: #/definitions/A',
-                  path: ['definitions', 'A']
-                },
-                {
-                  code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/B', '#/definitions/A', '#/definitions/B'],
                   message: 'Schema object inherits from itself: #/definitions/B',
                   path: ['definitions', 'B']
+                },
+                {
+                  code: 'CIRCULAR_INHERITANCE',
+                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/A'],
+                  message: 'Schema object inherits from itself: #/definitions/A',
+                  path: ['definitions', 'A']
                 }
               ]);
             })
@@ -830,9 +830,9 @@ describe('SwaggerApi', function () {
               assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/C', '#/definitions/A'],
-                  message: 'Schema object inherits from itself: #/definitions/A',
-                  path: ['definitions', 'A']
+                  lineage: ['#/definitions/C', '#/definitions/A', '#/definitions/B', '#/definitions/C'],
+                  message: 'Schema object inherits from itself: #/definitions/C',
+                  path: ['definitions', 'C']
                 },
                 {
                   code: 'CIRCULAR_INHERITANCE',
@@ -842,9 +842,9 @@ describe('SwaggerApi', function () {
                 },
                 {
                   code: 'CIRCULAR_INHERITANCE',
-                  lineage: ['#/definitions/C', '#/definitions/A', '#/definitions/B', '#/definitions/C'],
-                  message: 'Schema object inherits from itself: #/definitions/C',
-                  path: ['definitions', 'C']
+                  lineage: ['#/definitions/A', '#/definitions/B', '#/definitions/C', '#/definitions/A'],
+                  message: 'Schema object inherits from itself: #/definitions/A',
+                  path: ['definitions', 'A']
                 }
               ]);
             })
