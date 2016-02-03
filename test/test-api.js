@@ -29,6 +29,7 @@
 var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
+var JsonRefs = require('json-refs');
 var sHelpers = require('../lib/helpers');
 var Sway = helpers.getSway();
 
@@ -752,6 +753,16 @@ describe('SwaggerApi', function () {
       });
 
       describe('circular composition/inheritance', function () {
+        function validateErrors (actual, expected) {
+          assert.equal(actual.length, expected.length);
+
+          _.each(actual, function (aErr) {
+            assert.deepEqual(aErr, _.find(expected, function (vErr) {
+              return JsonRefs.pathToPtr(aErr.path) === JsonRefs.pathToPtr(vErr.path);
+            }));
+          });
+        }
+
         it('definition (direct)', function (done) {
           var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
@@ -777,7 +788,8 @@ describe('SwaggerApi', function () {
               var results = api.validate();
 
               assert.deepEqual(results.warnings, []);
-              assert.deepEqual(results.errors, [
+
+              validateErrors(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/B', '#/definitions/A', '#/definitions/B'],
@@ -827,7 +839,7 @@ describe('SwaggerApi', function () {
               var results = api.validate();
 
               assert.deepEqual(results.warnings, []);
-              assert.deepEqual(results.errors, [
+              validateErrors(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
                   lineage: ['#/definitions/C', '#/definitions/A', '#/definitions/B', '#/definitions/C'],
