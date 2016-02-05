@@ -332,4 +332,52 @@ describe('issues', function () {
       })
       .then(done, done);    
   });
+
+  it('should not validate optional parameters that are undefined (Issue 60)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      name: 'alive',
+        in: 'query',
+      description: 'Whether the animal is alive or not',
+      type: 'boolean'
+    });
+
+    Sway.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').validateRequest({
+          query: {}
+        }), {
+          errors: [],
+          warnings: []
+        })
+      })
+      .then(done, done);    
+  });
+
+  it('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
+    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      name: 'nickname',
+        in: 'query',
+      description: 'The pet\' nickname',
+      type: 'string'
+    });
+
+    Sway.create({
+      definition: cSwaggerDoc
+    })
+      .then(function (api) {
+        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').validateRequest({
+          query: {}
+        }), {
+          errors: [],
+          warnings: []
+        })
+      })
+      .then(done, done);    
+  });
 });

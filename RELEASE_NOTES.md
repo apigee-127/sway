@@ -14,6 +14,7 @@ references resolved)*
 * Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
 * Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
 into account for the initial load
+* Fixed a bug where identifying required parameters didn't work in all cases *(Issue #60)*
 * Fixed a bug where we removed `String -> [Array|Object]` coercion to fix issue #46 but shouldn't had *(Issue #48)*'
 * Moved all response-specific APIs from `Operation` to the `Response` type except `Operation#validateResponse` *(Issue #44)*
     * API Additions
