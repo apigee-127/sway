@@ -11,6 +11,7 @@ references resolved)*
 * Changed object exported in the browser from `SwaggerApi` to `Sway`
 * Changed the `definition` property for `Operation`, `Parameter`, `Path` and `Response` to now be
 `definitionFullyResolved` and now the `definition` property is the original, non-dereferenced value
+* Fixed a bug where `Path#getOperation` did not handle uppercase method
 * Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
 * Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
 into account for the initial load
