@@ -244,7 +244,9 @@ describe('SwaggerApi', function () {
               {
                 code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                 message: 'Missing required property: paths',
-                path: []
+                params: ['paths'],
+                path: [],
+                schemaId: 'http://swagger.io/v2/schema.json#'
               }
             ]);
           })
@@ -945,6 +947,7 @@ describe('SwaggerApi', function () {
                   code: 'INVALID_TYPE',
                   description: 'The Pet status', // Copied in for non-body parameters
                   message: 'Expected type string but found type integer',
+                  params: ['string', 'integer'],
                   path: ['paths', '/pet', 'post', 'parameters', '1', 'default']
                 }
               ]);
@@ -968,6 +971,7 @@ describe('SwaggerApi', function () {
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type string but found type integer',
+                  params: ['string', 'integer'],
                   path: ['definitions', 'Pet', 'properties', 'name', 'default']
                 }
               ]);

@@ -70,6 +70,10 @@ if (typeof Promise === 'undefined') {
 /**
  * Validation error/warning object.
  *
+ * When this object is created as a result of JSON Schema validation, this object is created by 
+ * [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
+ * documented below.
+ *
  * @typedef {object} ValidationEntry
  *
  * @property {string} code - The code used to identify the error/warning
@@ -78,7 +82,11 @@ if (typeof Promise === 'undefined') {
  * @property {string[]} [lineage] - Contains the composition lineage for circular composition errors
  * @property {string} message - The human readable description of the error/warning
  * @property {string} [name] - The header name for header validation errors
+ * @property {array} [params] - The parameters used when validation failed *(This is a z-schema construct and is only
+ * set for JSON Schema validation errors.)*
  * @property {string[]} path - The path to the location in the document where the error/warning occurred
+ * @property {string} [schemaId] - The schema id *(This is a z-schema construct and is only set for JSON Schema
+ * validation errors and when its value is not `undefined`.)
  */
 
 /**

@@ -218,6 +218,7 @@ describe('issues', function () {
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type string',
+                  params: ['object', 'string'],
                   path: []
                 }
               ],
@@ -276,6 +277,7 @@ describe('issues', function () {
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type string',
+                  params: ['object', 'string'],
                   path: []
                 }
               ],

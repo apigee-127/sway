@@ -357,11 +357,13 @@ describe('Operation', function () {
               {
                 code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                 message: 'Missing required property: photoUrls',
+                params: ['photoUrls'],
                 path: []
               },
               {
                 code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                 message: 'Missing required property: name',
+                params: ['name'],
                 path: []
               }
             ],

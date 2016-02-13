@@ -118,6 +118,7 @@ describe('format validators', function () {
         {
           code: 'INVALID_TYPE',
           message: 'Expected type integer but found type number',
+          params: ['integer', 'number'],
           path: []
         }
       ]);
@@ -172,6 +173,7 @@ describe('format validators', function () {
         {
           code: 'INVALID_TYPE',
           message: 'Expected type integer but found type number',
+          params: ['integer', 'number'],
           path: []
         }
       ]);

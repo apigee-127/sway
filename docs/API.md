@@ -567,6 +567,10 @@ Performs validation of the Swagger API document(s).
 ### Sway~ValidationEntry : <code>object</code>
 Validation error/warning object.
 
+When this object is created as a result of JSON Schema validation, this object is created by 
+[z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
+documented below.
+
 **Kind**: inner typedef of <code>[Sway](#module_Sway)</code>  
 **Properties**
 
@@ -578,7 +582,9 @@ Validation error/warning object.
 | lineage | <code>Array.&lt;string&gt;</code> | Contains the composition lineage for circular composition errors |
 | message | <code>string</code> | The human readable description of the error/warning |
 | name | <code>string</code> | The header name for header validation errors |
+| params | <code>array</code> | The parameters used when validation failed *(This is a z-schema construct and is only set for JSON Schema validation errors.)* |
 | path | <code>Array.&lt;string&gt;</code> | The path to the location in the document where the error/warning occurred |
+| schemaId | <code>string</code> | The schema id *(This is a z-schema construct and is only set for JSON Schema validation errors and when its value is not `undefined`.) |
 
 <a name="module_Sway..ValidationResults"></a>
 ### Sway~ValidationResults : <code>object</code>

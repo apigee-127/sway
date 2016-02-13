@@ -368,6 +368,7 @@ describe('Response', function () {
                     code: 'MAXIMUM',
                     description: 'calls per hour allowed by the user',
                     message: 'Value 1000 is greater than maximum 5',
+                    params: [1000, 5],
                     path: []
                   }
                 ],
@@ -560,11 +561,13 @@ describe('Response', function () {
                 {
                   code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                   message: 'Missing required property: photoUrls',
+                  params: ['photoUrls'],
                   path: []
                 },
                 {
                   code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
                   message: 'Missing required property: name',
+                  params: ['name'],
                   path: []
                 }
               ],
@@ -609,6 +612,7 @@ describe('Response', function () {
                     {
                       code: 'MIN_LENGTH',
                       message: 'String is too short (2 chars), minimum 3',
+                      params: [2, 3],
                       path: []
                     }
                   ],

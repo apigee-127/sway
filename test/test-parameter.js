@@ -1025,6 +1025,7 @@ describe('Parameter', function () {
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type integer',
+                  params: ['object', 'integer'],
                   path: []
                 }
               ]);
@@ -1050,6 +1051,7 @@ describe('Parameter', function () {
                 {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type string',
+                  params: ['object', 'string'],
                   path: []
                 }
               ]);
@@ -1505,11 +1507,13 @@ describe('Parameter', function () {
           {
             code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
             message: 'Missing required property: photoUrls',
+            params: ['photoUrls'],
             path: []
           },
           {
             code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
             message: 'Missing required property: name',
+            params: ['name'],
             path: []
           }
         ]);

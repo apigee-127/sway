@@ -34,6 +34,8 @@ need to have a _composite view_ for operation parameters.)*
 with all references fully resolved)*
 * Updated invalid/missing JSON References to be a structural validation errors like z-schema does
 * Updated `SwaggerApi#validate` to include json-refs warnings as validation warnings
+* Updated validation errors/warnings to no longer have `params` pruned *(Issue #61)*
+* Updated validation errors/warnings to no longer have `schemaId` pruned when its value is not `undefined` *(Issue #61)*
 * Various changes to all constructors in `lib/types` *(Should have no impact since these are technically internal)*
 
 ### v0.6.0 (2015-11-25)
