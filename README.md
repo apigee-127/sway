@@ -53,8 +53,9 @@ npm install sway --save
 
 ## Documentation
 
-The documentation for this project can be found here: https://github.com/apigee-127/sway/blob/master/docs/README.md
-Of course, if you just want a quick link to the API documentation, that would be here: https://github.com/apigee-127/sway/blob/master/docs/API.md
+The documentation for this project can be found here: [/docs/README](/docs/README.md)
+
+Of course, if you just want a quick link to the API documentation, that would be here:[/docs/API.md](/docs/API.md)
 
 ## Contributing
 
