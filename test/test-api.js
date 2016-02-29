@@ -30,14 +30,14 @@ var _ = require('lodash');
 var assert = require('assert');
 var helpers = require('./helpers');
 var JsonRefs = require('json-refs');
-var sHelpers = require('../lib/helpers');
+var supportedHttpMethods = require('swagger-methods');
 var Sway = helpers.getSway();
 
 function getOperationCount (pathDef) {
   var count = 0;
 
   _.each(pathDef, function (operation, method) {
-    if (sHelpers.supportedHttpMethods.indexOf(method) > -1) {
+    if (supportedHttpMethods.indexOf(method) > -1) {
       count += 1;
     }
   });
