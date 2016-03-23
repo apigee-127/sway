@@ -393,6 +393,12 @@ describe('Parameter', function () {
             url: '/v2/pet/abc%3AHZ'
           }).raw, 'abc:HZ');
         });
+
+        it('provided value with slash (encoded)', function () {
+          assert.deepEqual(parameter.getValue({
+            url: '/v2/pet/abc%2FHZ'
+          }).raw, 'abc/HZ');
+        });
       });
 
       describe('query', function () {
