@@ -48,7 +48,7 @@
     "gulp-uglify": "^1.5.1",
     "karma": "^0.13.19",
     "karma-mocha": "^0.2.1",
-    "karma-mocha-reporter": "^1.1.5",
+    "karma-mocha-reporter": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.0",
     "mocha": "^2.4.5",
     "pathmodify": "^0.5.0",
