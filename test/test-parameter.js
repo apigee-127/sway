@@ -1181,8 +1181,10 @@ describe('Parameter', function () {
             });
 
             describe('date format', function () {
-              var dateStr = '2015-04-09';
-              var date = new Date(dateStr);
+              var date = new Date('2015-04-09');
+              var validValues = ['2015-04-09', '0000-01-01', '9999-12-31'];
+              var invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09"',
+                '2015-00-09', '2015-13-09', '2015-04-00', '2015-04-32', '10000-01-01'];
 
               before(function (done) {
                 var cSwagger = _.cloneDeep(helpers.swaggerDoc);
@@ -1215,32 +1217,42 @@ describe('Parameter', function () {
                 assert.ok(paramValue.valid);
               });
 
-              it('string request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    createdBefore: dateStr
-                  }
-                });
+              _.each(validValues, function (value, index) {
+                it('string request value ' + index, function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: value
+                    }
+                  });
 
-                validateDate(paramValue.value, date);
-                assert.ok(paramValue.valid);
+                  validateDate(paramValue.value, new Date(value));
+                  assert.ok(paramValue.valid);
+                });
               });
 
-              it('invalid request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    createdBefore: 'invalid'
-                  }
-                });
+              _.each(invalidValues, function (value, index) {
+                it('invalid request value ' + index, function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: value
+                    }
+                  });
 
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message, 'Object didn\'t pass validation for format date: invalid');
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.error.message, 'Object didn\'t pass validation for format date: ' + value);
+                });
               });
             });
 
             describe('date-time format', function () {
-              var dateTimeStr = '2015-04-09T14:07:26-06:00';
-              var dateTime = new Date(dateTimeStr);
+              var dateTime = new Date('2015-04-09T14:07:26-06:00');
+              var validValues = [
+                '2015-04-09T14:07:26-06:00', '2015-04-09T14:07:26.0182-06:00', '2015-04-09T14:07:26+06:00',
+                '2015-04-09T14:07:26Z', '2001-01-01T00:00:00+00:00', '9999-12-31T23:59:59+23:59'];
+              var invalidValues = ['invalid', '12345', 'jan 5', '"2015-04-09T14:07:26-06:00"',
+                '2015-00-09T14:07:26-06:00', '2015-13-09T14:07:26-06:00', '2015-04-00T14:07:26-06:00',
+                '2015-04-32T14:07:26-06:00', '2015-04-09T24:07:26-06:00', '2015-04-09T14:60:26-06:00',
+                '2015-04-09T14:07:61-06:00', '2015-04-09T14:07:26-25:00', '2015-04-09T14:07:26+25:00'];
 
               before(function (done) {
                 var cSwagger = _.cloneDeep(helpers.swaggerDoc);
@@ -1273,26 +1285,30 @@ describe('Parameter', function () {
                 assert.ok(paramValue.valid);
               });
 
-              it('string request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    createdBefore: dateTimeStr
-                  }
-                });
+              _.each(validValues, function (value, index) {
+                it('string request value ' + index, function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: value
+                    }
+                  });
 
-                validateDate(paramValue.value, dateTime);
-                assert.ok(paramValue.valid);
+                  validateDate(paramValue.value, new Date(value));
+                  assert.ok(paramValue.valid);
+                });
               });
 
-              it('invalid request value', function () {
-                var paramValue = cParam.getValue({
-                  query: {
-                    createdBefore: 'invalid'
-                  }
-                });
+              _.each(invalidValues, function (value, index) {
+                it('invalid request value ' + index, function () {
+                  var paramValue = cParam.getValue({
+                    query: {
+                      createdBefore: value
+                    }
+                  });
 
-                assert.ok(_.isUndefined(paramValue.value));
-                assert.equal(paramValue.error.message,  'Object didn\'t pass validation for format date-time: invalid');
+                  assert.ok(_.isUndefined(paramValue.value));
+                  assert.equal(paramValue.error.message,  'Object didn\'t pass validation for format date-time: ' + value);
+                });
               });
             });
           });
