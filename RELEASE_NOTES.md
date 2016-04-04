@@ -1,6 +1,6 @@
 ## Release Notes
 
-### v1.0.0 (TBD)
+### v1.0.0 (2016-04-04)
 
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
 * Added `Operation#getParameter(name, [location])` *(Issue #56)*

@@ -7,11 +7,6 @@ Sway will always be built around the latest stable release of Swagger, which hap
 This means that its APIs and object model will be specific to that version of Swagger and supporting any other versions
 of Swagger will require a conversion step prior to using Sway.
 
-# Disclaimer
-
-This is an unreleased API and is subject to change without any warning.  Also, this document may be out of date at any
-time up until we publish the first release.
-
 ## Installation
 
 sway is available for both Node.js and the browser.  Installation instructions for each environment are below.
@@ -30,8 +25,12 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,484kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _644kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone.js): _6,312kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone-min.js): _1,156kb_, minified, compressed and no source map
+
+**Note:** I realize these binaries are big and I'm working on making them smaller.  Unfortunately, some of this is out
+of my control without rewriting some of the core features provided by third-party libraries currently contributing to
+the size issue.
 
 ### Node.js
 

@@ -17,11 +17,6 @@ of Swagger will require a conversion step prior to using Sway.
 * License: [![License](http://img.shields.io/npm/l/sway.svg)](https://github.com/apigee-127/sway/blob/master/LICENSE)
 * Version: [![NPM Version](http://img.shields.io/npm/v/sway.svg)](https://www.npmjs.org/package/sway)
 
-## Project Status
-
-Up until `1.0.0`, the API is unstable and can change without warning.  While we will do our best to ensure this does
-not happen, as we begin to use sway we may run into situations where changing the API is required.
-
 ## Installation
 
 sway is available for both Node.js and the browser.  Installation instructions for each environment are below.
@@ -40,8 +35,12 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway.js): _4,484kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-min.js): _644kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone.js): _6,312kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone-min.js): _1,156kb_, minified, compressed and no source map
+
+**Note:** I realize these binaries are big and I'm working on making them smaller.  Unfortunately, some of this is out
+of my control without rewriting some of the core features provided by third-party libraries currently contributing to
+the size issue.
 
 ### Node.js
 
