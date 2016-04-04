@@ -120,6 +120,15 @@ describe('format validators', function () {
           message: 'Expected type integer but found type number',
           params: ['integer', 'number'],
           path: []
+        },
+        {
+          code: 'INVALID_FORMAT',
+          message: 'Object didn\'t pass validation for format int32: 1.1',
+          params: [
+            'int32',
+            1.1
+          ],
+          path: []
         }
       ]);
     });
@@ -174,6 +183,15 @@ describe('format validators', function () {
           code: 'INVALID_TYPE',
           message: 'Expected type integer but found type number',
           params: ['integer', 'number'],
+          path: []
+        },
+        {
+          code: 'INVALID_FORMAT',
+          message: 'Object didn\'t pass validation for format int64: 1.1',
+          params: [
+            'int64',
+            1.1
+          ],
           path: []
         }
       ]);

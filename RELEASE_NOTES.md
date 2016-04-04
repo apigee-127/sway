@@ -11,6 +11,7 @@ references resolved)*
 * Changed object exported in the browser from `SwaggerApi` to `Sway`
 * Changed the `definition` property for `Operation`, `Parameter`, `Path` and `Response` to now be
 `definitionFullyResolved` and now the `definition` property is the original, non-dereferenced value
+* Fixed a bug where `date`/`date-time` formats were not validated properly *(PR #70)*
 * Fixed a bug where `Path#getOperation` did not handle uppercase method
 * Fixed a bug where `Sway#create` did not properly register custom validators *(Issue #53)*
 * Fixed a bug where `Sway#create` with a relative `options.definition` did not take `options.jsonRefs.relativeBase`
@@ -37,6 +38,7 @@ with all references fully resolved)*
 * Updated `SwaggerApi#validate` to include json-refs warnings as validation warnings
 * Updated validation errors/warnings to no longer have `params` pruned *(Issue #61)*
 * Updated validation errors/warnings to no longer have `schemaId` pruned when its value is not `undefined` *(Issue #61)*
+* Updated validation to not stop at the first JSON Schema validation error *(Issue #63)*
 * Various changes to all constructors in `lib/types` *(Should have no impact since these are technically internal)*
 
 ### v0.6.0 (2015-11-25)
