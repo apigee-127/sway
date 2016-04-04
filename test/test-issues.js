@@ -332,7 +332,7 @@ describe('issues', function () {
         assert.equal(pageOffsetParamValue.raw, req.query.page.nested.offset);
         assert.equal(pageOffsetParamValue.value, 1);
       })
-      .then(done, done);    
+      .then(done, done);
   });
 
   it('should not validate optional parameters that are undefined (Issue 60)', function (done) {
@@ -356,7 +356,7 @@ describe('issues', function () {
           warnings: []
         })
       })
-      .then(done, done);    
+      .then(done, done);
   });
 
   it('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
@@ -380,6 +380,52 @@ describe('issues', function () {
           warnings: []
         })
       })
-      .then(done, done);    
+      .then(done, done);
+  });
+
+  describe('should handle mixed-case headers for validation (Issue 67)', function () {
+    it('parameter processing', function () {
+      var parameterValue = swaggerApi.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
+        headers: {
+          'ApI_KeY': 'Testing'
+        }
+      });
+
+      assert.equal(parameterValue.value, 'Testing');
+    });
+
+    it('request validation', function () {
+      var results = swaggerApi.getOperation('/pet', 'POST').validateRequest({
+        url: '/pet',
+        body: {
+          name: 'Test Pet',
+          photoUrls: []
+        },
+        headers: {
+          'CoNtEnT-TyPe': 'application/json'
+        }
+      });
+
+      assert.equal(results.warnings.length, 0);
+      assert.equal(results.errors.length, 0);
+    });
+
+    it('response validation', function () {
+      var results = swaggerApi.getOperation('/pet/findByStatus', 'GET').validateResponse({
+        headers: {
+          'CoNtEnT-TyPe': 'application/json'
+        },
+        statusCode: 200,
+        body: [
+          {
+            name: 'Test Pet',
+            photoUrls: []
+          }
+        ]
+      });
+
+      assert.equal(results.warnings.length, 0);
+      assert.equal(results.errors.length, 0);
+    });
   });
 });

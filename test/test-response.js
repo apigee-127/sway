@@ -242,7 +242,7 @@ describe('Response', function () {
             assert.deepEqual(results.errors, [
               {
                 code: 'INVALID_CONTENT_TYPE',
-                message: 'Invalid Content-Type (undefined).  ' +
+                message: 'Invalid Content-Type (application/octet-stream).  ' +
                          'These are supported: application/xml, application/json',
                 path: []
               }
