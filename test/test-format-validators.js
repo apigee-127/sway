@@ -202,7 +202,7 @@ describe('format validators', function () {
     });
   });
 
-  describe('int32', function () {
+  describe('uuid', function () {
     var badParamValue;
     var goodParamValue;
 
