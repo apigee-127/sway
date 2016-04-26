@@ -201,4 +201,62 @@ describe('format validators', function () {
       assert.ok(goodParamValue.valid);
     });
   });
+
+  describe('uuid', function () {
+    var badParamValue;
+    var goodParamValue;
+
+    before(function (done) {
+      var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+        name: 'uuid',
+          in: 'query',
+        type: 'string',
+        format: 'uuid'
+      });
+
+      // Test the format validator using parameter validation
+      Sway.create({definition: cSwaggerDoc})
+        .then(function (api) {
+            badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('uuid').getValue({
+            query: {
+              uuid: 'asdf'
+            }
+          });
+          goodParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('uuid').getValue({
+            query: {
+              uuid: '9b299a97-858c-40c7-bbd1-8ac3987db564'
+            }
+          });
+        })
+        .then(done, done);
+    });
+
+    it('bad value', function () {
+      var error = badParamValue.error;
+
+      assert.ok(!badParamValue.valid);
+      assert.ok(!_.isUndefined(badParamValue.value));
+      assert.equal(badParamValue.raw, 'asdf');
+      assert.equal(error.message, 'Value failed JSON Schema validation');
+      assert.equal(error.code, 'SCHEMA_VALIDATION_FAILED');
+      assert.ok(error.failedValidation);
+      assert.deepEqual(error.errors, [
+        {
+          code: 'INVALID_FORMAT',
+          message: 'Object didn\'t pass validation for format uuid: asdf',
+          params: [
+            'uuid',
+            'asdf'
+          ],
+          path: []
+        }
+      ]);
+    });
+
+    it('good value', function () {
+      assert.ok(goodParamValue.valid);
+    });
+  });
 });

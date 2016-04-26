@@ -70,6 +70,7 @@
     "path-to-regexp": "^1.2.1",
     "swagger-methods": "^1.0.0",
     "swagger-schema-official": "2.0.0-bab6bed",
+    "validator": "^5.2.0",
     "z-schema": "^3.16.1"
   }
 }
