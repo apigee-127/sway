@@ -1,5 +1,5 @@
 {
-  "name": "sway",
+  "name": "@m/sway",
   "version": "1.0.0",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
