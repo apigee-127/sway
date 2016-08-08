@@ -83,6 +83,17 @@ describe('issues', function () {
       .then(done, done);
   });
 
+  it('should support external nested references', function (done) {
+    Sway.create({
+      definition: helpers.swaggerDocNestedRefsPath
+    })
+      .then(function (api) {
+        var entry = api.references['#/definitions/x/properties/children/items'];
+        assert.ok(typeof entry.missing === 'undefined');
+      })
+      .then(done, done);
+  });
+
   it('should not throw an error for unknown formats (Issue 20)', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
