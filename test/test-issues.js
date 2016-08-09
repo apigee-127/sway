@@ -89,6 +89,7 @@ describe('issues', function () {
     })
       .then(function (api) {
         var entry = api.references['#/definitions/x/properties/children/items'];
+        
         assert.ok(typeof entry.missing === 'undefined');
       })
       .then(done, done);
