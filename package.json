@@ -69,7 +69,7 @@
     "native-promise-only": "^0.8.1",
     "path-to-regexp": "^1.2.1",
     "swagger-methods": "^1.0.0",
-    "swagger-schema-official": "2.0.0-bab6bed",
+    "swagger-schema-dianwoda": "2.0.0",
     "z-schema": "^3.18.0"
   }
 }
