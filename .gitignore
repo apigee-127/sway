@@ -5,6 +5,9 @@ bower_components/
 coverage/
 typings/
 .settings/
+.vscode/
+
 .projectile
 .tern-project
 .DS_Store
+jsconfig.json
