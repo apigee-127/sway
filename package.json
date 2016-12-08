@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "gulp"
   },
