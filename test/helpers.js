@@ -36,8 +36,10 @@ var YAML = require('js-yaml');
 var documentBase = path.join(__dirname, 'browser', 'documents');
 var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
 var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
+var swaggerDocRelativeRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-relative-refs.yaml'), 'utf8'));
 var swaggerDocValidator = helpers.getJSONSchemaValidator();
-var swaggerApi
+var swaggerApi;
+var swaggerApiRelativeRefs;
 
 function fail (msg) {
   assert.fail(msg);
@@ -64,6 +66,24 @@ module.exports.getSwaggerApi = function (callback) {
   }
 };
 
+module.exports.getSwaggerApiRelativeRefs = function (callback) {
+  if (swaggerApiRelativeRefs) {
+    callback(swaggerApiRelativeRefs);
+  } else {
+    Sway.create({
+      definition: swaggerDocRelativeRefs,
+      jsonRefs: {relativeBase: path.join(relativeBase, './2.0')}
+    })
+      .then(function (obj) {
+        swaggerApiRelativeRefs = obj;
+
+        callback(swaggerApiRelativeRefs);
+      }, function (err) {
+        callback(err);
+      });
+  }
+};
+
 module.exports.getSway = function () {
   return Sway;
 };
@@ -81,6 +101,8 @@ module.exports.shouldNotHadFailed = function (err) {
 module.exports.swaggerDoc = swaggerDoc;
 
 module.exports.swaggerDocPath = path.join(relativeBase, './2.0/swagger.yaml');
+
+module.exports.swaggerDocRelativeRefs = swaggerDocRelativeRefs;
 
 module.exports.swaggerDocRelativeRefsPath = path.join(relativeBase, './2.0/swagger-relative-refs.yaml');
 
