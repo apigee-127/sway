@@ -102,8 +102,6 @@ module.exports.swaggerDoc = swaggerDoc;
 
 module.exports.swaggerDocPath = path.join(relativeBase, './2.0/swagger.yaml');
 
-module.exports.swaggerDocRelativeRefs = swaggerDocRelativeRefs;
-
 module.exports.swaggerDocRelativeRefsPath = path.join(relativeBase, './2.0/swagger-relative-refs.yaml');
 
 module.exports.swaggerDocValidator = swaggerDocValidator;
