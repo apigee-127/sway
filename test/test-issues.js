@@ -65,22 +65,20 @@ describe('issues', function () {
   });
 
   it('should support relative references (and to YAML files) (Issue 17)', function (done) {
-    Sway.create({
-      definition: helpers.swaggerDocRelativeRefsPath
-    })
-      .then(function () {
-        assert.ok(_.isUndefined(swaggerApi.definitionFullyResolved.info.$ref));
-        assert.ok(Object.keys(swaggerApi.definitionFullyResolved.definitions).length > 1);
-        assert.ok(Object.keys(swaggerApi.definitionFullyResolved.paths).length > 1);
-        assert.equal(swaggerApi.definitionFullyResolved.info.title, 'Swagger Petstore');
-        assert.ok(_.isPlainObject(swaggerApi.definitionFullyResolved.definitions.Pet));
-        assert.ok(_.isPlainObject(swaggerApi.definitionFullyResolved.paths['/pet/{petId}'].get));
+    helpers.getSwaggerApiRelativeRefs(function (swaggerApiRelativeRefs) {
+      assert.ok(_.isUndefined(swaggerApiRelativeRefs.definitionFullyResolved.info.$ref));
+      assert.ok(Object.keys(swaggerApiRelativeRefs.definitionFullyResolved.definitions).length > 1);
+      assert.ok(Object.keys(swaggerApiRelativeRefs.definitionFullyResolved.paths).length > 1);
+      assert.equal(swaggerApiRelativeRefs.definitionFullyResolved.info.title, 'Swagger Petstore');
+      assert.ok(_.isPlainObject(swaggerApiRelativeRefs.definitionFullyResolved.definitions.Pet));
+      assert.ok(_.isPlainObject(swaggerApiRelativeRefs.definitionFullyResolved.paths['/pet/{petId}'].get));
 
-        _.each(swaggerApi.references, function (entry) {
-          assert.ok(typeof entry.missing === 'undefined');
-        });
-      })
-      .then(done, done);
+      _.each(swaggerApiRelativeRefs.references, function (entry) {
+        assert.ok(typeof entry.missing === 'undefined');
+      });
+
+      done();
+    })
   });
 
   it('should not throw an error for unknown formats (Issue 20)', function (done) {
