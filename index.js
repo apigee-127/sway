@@ -188,7 +188,7 @@ module.exports.create = function (options) {
       // Resolve all references (Should only resolve locals now since the remote references are resolved)
       delete cOptions.jsonRefs.filter;
 
-      return JsonRefs.resolveRefs(remoteResults.value || cOptions.definition, cOptions.jsonRefs)
+      return JsonRefs.resolveRefs(remoteResults.resolved || cOptions.definition, cOptions.jsonRefs)
         .then(function (results) {
           return {
             // The original Swagger definition
