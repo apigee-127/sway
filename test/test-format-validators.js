@@ -201,4 +201,67 @@ describe('format validators', function () {
       assert.ok(goodParamValue.valid);
     });
   });
+  describe('array', function () {
+    var singleNumParamValue;
+    var singleStrParamValue;
+    var multipleParamValue;
+    var singleStrBooleanLikeValue;
+
+    before(function (done) {
+      var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+        name: 'versions',
+          in: 'query',
+        type: 'array',
+        items: {
+          type: 'string'
+        }
+      });
+
+      // Test primitive values, because req.query.PARAM will return a primitive
+      // if only one is passed to the query param.
+      Sway.create({definition: cSwaggerDoc})
+        .then(function (api) {
+          // Test a string value that JSON.parse would coerse to Number
+          singleNumParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('versions').getValue({
+            query: {
+              versions: '1.1'
+            }
+          });
+          // Test a string value that JSON.parse would coerse to Number
+          singleStrBooleanLikeValue = api.getOperation('/pet/findByStatus', 'get').getParameter('versions').getValue({
+            query: {
+              versions: 'true'
+            }
+          });
+          // Test a string value
+          singleStrParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('versions').getValue({
+            query: {
+              versions: '1.1#rc'
+            }
+          });
+          // Test an array value
+          multipleParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('versions').getValue({
+            query: {
+              versions: ['1.0', '1.1#rc']
+            }
+          });
+        })
+        .then(done, done);
+    });
+    it('string value that could be coersed to Number', function () {
+      assert.ok(singleNumParamValue.valid);
+    });
+    it('string value that could be coersed to Boolean', function () {
+      assert.ok(singleStrBooleanLikeValue.valid);
+    });
+    it('string value (as req.query.param returns primitive if only one param is passed)', function () {
+      assert.ok(singleStrParamValue.valid);
+    });
+    it('array value', function () {
+      assert.ok(multipleParamValue.valid);
+    });
+
+  });
 });
