@@ -1,5 +1,12 @@
 ## Release Notes
 
+### v1.0.1 (TBD)
+
+* Added typings *(PR 113)*
+* Fixed a bug where using `$ref` to reference path objects in other files resulted in an error *(Issue #92)*
+* Updated `json-schema-faker` dependency to `0.3.2` *(PR #80)*
+* Updated `z-schema` dependency to `3.18.0` which removes transitive dependency on `request` *(PR #107)*
+
 ### v1.0.0 (2016-04-04)
 
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*
