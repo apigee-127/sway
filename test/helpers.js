@@ -37,8 +37,10 @@ var documentBase = path.join(__dirname, 'browser', 'documents');
 var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
 var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
 var swaggerDocRelativeRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-relative-refs.yaml'), 'utf8'));
+var swaggerDocPolymorphic = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-polymorphic.yaml'), 'utf8'));
 var swaggerDocValidator = helpers.getJSONSchemaValidator();
 var swaggerApi;
+var swaggerApiPolymorphic;
 var swaggerApiRelativeRefs;
 
 function fail (msg) {
@@ -78,6 +80,24 @@ module.exports.getSwaggerApiRelativeRefs = function (callback) {
         swaggerApiRelativeRefs = obj;
 
         callback(swaggerApiRelativeRefs);
+      }, function (err) {
+        callback(err);
+      });
+  }
+};
+
+module.exports.getSwaggerApiPolymorphic = function (callback) {
+  if (swaggerApiPolymorphic) {
+    callback(swaggerApiPolymorphic);
+  } else {
+    Sway.create({
+      definition: swaggerDocPolymorphic,
+      jsonRefs: {relativeBase: path.join(relativeBase, './2.0')}
+    })
+      .then(function (obj) {
+        swaggerApiPolymorphic = obj;
+
+        callback(swaggerApiPolymorphic);
       }, function (err) {
         callback(err);
       });

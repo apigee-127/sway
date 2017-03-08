@@ -1,0 +1,192 @@
+swagger: "2.0"
+info:
+  description: "test"
+  version: "1.0.0"
+  title: "Swagger Petstore"
+  termsOfService: "http://helloreverb.com/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "petstore.swagger.io"
+basePath: "/v2"
+schemes:
+- "http"
+
+paths:
+  /toy:
+    post:
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Toy"
+      produces: 
+        - 'application/json'
+      consumes: 
+        - 'application/json'
+      responses:
+        201:
+          description: "Created toy"
+          schema:
+            $ref: '#/definitions/Toy'
+  /toys:
+    post:
+      summary: "Add a new toy"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Toy"
+      produces: 
+        - 'application/json'
+      consumes: 
+        - 'application/json'
+      responses:
+        201:
+          description: "Created toys"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Toy"
+  /package:
+    post:
+      summary: "Add a new package"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Package"
+      produces: 
+        - 'application/json'
+      consumes: 
+        - 'application/json'
+      responses:
+        201:
+          description: "Created package"
+          schema:
+            $ref: '#/definitions/Package'
+
+  /invoices:
+    post:
+      summary: "Add a new invoice"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Invoice"
+      produces: 
+        - 'application/json'
+      consumes: 
+        - 'application/json'
+      responses:
+        201:
+          description: "Created invoice"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Invoice'
+
+  /customer:
+    post:
+      summary: "Add a new customer"
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Customer"
+      produces: 
+        - 'application/json'
+      consumes: 
+        - 'application/json'
+      responses:
+        201:
+          description: "Created customer"
+          schema:
+            $ref: '#/definitions/Customer'
+
+definitions:
+  Package:
+    description: Package deal containing several items
+    properties:
+      name:
+        type: string
+      toy:
+        $ref: '#/definitions/Toy'
+
+  Toy:
+    description: A toy
+    type: object
+    discriminator: type
+    required: [type]
+
+    properties:
+      type:
+        type: string
+      cost:
+        type: number
+        minimum: 0
+
+  Bone:
+    description: Extends toy
+    allOf:
+      - $ref: '#/definitions/Toy'
+      - properties:
+          color:
+            type: string
+            enum: [white]
+
+  Whistle:
+    description: Extends toy
+    allOf:
+      - $ref: '#/definitions/Toy'
+      - properties:
+          color:
+            type: string
+            enum: [red]
+
+  Invoice:
+    description: Has packages
+    discriminator: invoiceType
+    required: [invoiceType]
+    properties:
+      id:
+        type: number
+      packages:
+        type: array
+        items:
+          $ref: '#/definitions/Package'
+      refunded:
+        type: boolean
+        default: false
+      invoiceType:
+        type: string
+
+  RefundedInvoice:
+    description: Extends invoice
+    allOf:
+      - $ref: '#/definitions/Invoice'
+      - properties:
+          refunded:
+            type: boolean
+            default: true
+          refundDate:
+            type: string
+
+  Customer:
+    description: Has list of invoices
+    properties:
+      invoices:
+        type: array
+        items:
+          $ref: '#/definitions/Invoice'
