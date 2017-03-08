@@ -66,7 +66,7 @@ describe('sway', function () {
         assert.ok(theApi.pathObjects.length > 0);
 
         // Validate the registration of customValidator on SwaggerApi
-        assert.deepEqual(theApi.customValidators, options.customValidators || [])
+        assert.deepEqual(theApi.customValidators, options.customValidators || []);
       };
     }
 

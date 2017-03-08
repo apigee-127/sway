@@ -547,6 +547,23 @@ paths:
           description: "User not found"
       security:
         - api_key: []
+  /toy:
+    post:
+      summary: "Creates a toy"
+      description: ""
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Toy"
+      responses:
+        default:
+          description: "successful operation"
 securityDefinitions:
   petstore_auth:
     type: "oauth2"
@@ -672,6 +689,35 @@ definitions:
     type: "object"
     xml:
       name: "Pet"
+  Toy:
+    required:
+    - "type"
+    discriminator: type
+    properties:
+      type:
+        type: string
+        enum:
+        - "Toy"
+        - "RubberBone"
+        - "Frisbee"
+      stock:
+        type: number
+  RubberBone:
+    allOf:
+      - $ref: '#/definitions/Toy'
+      - properties:
+          price:
+            type: number
+            minimum: 5
+            maximum: 10
+  Frisbee:
+    allOf:
+      - $ref: '#/definitions/Toy'
+      - properties:
+          price:
+            type: number
+            minimum: 15
+            maximum: 20
   ApiResponse:
     properties:
       code:

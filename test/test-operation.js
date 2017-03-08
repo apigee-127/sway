@@ -906,4 +906,922 @@ describe('Operation', function () {
       });
     });
   });
+
+  describe('getSwaggerApiPolymorphic', function () {
+    describe('#validateRequest', function () {
+      var req;
+      var results;
+      var swaggerApiPolymorphic;
+
+      before(function (done) {
+        helpers.getSwaggerApiPolymorphic(function (api) {
+          swaggerApiPolymorphic = api;
+          req = undefined;
+          results = undefined;
+          done();
+        });
+      });
+
+      it('should validate parameter using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toy', 'post')
+
+        var expectations = [
+          {
+            body: {type: 'toy', cost: 1},
+          },
+          {
+            body: {type: 'toy', cost: -1},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Bone', cost: 1, color: 'white'},
+          },
+          {
+            body: {type: 'Bone', cost: -1, color: 'white'},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Bone', cost: 1, color: 'red'},
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {type: 'Whistle', cost: 1, color: 'red'},
+          },
+          {
+            body: {type: 'Whistle', cost: -1, color: 'red'},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Whistle', cost: 1, color: 'white'},
+            error_code: 'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          req = {headers: {'content-type': 'application/json'}, body: expectation.body}
+          results = op.validateRequest(req)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      });
+
+      it('should throw if given an invalid type to extend', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toy', 'post')
+
+        req = {headers: {'content-type': 'application/json'}, body: {type: 'UNKNOWN', baseProperty: 1}}
+
+        try {
+          results = op.validateRequest(req);
+          helpers.shouldHadFailed();
+        } catch (e) {
+          assert.equal(e.message, 'Unable to extend using \'type\' as discriminator with value \'UNKNOWN\', as \'UNKNOWN\' is not a definition that exists');      
+        }
+      });
+
+      it('should validate nested parameters using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/package', 'post')
+
+        var expectations = [
+          {
+            body: {type: 'package', name: 'pet+toy'},
+          },
+          {
+            body: {type: 'package', name: 1},
+            error_code:'INVALID_TYPE'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}},
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}},
+            error_code:'MINIMUM'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}},
+            error_code:'ENUM_MISMATCH'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}},
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: -1, color: 'red'}},
+            error_code:'MINIMUM'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}},
+            error_code:'ENUM_MISMATCH'
+          }
+        ];
+
+        _.forEach(expectations, function (expectation) {
+          req = {headers: {'content-type': 'application/json'}, body: expectation.body}
+          results = op.validateRequest(req)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate arrays of parameters with different types using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toys', 'post')
+
+        var expectations = [
+          {
+            body: [{type: 'toy', cost: 1}],
+          },
+          {
+            body: [{type: 'toy', cost: -1}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'red'}],
+          },
+          {
+            body: [{type: 'Bone', cost: -1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'red'}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: -1, color: 'red'}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'white'}],
+            error_code:'ENUM_MISMATCH'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'red'}, {type: 'Whistle', cost: 1, color: 'red'}],
+            error_code:'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          req = {headers: {'content-type': 'application/json'}, body: expectation.body}
+          results = op.validateRequest(req)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate deeply nested arrays of parameters with different types using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/invoices', 'post')
+
+        var expectations = [
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1}],
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 'string'}],
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1, packages: [{type: 'package', name: 'string'}]}]
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1, packages: [{type: 'package', name: 1}]}],
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }]
+            }],
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}
+              }]
+            }],
+            error_code: 'MINIMUM'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'},
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }]
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }, {
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }]
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }, {
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          req = {headers: {'content-type': 'application/json'}, body: expectation.body}
+          results = op.validateRequest(req)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate deeply nested arrays of parameters with different types and multiple extended objects using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/customer', 'post');
+
+        var expectations = [
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'invoice', refunded: false, id: 1}]},
+          },
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date'}]},
+          },
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 1}]},
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            }
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            }
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'INVALID_TYPE'
+          },
+           {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+        ];
+
+        _.forEach(expectations, function (expectation) {
+          req = {headers: {'content-type': 'application/json'}, body: expectation.body}
+          results = op.validateRequest(req)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+    });
+
+    describe('#validateResponse', function () {
+      var res;
+      var results;
+      var swaggerApiPolymorphic;
+
+      before(function (done) {
+        helpers.getSwaggerApiPolymorphic(function (api) {
+          swaggerApiPolymorphic = api;
+          res = undefined;
+          results = undefined;
+          done();
+        });
+      });
+
+      it('should validate parameter using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toy', 'post')
+
+        var expectations = [
+          {
+            body: {type: 'toy', cost: 1},
+          },
+          {
+            body: {type: 'toy', cost: -1},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Bone', cost: 1, color: 'white'},
+          },
+          {
+            body: {type: 'Bone', cost: -1, color: 'white'},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Bone', cost: 1, color: 'red'},
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {type: 'Whistle', cost: 1, color: 'red'},
+          },
+          {
+            body: {type: 'Whistle', cost: -1, color: 'red'},
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {type: 'Whistle', cost: 1, color: 'white'},
+            error_code: 'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: expectation.body}
+          results = op.validateResponse(res)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      });
+
+      it('should throw if given an invalid type to extend', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toy', 'post')
+
+        res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: {type: 'UNKNOWN', baseProperty: 1}}
+
+        try {
+          results = op.validateResponse(res);
+          helpers.shouldHadFailed();
+        } catch (e) {
+          assert.equal(e.message, 'Unable to extend using \'type\' as discriminator with value \'UNKNOWN\', as \'UNKNOWN\' is not a definition that exists');      
+        }
+      });
+
+      it('should validate nested parameters using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/package', 'post')
+
+        var expectations = [
+          {
+            body: {type: 'package', name: 'pet+toy'},
+          },
+          {
+            body: {type: 'package', name: 1},
+            error_code:'INVALID_TYPE'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}},
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}},
+            error_code:'MINIMUM'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}},
+            error_code:'ENUM_MISMATCH'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}},
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: -1, color: 'red'}},
+            error_code:'MINIMUM'
+          },
+          {
+            body: {type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}},
+            error_code:'ENUM_MISMATCH'
+          }
+        ];
+
+        _.forEach(expectations, function (expectation) {
+          res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: expectation.body}
+          results = op.validateResponse(res)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate arrays of parameters with different types using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/toys', 'post')
+
+        var expectations = [
+          {
+            body: [{type: 'toy', cost: 1}],
+          },
+          {
+            body: [{type: 'toy', cost: -1}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'red'}],
+          },
+          {
+            body: [{type: 'Bone', cost: -1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'red'}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: -1, color: 'red'}],
+            error_code:'MINIMUM'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'white'}, {type: 'Whistle', cost: 1, color: 'white'}],
+            error_code:'ENUM_MISMATCH'
+          },
+          {
+            body: [{type: 'Bone', cost: 1, color: 'red'}, {type: 'Whistle', cost: 1, color: 'red'}],
+            error_code:'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: expectation.body}
+          results = op.validateResponse(res)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate deeply nested arrays of parameters with different types using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/invoices', 'post')
+
+        var expectations = [
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1}],
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 'string'}],
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1, packages: [{type: 'package', name: 'string'}]}]
+          },
+          {
+            body: [{invoiceType: 'invoice', refunded: false, id: 1, packages: [{type: 'package', name: 1}]}],
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }]
+            }],
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}
+              }]
+            }],
+            error_code: 'MINIMUM'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'},
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }]
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }, {
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }]
+          },
+          {
+            body: [{
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }, {
+              invoiceType: 'invoice', refunded: false, id: 1, packages: [{
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+              }, {
+                type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+              }]
+            }],
+            error_code: 'ENUM_MISMATCH'
+          }
+        ]
+
+        _.forEach(expectations, function (expectation) {
+          res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: expectation.body}
+          results = op.validateResponse(res)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+
+      it('should validate deeply nested arrays of parameters with different types and multiple extended objects using the base and extended definitions', function () {
+        var op = swaggerApiPolymorphic.getOperation('/customer', 'post');
+
+        var expectations = [
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'invoice', refunded: false, id: 1}]},
+          },
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date'}]},
+          },
+          {
+            body: {type: 'customer', invoices:[{invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 1}]},
+            error_code: 'INVALID_TYPE'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            }
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: -1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'MINIMUM'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'red'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            }
+          },
+          {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }]
+            },
+            error_code: 'INVALID_TYPE'
+          },
+           {
+            body: {
+              type: 'customer', invoices: [{
+                invoiceType: 'invoice', refunded: true, id: 1, refundDate: 1, packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'red'}
+                }]
+              }, {
+                invoiceType: 'refundedInvoice', refunded: true, id: 1, refundDate: 'date', packages:[{
+                  type: 'package', name: 'pet+toy', toy: {type: 'Bone', cost: 1, color: 'white'}
+                }, {
+                  type: 'package', name: 'pet+toy', toy: {type: 'Whistle', cost: 1, color: 'white'}
+                }]
+              }]
+            },
+            error_code: 'ENUM_MISMATCH'
+          },
+        ];
+
+        _.forEach(expectations, function (expectation) {
+          res = {headers: {'content-type': 'application/json'}, statusCode: 201, body: expectation.body}
+          results = op.validateResponse(res)
+          
+          try {
+            if (expectation.error_code) {
+              assert.equal(results.errors[0].errors[0].code, expectation.error_code);
+            } else {
+              assert.equal(results.errors.length, 0);
+            }
+          } catch (e) {
+            console.log(expectation, results)
+            throw e
+          }
+        })
+      })
+    }); 
+  }); 
 });

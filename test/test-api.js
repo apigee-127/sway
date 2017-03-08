@@ -100,6 +100,24 @@ describe('SwaggerApi', function () {
       it('should return no operation for missing method', function () {
         assert.ok(_.isUndefined(swaggerApi.getOperation('/pet/{petId}', 'head')));
       });
+
+      it('should throw typeError if argument is invalid', function () {
+        var scenarios = [
+          [[], 'pathOrReq is required'],
+          [['/pet/{petId}'], 'method cannot be undefined'],
+          [['/pet/{petId}', 2], 'method must be a string']
+        ];
+
+        _.forEach(scenarios, function (scenario) {
+          try {
+            swaggerApi.getOperation.apply(swaggerApi, scenario[0]);
+
+            helpers.shouldHadFailed();
+          } catch (err) {
+            assert.equal(scenario[1], err.message);
+          }
+        });
+      });
     });
 
     describe('http.ClientRequest (or similar)', function () {
@@ -886,7 +904,11 @@ describe('SwaggerApi', function () {
             .then(function (api) {
               var results = api.validate();
 
-              assert.deepEqual(results.warnings, []);
+              assert.deepEqual(results.warnings, [{
+                code: 'UNUSED_DEFINITION',
+                message: 'Definition is not used: #/definitions/A',
+                path: ['definitions', 'A']
+              }]);
               assert.deepEqual(results.errors, [
                 {
                   code: 'CIRCULAR_INHERITANCE',
