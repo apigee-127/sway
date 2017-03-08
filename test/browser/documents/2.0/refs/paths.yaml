@@ -514,25 +514,3 @@
         description: "User not found"
     security:
       - api_key: []
-
-/toy:
-  post:
-    summary: "Creates a toy"
-    description: ""
-    produces:
-    - "application/json"
-    consumes:
-    - "application/json"
-    parameters:
-    - in: "body"
-      name: "body"
-      required: true
-      schema:
-        $ref: "#/definitions/Toy"
-    responses:
-      201:
-        description: "successful operation"
-        schema:
-          $ref: "#/definitions/Toy"
-      default:
-        description: "successful operation"

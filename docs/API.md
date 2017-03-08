@@ -79,7 +79,12 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 <a name="new_module_Sway..Operation_new"></a>
 
 #### new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)
-The Swagger Operation object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition                      object.
+The Swagger Operation object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
 
 
 | Param | Type | Description |
@@ -96,7 +101,8 @@ The Swagger Operation object.**Note:** Do not use directly.**Extra Propertie
 Returns the parameter with the provided name and location when provided.
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
-**Returns**: <code>[Parameter](#module_Sway..Parameter)</code> - The `Parameter` matching the location and name combination or `undefined` if there is                                 no match  
+**Returns**: <code>[Parameter](#module_Sway..Parameter)</code> - The `Parameter` matching the location and name combination or `undefined` if there is
+                                 no match  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -132,14 +138,31 @@ Returns all responses for the operation.
 <a name="module_Sway..Operation+getSecurity"></a>
 
 #### operation.getSecurity() ⇒ <code>Array.&lt;object&gt;</code>
-Returns the composite security definitions for this operation.The difference between this API and `this.security` is that `this.security` is the raw `security` value for theoperation where as this API will return the global `security` value when available and this operation's securityis undefined.
+Returns the composite security definitions for this operation.
+
+The difference between this API and `this.security` is that `this.security` is the raw `security` value for the
+operation where as this API will return the global `security` value when available and this operation's security
+is undefined.
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>Array.&lt;object&gt;</code> - The security for this operation  
 <a name="module_Sway..Operation+validateRequest"></a>
 
 #### operation.validateRequest(req) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
-Validates the request.**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:  * `body`: Used for `body` and `formData` parameters  * `files`: Used for `formData` parameters whose `type` is `file`  * `headers`: Used for `header` parameters and consumes  * `query`: Used for `query` parameters  * `url`: used for `path` parametersFor `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`property.*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+Validates the request.
+
+**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
+
+  * `body`: Used for `body` and `formData` parameters
+  * `files`: Used for `formData` parameters whose `type` is `file`
+  * `headers`: Used for `header` parameters and consumes
+  * `query`: Used for `query` parameters
+  * `url`: used for `path` parameters
+
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
+property.
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>[ValidationResults](#module_Sway..ValidationResults)</code> - The validation results  
@@ -185,7 +208,12 @@ Validates the response.
 <a name="new_module_Sway..Parameter_new"></a>
 
 #### new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)
-The Swagger Parameter object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definitionobject.
+The Swagger Parameter object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+object.
 
 
 | Param | Type | Description |
@@ -205,7 +233,19 @@ Returns a sample value for the parameter based on its schema;
 <a name="module_Sway..Parameter+getValue"></a>
 
 #### parameter.getValue(req) ⇒ <code>[ParameterValue](#module_Sway..ParameterValue)</code>
-Returns the parameter value from the request.**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:  * `body`: Used for `body` and `formData` parameters  * `files`: Used for `formData` parameters whose `type` is `file`  * `headers`: Used for `header` parameters  * `query`: Used for `query` parameters  * `url`: used for `path` parametersFor `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url` property.*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+Returns the parameter value from the request.
+
+**Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
+
+  * `body`: Used for `body` and `formData` parameters
+  * `files`: Used for `formData` parameters whose `type` is `file`
+  * `headers`: Used for `header` parameters
+  * `query`: Used for `query` parameters
+  * `url`: used for `path` parameters
+
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url` property.
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[Parameter](#module_Sway..Parameter)</code>  
 **Returns**: <code>[ParameterValue](#module_Sway..ParameterValue)</code> - The parameter value object  
@@ -235,7 +275,9 @@ Returns the parameter value from the request.**Note:** Below is the list of `r
 <a name="new_module_Sway..ParameterValue_new"></a>
 
 #### new ParameterValue(parameterObject, raw)
-Object representing a parameter value.**Note:** Do not use directly.
+Object representing a parameter value.
+
+**Note:** Do not use directly.
 
 
 | Param | Type | Description |
@@ -272,7 +314,12 @@ Object representing a parameter value.**Note:** Do not use directly.
 <a name="new_module_Sway..Path_new"></a>
 
 #### new Path(api, path, definition, definitionFullyResolved, pathToDefinition)
-The Path object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the                      definition object.
+The Path object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+                      definition object.
 
 
 | Param | Type | Description |
@@ -289,7 +336,8 @@ The Path object.**Note:** Do not use directly.**Extra Properties:** Other th
 Return the operation for this path and method.
 
 **Kind**: instance method of <code>[Path](#module_Sway..Path)</code>  
-**Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no                                   operation for the provided method  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no
+                                   operation for the provided method  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -346,7 +394,12 @@ Return the parameters for this path.
 <a name="new_module_Sway..Response_new"></a>
 
 #### new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)
-The Swagger Response object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the                      definition object.
+The Swagger Response object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+                      definition object.
 
 
 | Param | Type | Description |
@@ -391,7 +444,11 @@ Validates the response.
 <a name="module_Sway..ServerResponseWrapper"></a>
 
 ### Sway~ServerResponseWrapper : <code>object</code>
-Server response wrapper.Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public wayto gather the necessary parts of the response to perform validation, this object encapsulates the required responseinformation to perform response validation.
+Server response wrapper.
+
+Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
+to gather the necessary parts of the response to perform validation, this object encapsulates the required response
+information to perform response validation.
 
 **Kind**: inner typedef of <code>[Sway](#module_Sway)</code>  
 **Properties**
@@ -435,7 +492,12 @@ Server response wrapper.Since the low level `http.ServerResponse` object is no
 <a name="new_module_Sway..SwaggerApi_new"></a>
 
 #### new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)
-The Swagger API object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition                      object.
+The Swagger API object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
+                      object.
 
 
 | Param | Type | Description |
@@ -449,10 +511,18 @@ The Swagger API object.**Note:** Do not use directly.**Extra Properties:** O
 <a name="module_Sway..SwaggerApi+getOperation"></a>
 
 #### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#module_Sway..Operation)</code>
-Returns the operation for the given path and operation.**Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:  * `method`  * `url`*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+Returns the operation for the given path and operation.
+
+**Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
+
+  * `method`
+  * `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
-**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided path and method or `undefined` if there is no                                 operation for that path and method combination  
+**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided path and method or `undefined` if there is no
+                                 operation for that path and method combination  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -486,7 +556,13 @@ Returns all operations for the provided tag.
 <a name="module_Sway..SwaggerApi+getPath"></a>
 
 #### swaggerApi.getPath(pathOrReq) ⇒ <code>[Path](#module_Sway..Path)</code>
-Returns the path object for the given path or request.**Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:  * `url`*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
+Returns the path object for the given path or request.
+
+**Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
+
+  * `url`
+
+*(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
 **Returns**: <code>[Path](#module_Sway..Path)</code> - The corresponding `Path` object for the requested path or request  
@@ -527,7 +603,11 @@ Performs validation of the Swagger API document(s).
 <a name="module_Sway..ValidationEntry"></a>
 
 ### Sway~ValidationEntry : <code>object</code>
-Validation error/warning object.When this object is created as a result of JSON Schema validation, this object is created by[z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties notdocumented below.
+Validation error/warning object.
+
+When this object is created as a result of JSON Schema validation, this object is created by 
+[z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
+documented below.
 
 **Kind**: inner typedef of <code>[Sway](#module_Sway)</code>  
 **Properties**
@@ -586,5 +666,10 @@ Creates a SwaggerApi object from its Swagger definition(s).
 
 **Example**  
 ```js
-SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})  .then(function (api) {    console.log('Documentation URL: ', api.documentationUrl);  }, function (err) {    console.error(err.stack);  });
+SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
+  .then(function (api) {
+    console.log('Documentation URL: ', api.documentationUrl);
+  }, function (err) {
+    console.error(err.stack);
+  });
 ```

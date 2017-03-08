@@ -116,34 +116,3 @@ ApiResponse:
     message:
       type: "string"
   type: "object"
-
-Toy:
-  required:
-  - "type"
-  - "stock"
-  discriminator: type
-  properties:
-    type:
-      type: string
-      enum:
-      - "Toy"
-      - "RubberBone"
-      - "Frisbee"
-    stock:
-      type: number
-RubberBone:
-  allOf:
-    - $ref: '#/definitions/Toy'
-    - properties:
-        price:
-          type: number
-          minimum: 5
-          maximum: 10
-Frisbee:
-  allOf:
-    - $ref: '#/definitions/Toy'
-    - properties:
-        price:
-          type: number
-          minimum: 15
-          maximum: 20
