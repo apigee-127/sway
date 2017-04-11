@@ -546,6 +546,43 @@ describe('Parameter', function () {
               .then(done, done);
           });
 
+          it('provided (global array default)', function (done) {
+            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+              {
+                type: 'string',
+              }
+            ];
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+
+            Sway.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                  query: {}
+                }).value, ['available', 'pending']);
+              })
+              .then(done, done);
+          });
+
+          it('provided (global array default + items default) : should take the items default', function (done) {
+            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+
+            Sway.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                  query: {}
+                }).value, ['available']);
+              })
+              .then(done, done);
+          });
+
           it('missing (array items array)', function (done) {
             var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
