@@ -110,14 +110,7 @@ describe('Operation', function () {
 
       assert.ok(typeof operation.securityDefinitions !== 'undefined', 'Should define securityDefinitions');
       assert.ok(typeof operation.securityDefinitions['petstore_auth'] !== 'undefined', 'Should take \'petstore_auth\' from global security');
-      assert.deepEqual(operation.securityDefinitions['petstore_auth'], [
-        {
-          'petstore_auth': [
-            'read:pets',
-            'write:pets'
-          ]
-        }
-      ]);
+      assert.deepEqual(operation.securityDefinitions['petstore_auth'], swaggerApiRelativeRefs.securityDefinitions['petstore_auth']);
     });
 
     it('should handle explicit parameters', function () {
