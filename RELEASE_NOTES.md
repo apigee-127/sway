@@ -1,5 +1,10 @@
 ## Release Notes
 
+### TBD
+
+* Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
+* Updated dependencies *(Issue #80, #104, #141)*
+
 ### v1.0.0 (2016-04-04)
 
 * Added support for nested query parameters, as supported by [qs](https://github.com/ljharb/qs) *(Issue #39)*

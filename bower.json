@@ -24,14 +24,13 @@
     "test"
   ],
   "dependencies": {
-    "js-yaml": "~3.5.2",
-    "json-refs": "~2.1.5",
-    "lodash": "~4.6.1",
-    "visionmedia-debug": "~2.2.0",
-    "z-schema": "~3.16.1",
+    "js-yaml": "~3.8.4",
+    "json-refs": "~3.0.0",
+    "lodash": "~4.17.4",
+    "z-schema": "~3.18.2",
     "js-base64": "~2.1.9"
   },
   "devDependencies": {
-    "mocha": "^2.4.5"
+    "mocha": "^3.4.2"
   }
 }

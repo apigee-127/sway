@@ -605,7 +605,7 @@ Performs validation of the Swagger API document(s).
 ### Sway~ValidationEntry : <code>object</code>
 Validation error/warning object.
 
-When this object is created as a result of JSON Schema validation, this object is created by 
+When this object is created as a result of JSON Schema validation, this object is created by
 [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
 documented below.
 
