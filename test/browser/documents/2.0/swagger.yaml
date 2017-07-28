@@ -183,7 +183,7 @@ paths:
         - name: "name"
           in: "formData"
           description: "Updated name of the pet"
-          required: false
+          required: true
           type: "string"
         - name: "status"
           in: "formData"
@@ -206,7 +206,7 @@ paths:
       - name: "api_key"
         in: "header"
         description: ""
-        required: false
+        required: true
         type: "string"
         default: ""
       responses:
@@ -238,7 +238,7 @@ paths:
       - name: "file"
         in: "formData"
         description: "file to upload"
-        required: false
+        required: true
         type: "file"
       responses:
         200:

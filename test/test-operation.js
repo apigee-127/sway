@@ -857,7 +857,9 @@ describe('Operation', function () {
               'content-type': 'multipart/form-data'
             },
             body: {},
-            files: {}
+            files: {
+              'file': 'fake file'
+            }
           });
 
           assert.equal(results.warnings.length, 0);
