@@ -219,7 +219,7 @@ describe('Operation', function () {
           }
         };
 
-        describe('operation level consumes', function () {
+        describe('post operation level consumes', function () {
           var operation;
 
           before(function () {
@@ -271,6 +271,66 @@ describe('Operation', function () {
 
             assert.equal(results.warnings.length, 0);
             assert.equal(results.errors.length, 0);
+          });
+        });
+
+        // only going to test that these operations are actually getting validated
+        describe('patch operation level consumes', function () {
+          var operation;
+
+          before(function () {
+            operation = swaggerApiRelativeRefs.getOperation('/pet', 'patch');
+          });
+
+          it('should return an error for an unsupported value', function () {
+            var request = _.cloneDeep(baseRequest);
+            var results;
+
+            request.headers = {
+              'content-type': 'application/x-yaml'
+            };
+
+            results = operation.validateRequest(request);
+
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                        'These are supported: application/json, application/xml',
+                path: []
+              }
+            ]);
+          });
+        });
+
+        describe('delete operation level consumes', function () {
+          var operation;
+
+          before(function () {
+            operation = swaggerApiRelativeRefs.getOperation('/pet/{petId}', 'delete');
+          });
+
+          it('should return an error for an unsupported value', function () {
+            var results;
+            var request = {
+              url: '/v2/pet/123'
+            };
+
+            request.headers = {
+              'content-type': 'application/x-yaml'
+            };
+
+            results = operation.validateRequest(request);
+            assert.equal(results.warnings.length, 0);
+            assert.deepEqual(results.errors, [
+              {
+                code: 'INVALID_CONTENT_TYPE',
+                message: 'Invalid Content-Type (application/x-yaml).  ' +
+                        'These are supported: ',
+                path: []
+              }
+            ]);
           });
         });
 
