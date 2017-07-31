@@ -47,6 +47,32 @@
         description: "Pet not found"
       405:
         description: "Validation exception"
+  patch:
+    tags:
+    - "pet"
+    summary: "Patch an existing pet"
+    description: ""
+    operationId: "patchPet"
+    consumes:
+    - "application/json"
+    - "application/xml"
+    produces:
+    - "application/xml"
+    - "application/json"
+    parameters:
+    - in: "body"
+      name: "body"
+      description: "Pet object that needs to be added to the store"
+      required: true
+      schema:
+        $ref: "./models.yaml#/Pet"
+    responses:
+      400:
+        description: "Invalid ID supplied"
+      404:
+        description: "Pet not found"
+      405:
+        description: "Validation exception"
 /pet/findByStatus:
   get:
     tags:
