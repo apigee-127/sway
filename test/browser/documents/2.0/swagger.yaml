@@ -209,6 +209,12 @@ paths:
         required: true
         type: "string"
         default: ""
+      - name: "optional_header"
+        in: "header"
+        description: ""
+        required: false
+        type: "string"
+        default: ""
       responses:
         400:
           description: "Invalid pet value"
@@ -239,6 +245,11 @@ paths:
         in: "formData"
         description: "file to upload"
         required: true
+        type: "file"
+      - name: "optionalFile"
+        in: "formData"
+        description: "file to upload"
+        required: false
         type: "file"
       responses:
         200:

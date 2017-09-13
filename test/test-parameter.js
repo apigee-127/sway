@@ -195,7 +195,7 @@ describe('Parameter', function () {
         });
       });
 
-      describe('formData (file)', function () {
+      describe('formData (file) - required', function () {
         var parameter;
 
         before(function () {
@@ -227,7 +227,23 @@ describe('Parameter', function () {
         });
       });
 
-      describe('formData (not file)', function () {
+      describe('formData (file) - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
+        });
+
+        it('missing req.files', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed();
+          }
+        });
+      });
+
+      describe('formData (not file) - required', function () {
         var parameter;
 
         before(function () {
@@ -260,7 +276,23 @@ describe('Parameter', function () {
         });
       });
 
-      describe('header', function () {
+      describe('formData (not file) - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('status');
+        });
+
+        it('missing req.body', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed
+          }
+        });
+      });
+
+      describe('header - required', function () {
         var parameter;
 
         before(function () {
@@ -303,6 +335,22 @@ describe('Parameter', function () {
 
           // Change it back
           parameter.name = 'api_key';
+        });
+      });
+
+      describe('header - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
+        });
+
+        it('missing req.headers', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed
+          }
         });
       });
 
