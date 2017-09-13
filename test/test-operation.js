@@ -229,6 +229,31 @@ describe('Operation', function () {
           }
         };
 
+        describe('operation level consumes - ignore when empty', function () {
+          var operation; 
+
+          before(function () {
+            // this path+op doesn't specify 'consumes'
+            operation = swaggerApiRelativeRefs.getOperation('/pet/findByStatus', 'get');
+          });
+          
+          it('should not return an unsupported content-type error', function () {
+            var request = {
+              url: '/pet/findByStatus',
+              query: {
+                'status': 'sold'
+              },
+              headers: {
+                'content-type': 'application/json' // extraneous content-type header
+              }
+            };
+            var results = operation.validateRequest(request);
+
+            assert.equal(results.warnings.length, 0);
+            assert.equal(results.errors.length, 0);
+          });
+        });
+
         describe('operation level consumes', function () {
           var operation;
 
