@@ -103,6 +103,16 @@ describe('Operation', function () {
       });
     });
 
+    it('should take global security definitions', function () {
+      var method = 'post';
+      var path = '/pet/{petId}/uploadImage';
+      var operation = swaggerApiRelativeRefs.getOperation(path, method);
+
+      assert.ok(typeof operation.securityDefinitions !== 'undefined', 'Should define securityDefinitions');
+      assert.ok(typeof operation.securityDefinitions['petstore_auth'] !== 'undefined', 'Should take \'petstore_auth\' from global security');
+      assert.deepEqual(operation.securityDefinitions['petstore_auth'], swaggerApiRelativeRefs.securityDefinitions['petstore_auth']);
+    });
+
     it('should handle explicit parameters', function () {
       assert.deepEqual(swaggerApiRelativeRefs.getOperation('/user/{username}', 'get').security, [
         {
