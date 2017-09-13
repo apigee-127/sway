@@ -63,6 +63,7 @@ describe('Path', function () {
     // Make sure they match the expected URLs
     assert.ok(_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pet/1')));
     assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pets/1')));
+    assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/Pet/1')));
   });
 
   describe('#getOperation', function () {
