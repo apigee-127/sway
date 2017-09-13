@@ -2,6 +2,7 @@
 
 ### TBD
 
+* Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Updated dependencies *(Issue #80, #104, #141)*
 
