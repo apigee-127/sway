@@ -2,6 +2,7 @@
 
 ### TBD
 
+* Fix bug where default values for arrays were not used when they should be *(Issue #132)*
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where missing optional file parameters were treated as a validation failure *(Issue #129)*
 * Fix bug where path matching was not case sensitive *(Issue #147)*
