@@ -8,6 +8,7 @@
 * Fix bug where path matching was not case sensitive *(Issue #147)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
+* Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #80, #104, #141)*
 
 ### v1.0.0 (2016-04-04)
