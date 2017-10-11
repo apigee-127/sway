@@ -133,6 +133,12 @@ gulp.task('lint', function () {
     .pipe($.eslint.failAfterError());
 });
 
+gulp.task('nsp', function (cb) {
+  $.nsp({
+    package: path.join(__dirname, 'package.json')
+  }, cb);
+});
+
 gulp.task('test-node', function (done) {
   Promise.resolve()
     .then(function () {
@@ -246,5 +252,5 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'test', 'docs', done);
+  runSequence('lint', 'nsp', 'test', 'docs', done);
 });
