@@ -10,6 +10,7 @@
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #80, #104, #141)*
+* Updated `Sway#getOperation` and `Path#getOperation` to work with an `operationId` *(Issue #152)*
 
 ### v1.0.0 (2016-04-04)
 

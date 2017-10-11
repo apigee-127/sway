@@ -23,7 +23,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [new ParameterValue(parameterObject, raw)](#new_module_Sway..ParameterValue_new)
         * [~Path](#module_Sway..Path)
             * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
-            * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+            * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
@@ -35,7 +35,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
             * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
-            * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+            * [.getOperation(idOrPathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
             * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
@@ -306,7 +306,7 @@ Object representing a parameter value.
 
 * [~Path](#module_Sway..Path)
     * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
-    * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+    * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
@@ -332,8 +332,8 @@ The Path object.
 
 <a name="module_Sway..Path+getOperation"></a>
 
-#### path.getOperation(method) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
-Return the operation for this path and method.
+#### path.getOperation(idOrMethod) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+Return the operation for this path and operation id or method.
 
 **Kind**: instance method of <code>[Path](#module_Sway..Path)</code>  
 **Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no
@@ -341,7 +341,7 @@ Return the operation for this path and method.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| method | <code>string</code> | The method |
+| idOrMethod | <code>string</code> | The operation id or method |
 
 <a name="module_Sway..Path+getOperations"></a>
 
@@ -481,7 +481,7 @@ information to perform response validation.
 
 * [~SwaggerApi](#module_Sway..SwaggerApi)
     * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
-    * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+    * [.getOperation(idOrPathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
     * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
@@ -510,7 +510,7 @@ The Swagger API object.
 
 <a name="module_Sway..SwaggerApi+getOperation"></a>
 
-#### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+#### swaggerApi.getOperation(idOrPathOrReq, [method]) ⇒ <code>[Operation](#module_Sway..Operation)</code>
 Returns the operation for the given path and operation.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
@@ -521,13 +521,13 @@ Returns the operation for the given path and operation.
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
-**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided path and method or `undefined` if there is no
-                                 operation for that path and method combination  
+**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided operation id, or path and method or `undefined` if
+                                 there is no operation for that operation id, or path and method combination  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
-| [method] | <code>string</code> | The Swagger operation method |
+| idOrPathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger opeartion id, path string or the http client request *(or                                        equivalent)* |
+| [method] | <code>string</code> | The Swagger operation method _(not used when providing an operation id)_ |
 
 <a name="module_Sway..SwaggerApi+getOperations"></a>
 
