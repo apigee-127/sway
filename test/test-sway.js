@@ -71,8 +71,12 @@ describe('sway', function () {
     }
 
     it('should always return a promise', function () {
-      assert.ok(Sway.create({}) instanceof Promise);
-      assert.ok(Sway.create({}, function () {}) instanceof Promise);
+      assert.ok(Sway.create({
+        definition: helpers.swaggerDoc
+      }) instanceof Promise);
+      assert.ok(Sway.create({
+        definition: helpers.swaggerDoc
+      }, function () {}) instanceof Promise);
     });
 
     it('should return proper error', function (done) {
