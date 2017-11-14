@@ -78,7 +78,7 @@ Pet:
       type: "integer"
       format: "int64"
     category:
-      $ref: "#/definitions/Category"
+      $ref: "#/Category"
     name:
       type: "string"
       example: "doggie"
@@ -95,7 +95,7 @@ Pet:
         name: "tag"
         wrapped: true
       items:
-        $ref: "#/definitions/Tag"
+        $ref: "#/Tag"
     status:
       type: "string"
       description: "pet status in the store"

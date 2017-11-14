@@ -38,7 +38,6 @@ var glob = require('glob');
 var gulp = require('gulp');
 var KarmaServer = require('karma').Server;
 var path = require('path');
-var pathmodify = require('pathmodify');
 var runSequence = require('run-sequence');
 var source = require('vinyl-source-stream');
 
@@ -56,7 +55,7 @@ function displayCoverageReport (display) {
   }
 }
 
-gulp.task('browserify', function () {
+gulp.task('browserify', function (cb) {
   function browserifyBuild (isStandalone, useDebug) {
     return function () {
       return new Promise(function (resolve, reject) {
@@ -65,25 +64,16 @@ gulp.task('browserify', function () {
           standalone: 'Sway'
         });
 
-        // Only include the 'en' faker.js locale
-        b.plugin(pathmodify, {mods: [
-          function (rec) {
-            var alias;
-
-            if (rec.id === 'faker' && rec.opts.filename.indexOf('json-schema-faker/lib/util/container.js') > -1) {
-              alias = {id: 'faker/locale/en'};
-            }
-
-            return alias;
-          }
-        ]});
-
         if (!isStandalone) {
           // Expose Bower modules so they can be required
           exposify.config = {
+            'graphlib': 'graphlib',
+            'js-base64': 'Base64',
             'json-refs': 'JsonRefs',
             'js-yaml': 'jsyaml',
-            'lodash': '_'
+            'lodash': '_',
+            'path-loader': 'PathLoader',
+            'z-schema': 'ZSchema'
           };
 
           b.transform('exposify');
@@ -100,7 +90,7 @@ gulp.task('browserify', function () {
     };
   }
 
-  return Promise.resolve()
+  Promise.resolve()
     // Standalone build with source maps and complete source
     .then(browserifyBuild(true, true))
     // Standalone build minified and without source maps
@@ -108,7 +98,8 @@ gulp.task('browserify', function () {
     // Bower build with source maps and complete source
     .then(browserifyBuild(false, true))
     // Bower build minified and without source maps
-    .then(browserifyBuild(false, false));
+    .then(browserifyBuild(false, false))
+    .then(cb, cb);
 });
 
 gulp.task('clean', function (done) {
@@ -142,8 +133,14 @@ gulp.task('lint', function () {
     .pipe($.eslint.failAfterError());
 });
 
-gulp.task('test-node', function () {
-  return Promise.resolve()
+gulp.task('nsp', function (cb) {
+  $.nsp({
+    package: path.join(__dirname, 'package.json')
+  }, cb);
+});
+
+gulp.task('test-node', function (done) {
+  Promise.resolve()
     .then(function () {
       return new Promise(function (resolve, reject) {
         gulp.src([
@@ -168,10 +165,11 @@ gulp.task('test-node', function () {
               });
           });
       });
-    });
+    })
+    .then(done, done);
 });
 
-gulp.task('test-browser', ['browserify'], function () {
+gulp.task('test-browser', ['browserify'], function (done) {
   var basePath = './test/browser/';
 
   function cleanUp () {
@@ -191,7 +189,7 @@ gulp.task('test-browser', ['browserify'], function () {
     return err;
   }
 
-  return Promise.resolve()
+  Promise.resolve()
     .then(cleanUp)
     .then(function () {
       // Copy the browser build of sway to the test directory
@@ -245,13 +243,14 @@ gulp.task('test-browser', ['browserify'], function () {
         }).start();
       });
     })
-    .then(finisher, finisher);
+    .then(finisher, finisher)
+    .then(done, done);
 });
 
-gulp.task('test', function (cb) {
-  runSequence('test-node', 'test-browser', cb);
+gulp.task('test', function (done) {
+  runSequence('test-node', 'test-browser', done);
 });
 
-gulp.task('default', function (cb) {
-  runSequence('lint', 'test', 'docs', cb);
+gulp.task('default', function (done) {
+  runSequence('lint', 'nsp', 'test', 'docs', done);
 });

@@ -70,7 +70,7 @@ if (typeof Promise === 'undefined') {
 /**
  * Validation error/warning object.
  *
- * When this object is created as a result of JSON Schema validation, this object is created by 
+ * When this object is created as a result of JSON Schema validation, this object is created by
  * [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
  * documented below.
  *
@@ -150,7 +150,7 @@ module.exports.create = function (options) {
   // Make a copy of the input options so as not to alter them
   cOptions = _.cloneDeep(options);
 
-  // 
+  //
   allTasks = allTasks
     // Resolve relative/remote references
     .then(function () {

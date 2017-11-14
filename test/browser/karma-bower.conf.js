@@ -12,10 +12,9 @@ module.exports = function (config) {
     frameworks: ['mocha'],
     files: [
       {pattern: 'vendor/base64.min.js', watch: false, included: true},
-      {pattern: 'vendor/debug.js', watch: false, included: true},
-      {pattern: 'vendor/js-yaml.js', watch: false, included: true},
       {pattern: 'vendor/lodash.min.js', watch: false, included: true},
-      {pattern: 'vendor/traverse.js', watch: false, included: true},
+      {pattern: 'vendor/graphlib.core.min.js', watch: false, included: true},
+      {pattern: 'vendor/js-yaml.min.js', watch: false, included: true},
       {pattern: 'vendor/ZSchema-browser-min.js', watch: false, included: true},
       {pattern: 'vendor/path-loader-min.js', watch: false, included: true},
       {pattern: 'vendor/json-refs-min.js', watch: false, included: true},

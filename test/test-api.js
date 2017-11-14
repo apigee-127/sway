@@ -86,6 +86,12 @@ describe('SwaggerApi', function () {
   });
 
   describe('#getOperation', function () {
+    it('should return the expected operation by id', function () {
+      var operation = swaggerApi.getOperation('addPet');
+
+      assert.ok(!_.isUndefined(operation));
+    });
+
     describe('path + method', function () {
       it('should return the expected operation', function () {
         var operation = swaggerApi.getOperation('/pet/{petId}', 'get');

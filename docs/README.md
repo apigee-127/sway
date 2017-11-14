@@ -25,8 +25,8 @@ bower install sway --save
 
 The standalone binaries come in two flavors:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone.js): _6,312kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone-min.js): _1,156kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone.js): _5,069kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone-min.js): _788kb_, minified, compressed and no source map
 
 **Note:** I realize these binaries are big and I'm working on making them smaller.  Unfortunately, some of this is out
 of my control without rewriting some of the core features provided by third-party libraries currently contributing to
