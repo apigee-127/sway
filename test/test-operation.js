@@ -103,6 +103,16 @@ describe('Operation', function () {
       });
     });
 
+    it('should take global security definitions', function () {
+      var method = 'post';
+      var path = '/pet/{petId}/uploadImage';
+      var operation = swaggerApiRelativeRefs.getOperation(path, method);
+
+      assert.ok(typeof operation.securityDefinitions !== 'undefined', 'Should define securityDefinitions');
+      assert.ok(typeof operation.securityDefinitions['petstore_auth'] !== 'undefined', 'Should take \'petstore_auth\' from global security');
+      assert.deepEqual(operation.securityDefinitions['petstore_auth'], swaggerApiRelativeRefs.securityDefinitions['petstore_auth']);
+    });
+
     it('should handle explicit parameters', function () {
       assert.deepEqual(swaggerApiRelativeRefs.getOperation('/user/{username}', 'get').security, [
         {
@@ -218,6 +228,31 @@ describe('Operation', function () {
             photoUrls: []
           }
         };
+
+        describe('operation level consumes - ignore when empty', function () {
+          var operation; 
+
+          before(function () {
+            // this path+op doesn't specify 'consumes'
+            operation = swaggerApiRelativeRefs.getOperation('/pet/findByStatus', 'get');
+          });
+          
+          it('should not return an unsupported content-type error', function () {
+            var request = {
+              url: '/pet/findByStatus',
+              query: {
+                'status': 'sold'
+              },
+              headers: {
+                'content-type': 'application/json' // extraneous content-type header
+              }
+            };
+            var results = operation.validateRequest(request);
+
+            assert.equal(results.warnings.length, 0);
+            assert.equal(results.errors.length, 0);
+          });
+        });
 
         describe('operation level consumes', function () {
           var operation;
@@ -822,7 +857,9 @@ describe('Operation', function () {
               'content-type': 'multipart/form-data'
             },
             body: {},
-            files: {}
+            files: {
+              'file': 'fake file'
+            }
           });
 
           assert.equal(results.warnings.length, 0);

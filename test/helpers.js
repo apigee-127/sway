@@ -72,7 +72,7 @@ module.exports.getSwaggerApiRelativeRefs = function (callback) {
   } else {
     Sway.create({
       definition: swaggerDocRelativeRefs,
-      jsonRefs: {relativeBase: path.join(relativeBase, './2.0')}
+      jsonRefs: {location: path.join(relativeBase, './2.0/swagger-relative-refs.yaml')}
     })
       .then(function (obj) {
         swaggerApiRelativeRefs = obj;

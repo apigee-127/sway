@@ -63,11 +63,15 @@ describe('Path', function () {
     // Make sure they match the expected URLs
     assert.ok(_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pet/1')));
     assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pets/1')));
+    assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/Pet/1')));
   });
 
   describe('#getOperation', function () {
     it('should return the expected operation', function () {
+      // By method
       assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}').getOperation('get')));
+      // By operationId
+      assert.ok(!_.isUndefined(swaggerApi.getPath('/pet').getOperation('addPet')));
     });
 
     it('should return no operation for the missing method', function () {

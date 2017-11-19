@@ -195,7 +195,7 @@ describe('Parameter', function () {
         });
       });
 
-      describe('formData (file)', function () {
+      describe('formData (file) - required', function () {
         var parameter;
 
         before(function () {
@@ -227,7 +227,23 @@ describe('Parameter', function () {
         });
       });
 
-      describe('formData (not file)', function () {
+      describe('formData (file) - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
+        });
+
+        it('missing req.files', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed();
+          }
+        });
+      });
+
+      describe('formData (not file) - required', function () {
         var parameter;
 
         before(function () {
@@ -260,7 +276,23 @@ describe('Parameter', function () {
         });
       });
 
-      describe('header', function () {
+      describe('formData (not file) - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('status');
+        });
+
+        it('missing req.body', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed
+          }
+        });
+      });
+
+      describe('header - required', function () {
         var parameter;
 
         before(function () {
@@ -303,6 +335,22 @@ describe('Parameter', function () {
 
           // Change it back
           parameter.name = 'api_key';
+        });
+      });
+
+      describe('header - optional', function () {
+        var parameter;
+
+        before(function () {
+          parameter = swaggerApi.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
+        });
+
+        it('missing req.headers', function () {
+          try {
+            parameter.getValue({});
+          } catch (err) {
+            helpers.shouldNotHadFailed
+          }
         });
       });
 
@@ -542,6 +590,43 @@ describe('Parameter', function () {
                 assert.equal(api.getOperation('/pet/{petId}', 'delete').getParameter('api_key').getValue({
                   headers: {}
                 }).value, '');
+              })
+              .then(done, done);
+          });
+
+          it('provided (global array default)', function (done) {
+            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+              {
+                type: 'string',
+              }
+            ];
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+
+            Sway.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                  query: {}
+                }).value, ['available', 'pending']);
+              })
+              .then(done, done);
+          });
+
+          it('provided (global array default + items default) : should take the items default', function (done) {
+            var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+
+            Sway.create({
+              definition: cSwagger
+            })
+              .then(function (api) {
+                assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                  query: {}
+                }).value, ['available']);
               })
               .then(done, done);
           });
