@@ -2,6 +2,7 @@
 
 ### TBD
 
+* Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently
 * Fix bug where default values for arrays were not used when they should be *(Issue #132)*
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where missing optional file parameters were treated as a validation failure *(Issue #129)*
