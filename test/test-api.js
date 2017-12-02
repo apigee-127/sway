@@ -116,6 +116,13 @@ describe('SwaggerApi', function () {
         })));
       });
 
+      it('should return the expected operation (req.originalUrl)', function () {
+        assert.ok(!_.isUndefined(swaggerApi.getOperation({
+          method: 'GET',
+          originalUrl: swaggerApi.basePath + '/pet/1'
+        })));
+      });
+
       it('should return no operation for missing path', function () {
         assert.ok(_.isUndefined(swaggerApi.getOperation({
           method: 'GET',

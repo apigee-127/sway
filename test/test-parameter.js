@@ -367,7 +367,7 @@ describe('Parameter', function () {
 
             helpers.shouldHadFailed();
           } catch (err) {
-            assert.equal(err.message, 'req.url must be provided for \'path\' parameters');
+            assert.equal(err.message, 'req.originalUrl or req.url must be provided for \'path\' parameters');
           }
         });
 
@@ -380,6 +380,12 @@ describe('Parameter', function () {
         it('provided value (single)', function () {
           assert.deepEqual(parameter.getValue({
             url: '/v2/pet/1'
+          }).raw, '1');
+        });
+
+        it('provided value (req.originalUrl)', function () {
+          assert.deepEqual(parameter.getValue({
+            originalUrl: '/v2/pet/1'
           }).raw, '1');
         });
 

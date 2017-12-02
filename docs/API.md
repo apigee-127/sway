@@ -156,11 +156,12 @@ Validates the request.
   * `body`: Used for `body` and `formData` parameters
   * `files`: Used for `formData` parameters whose `type` is `file`
   * `headers`: Used for `header` parameters and consumes
+  * `originalUrl`: used for `path` parameters
   * `query`: Used for `query` parameters
   * `url`: used for `path` parameters
 
-For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
-property.
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
+`originalUrl` or `url` property.
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
@@ -240,10 +241,12 @@ Returns the parameter value from the request.
   * `body`: Used for `body` and `formData` parameters
   * `files`: Used for `formData` parameters whose `type` is `file`
   * `headers`: Used for `header` parameters
+  * `originalUrl`: used for `path` parameters
   * `query`: Used for `query` parameters
   * `url`: used for `path` parameters
 
-For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url` property.
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
+`originalUrl` or `url` property.
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
@@ -516,6 +519,7 @@ Returns the operation for the given path and operation.
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
 
   * `method`
+  * `originalUrl`
   * `url`
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
@@ -560,6 +564,7 @@ Returns the path object for the given path or request.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
 
+  * `originalUrl`
   * `url`
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
