@@ -7,6 +7,7 @@
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where missing optional file parameters were treated as a validation failure *(Issue #129)*
 * Fix bug where path matching was not case sensitive *(Issue #147)*
+* Fix bug where references were resolved multiple times *(Issue #123)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
