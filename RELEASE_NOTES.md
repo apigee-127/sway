@@ -2,6 +2,8 @@
 
 ### TBD
 
+* Added support for registering custom format validators via `options.customFormats` when creating the `SwaggerApi`
+object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently
 * Fix bug where default values for arrays were not used when they should be *(Issue #132)*
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
