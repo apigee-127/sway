@@ -116,6 +116,13 @@ describe('SwaggerApi', function () {
         })));
       });
 
+      it('should return the expected operation (req.originalUrl)', function () {
+        assert.ok(!_.isUndefined(swaggerApi.getOperation({
+          method: 'GET',
+          originalUrl: swaggerApi.basePath + '/pet/1'
+        })));
+      });
+
       it('should return no operation for missing path', function () {
         assert.ok(_.isUndefined(swaggerApi.getOperation({
           method: 'GET',
@@ -178,6 +185,77 @@ describe('SwaggerApi', function () {
   describe('#getPaths', function () {
     it('should return the expected path objects', function () {
       assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionFullyResolved.paths).length);
+    });
+  });
+
+  describe('#registerFormat', function () {
+    it('should throw TypeError for invalid arguments', function () {
+      var scenarios = [
+        [[], 'name is required'],
+        [[true], 'name must be a string'],
+        [['test'], 'validator is required'],
+        [['test', true], 'validator must be a function']
+      ];
+
+      _.forEach(scenarios, function (scenario) {
+        try {
+          swaggerApi.registerFormat.apply(swaggerApi, scenario[0]);
+
+          helpers.shouldHadFailed();
+        } catch (err) {
+          assert.equal(scenario[1], err.message);
+        }
+      });
+    });
+
+    it('should add validator to list of validators', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.definitions.Pet.properties.customFormat = {
+        format: 'alwaysFails',
+        type: 'string'
+      };
+
+      Sway.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          var req = {
+            body: {
+              customFormat: 'shouldFail',
+              name: 'Test Pet',
+              photoUrls: []
+            }
+          };
+          var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue(req);
+
+          assert.ok(_.isUndefined(paramValue.error));
+          assert.deepEqual(req.body, paramValue.raw);
+          assert.deepEqual(req.body, paramValue.value);
+
+          // Register the custom format
+          api.registerFormat('alwaysFails', function () {
+            return false;
+          });
+
+          paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue(req);
+
+          assert.equal(paramValue.error.message, 'Value failed JSON Schema validation');
+          assert.equal(paramValue.error.code, 'SCHEMA_VALIDATION_FAILED');
+          assert.deepEqual(paramValue.error.path, ['paths', '/pet', 'post', 'parameters', '0']);
+          assert.ok(paramValue.error.failedValidation)
+          assert.deepEqual(paramValue.error.errors, [
+            {
+              code: 'INVALID_FORMAT',
+              params: ['alwaysFails', 'shouldFail'],
+              message: "Object didn't pass validation for format alwaysFails: shouldFail",
+              path: ['customFormat']
+            }
+          ]);
+          assert.deepEqual(req.body, paramValue.raw);
+          assert.deepEqual(req.body, paramValue.value);
+        })
+        .then(done, done);
     });
   });
 

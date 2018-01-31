@@ -367,7 +367,7 @@ describe('Parameter', function () {
 
             helpers.shouldHadFailed();
           } catch (err) {
-            assert.equal(err.message, 'req.url must be provided for \'path\' parameters');
+            assert.equal(err.message, 'req.originalUrl or req.url must be provided for \'path\' parameters');
           }
         });
 
@@ -380,6 +380,12 @@ describe('Parameter', function () {
         it('provided value (single)', function () {
           assert.deepEqual(parameter.getValue({
             url: '/v2/pet/1'
+          }).raw, '1');
+        });
+
+        it('provided value (req.originalUrl)', function () {
+          assert.deepEqual(parameter.getValue({
+            originalUrl: '/v2/pet/1'
           }).raw, '1');
         });
 
@@ -717,6 +723,57 @@ describe('Parameter', function () {
             assert.equal(actual.toISOString(), expected.toISOString());
           }
 
+          var singleNumParamValue;
+          var singleStrParamValue;
+          var multipleParamValue;
+          var singleStrBooleanLikeValue;
+
+          before(function (done) {
+            var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              name: 'versions',
+                in: 'query',
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            });
+
+            // Test primitive values, because req.query.PARAM will return a primitive
+            // if only one is passed to the query param.
+            Sway.create({definition: cSwaggerDoc})
+              .then(function (api) {
+                var parameter = api.getOperation('/pet/findByStatus', 'get').getParameter('versions');
+
+                // Test a string value that JSON.parse would coerse to Number
+                singleNumParamValue = parameter.getValue({
+                  query: {
+                    versions: '1.1'
+                  }
+                });
+                // Test a string value that JSON.parse would coerse to Number
+                singleStrBooleanLikeValue = parameter.getValue({
+                  query: {
+                    versions: 'true'
+                  }
+                });
+                // Test a string value
+                singleStrParamValue = parameter.getValue({
+                  query: {
+                    versions: '1.1#rc'
+                  }
+                });
+                // Test an array value
+                multipleParamValue = parameter.getValue({
+                  query: {
+                    versions: ['1.0', '1.1#rc']
+                  }
+                });
+              })
+              .then(done, done);
+          });
+
           describe('array', function () {
             it('items array', function (done) {
               var cSwagger = _.cloneDeep(helpers.swaggerDoc);
@@ -771,12 +828,28 @@ describe('Parameter', function () {
               }).value, ['pending']);
             });
 
+            it('array value', function () {
+              assert.ok(multipleParamValue.valid);
+            });
+
             it('array request value', function () {
               assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                 query: {
                   status: ['available', 'pending']
                 }
               }).value, ['available', 'pending']);
+            });
+
+            it('string value that could be coersed to Number', function () {
+              assert.ok(singleNumParamValue.valid);
+            });
+
+            it('string value that could be coersed to Boolean', function () {
+              assert.ok(singleStrBooleanLikeValue.valid);
+            });
+
+            it('string value (as req.query.param returns primitive if only one param is passed)', function () {
+              assert.ok(singleStrParamValue.valid);
             });
 
             describe('collectionFormat', function () {
