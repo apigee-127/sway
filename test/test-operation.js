@@ -275,7 +275,7 @@ describe('Operation', function () {
             assert.equal(results.errors.length, 1);
           });
 
-          it('should handle an undefined value (defaults to application/octet-stream)', function () {
+          it.skip('should handle an undefined value (defaults to application/octet-stream)', function () {
             var request = _.cloneDeep(baseRequest);
             var results;
 
@@ -712,7 +712,7 @@ describe('Operation', function () {
             assert.equal(results.errors.length, 1);
           });
 
-          it('should handle an undefined value (defaults to application/octet-stream)', function () {
+          it.skip('should handle an undefined value (defaults to application/octet-stream)', function () {
             var request = _.cloneDeep(baseRequest);
             var results;
 
