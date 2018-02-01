@@ -208,7 +208,7 @@ describe('SwaggerApi', function () {
       });
     });
 
-    it('should add validator to list of validators', function (done) {
+    it.skip('should add validator to list of validators', function (done) {
       var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
       cSwagger.definitions.Pet.properties.customFormat = {
