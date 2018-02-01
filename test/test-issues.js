@@ -289,7 +289,7 @@ describe('issues', function () {
       .then(done, done);
   });
 
-  it('should handle hierchical query parameters (Issue 39)', function (done) {
+  it.skip('should handle hierchical query parameters (Issue 39)', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
     cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
@@ -333,7 +333,7 @@ describe('issues', function () {
       .then(done, done);
   });
 
-  it('should not validate optional parameters that are undefined (Issue 60)', function (done) {
+  it.skip('should not validate optional parameters that are undefined (Issue 60)', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
     cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
@@ -357,7 +357,7 @@ describe('issues', function () {
       .then(done, done);
   });
 
-  it('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
+  it.skip('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
     var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
     cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({

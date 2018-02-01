@@ -2,14 +2,19 @@
 
 ### TBD
 
+* Added support for registering custom format validators via `options.customFormats` when creating the `SwaggerApi`
+object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
+* Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently
 * Fix bug where default values for arrays were not used when they should be *(Issue #132)*
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where missing optional file parameters were treated as a validation failure *(Issue #129)*
 * Fix bug where path matching was not case sensitive *(Issue #147)*
+* Fix bug where references were resolved multiple times *(Issue #123)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #80, #104, #141)*
+* Updated `Sway#getPath` and `Parameter#getValue` to work with request objects containing `originalUrl` *(Issue #156)*
 * Updated `Sway#getOperation` and `Path#getOperation` to work with an `operationId` *(Issue #152)*
 
 ### v1.0.0 (2016-04-04)
