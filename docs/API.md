@@ -22,7 +22,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [~ParameterValue](#module_Sway..ParameterValue)
             * [new ParameterValue(parameterObject, raw)](#new_module_Sway..ParameterValue_new)
         * [~Path](#module_Sway..Path)
-            * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
+            * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition, isCaseSensitive)](#new_module_Sway..Path_new)
             * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
@@ -46,6 +46,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [~ValidationEntry](#module_Sway..ValidationEntry) : <code>object</code>
         * [~ValidationResults](#module_Sway..ValidationResults) : <code>object</code>
         * [~ValidatorCallback](#module_Sway..ValidatorCallback) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+        * [~buildRegex(hostTemplate, basePathPrefix, path, isCaseSensitive)](#module_Sway..buildRegex) ⇒ <code>object</code>
     * _static_
         * [.create(options)](#module_Sway.create) ⇒ <code>Promise</code>
 
@@ -309,7 +310,7 @@ Object representing a parameter value.
 
 
 * [~Path](#module_Sway..Path)
-    * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
+    * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition, isCaseSensitive)](#new_module_Sway..Path_new)
     * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
@@ -317,13 +318,8 @@ Object representing a parameter value.
 
 <a name="new_module_Sway..Path_new"></a>
 
-#### new Path(api, path, definition, definitionFullyResolved, pathToDefinition)
-The Path object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-                      definition object.
+#### new Path(api, path, definition, definitionFullyResolved, pathToDefinition, isCaseSensitive)
+The Path object.**Note:** Do not use directly.**Extra Properties:** Other than the documented properties, this object also exposes all properties of the                      definition object.
 
 
 | Param | Type | Description |
@@ -333,6 +329,7 @@ The Path object.
 | definition | <code>object</code> | The path definition *(The raw path definition __after__ remote references were                              resolved)* |
 | definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
+| isCaseSensitive | <code>Array.&lt;string&gt;</code> | Specifies if to consider the path case sensitive or not |
 
 <a name="module_Sway..Path+getOperation"></a>
 
@@ -340,8 +337,7 @@ The Path object.
 Return the operation for this path and operation id or method.
 
 **Kind**: instance method of <code>[Path](#module_Sway..Path)</code>  
-**Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no
-                                   operation for the provided method  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no                                   operation for the provided method  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -668,6 +664,21 @@ Callback used for validation.
 | Param | Type | Description |
 | --- | --- | --- |
 | api | <code>[SwaggerApi](#module_Sway..SwaggerApi)</code> | The Swagger API object |
+
+<a name="module_Sway..buildRegex"></a>
+
+### Sway~buildRegex(hostTemplate, basePathPrefix, path, isCaseSensitive) ⇒ <code>object</code>
+Builds the regex required for matching the request url against the templated path in the swagger spec.
+
+**Kind**: inner method of <code>[Sway](#module_Sway)</code>  
+**Returns**: <code>object</code> - The pathToRegexp object  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| hostTemplate | <code>srting</code> | the host template if any or empty string |
+| basePathPrefix | <code>string</code> | the basePathPrefix if any or '/' |
+| path | <code>string</code> | the templated path |
+| isCaseSensitive | <code>bool</code> | specifies if to use case sensitive comparison or not |
 
 <a name="module_Sway.create"></a>
 
