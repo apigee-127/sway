@@ -1681,6 +1681,29 @@ describe('SwaggerApi', function () {
       });
     });
 
+    it('should return errors for JsonRefs errors', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#definitions/Pet';
+
+      Sway.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          assert.deepEqual(api.validate(), {
+            errors: [
+              {
+                code: 'INVALID_REFERENCE',
+                message: 'ptr must start with a / or #/',
+                path: ['paths', '/pet', 'post', 'parameters', '0', 'schema', '$ref']
+              }
+            ],
+            warnings: []
+          });
+        })
+        .then(done, done);
+    });
+
     it('should return warnings for JsonRefs warnings', function (done) {
       var cSwagger = _.cloneDeep(helpers.swaggerDoc);
 
