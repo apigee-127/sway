@@ -13,7 +13,7 @@ object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
-* Updated dependencies *(Issue #80, #104, #141)*
+* Updated dependencies *(Issue #62, #72, #80, #84, #104, #141)*
 * Updated `Sway#getPath` and `Parameter#getValue` to work with request objects containing `originalUrl` *(Issue #156)*
 * Updated `Sway#getOperation` and `Path#getOperation` to work with an `operationId` *(Issue #152)*
 
