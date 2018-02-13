@@ -165,6 +165,8 @@ module.exports.create = function (options) {
       // Resolve only relative/remote references
       cOptions.jsonRefs.filter = ['relative', 'remote'];
 
+      cOptions.jsonRefs.resolveCirculars = true;
+
       // Update the json-refs options to process YAML
       if (_.isUndefined(cOptions.jsonRefs.loaderOptions)) {
         cOptions.jsonRefs.loaderOptions = {};
