@@ -426,4 +426,12 @@ describe('issues', function () {
       assert.equal(results.errors.length, 0);
     });
   });
+
+  it('should support circular references (Issue 165)', function (done) {
+    helpers.getSwaggerApiCircularRefs(function (swaggerApiCircularRefs) {
+      assert.ok(_.isUndefined(swaggerApiCircularRefs.definitionFullyResolved.definitions.CircularReference.properties.propone.items.$ref));
+      done();
+    })
+  });
+
 });

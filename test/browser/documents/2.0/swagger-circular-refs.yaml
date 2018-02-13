@@ -1,0 +1,30 @@
+---
+  swagger: "2.0"
+  info:
+    title: "Test API"
+    version: "v1"
+  definitions:
+    CircularReference:
+      type: "object"
+      properties:
+        propone:
+          type: "array"
+          items:
+            $ref: "#/definitions/CircularReference"
+  paths:
+    /test:
+      post:
+        produces:
+          - "application/json"
+        responses:
+          200:
+            description: ""
+        consumes:
+          - "application/json"
+        parameters:
+          -
+            schema:
+              $ref: "#/definitions/CircularReference"
+            in: "body"
+            name: "body"
+            required: true

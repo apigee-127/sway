@@ -37,9 +37,11 @@ var documentBase = path.join(__dirname, 'browser', 'documents');
 var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
 var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
 var swaggerDocRelativeRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-relative-refs.yaml'), 'utf8'));
+var swaggerDocCircularRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-circular-refs.yaml'), 'utf8'));
 var swaggerDocValidator = helpers.getJSONSchemaValidator();
 var swaggerApi;
 var swaggerApiRelativeRefs;
+var swaggerApiCircularRefs;
 
 function fail (msg) {
   assert.fail(msg);
@@ -78,6 +80,23 @@ module.exports.getSwaggerApiRelativeRefs = function (callback) {
         swaggerApiRelativeRefs = obj;
 
         callback(swaggerApiRelativeRefs);
+      }, function (err) {
+        callback(err);
+      });
+  }
+};
+
+module.exports.getSwaggerApiCircularRefs = function (callback) {
+  if (swaggerApiCircularRefs) {
+    callback(swaggerApiCircularRefs);
+  } else {
+    Sway.create({
+      definition: swaggerDocCircularRefs,
+      jsonRefs: {location: path.join(relativeBase, './2.0/swagger-circular-refs.yaml')}
+    })
+      .then(function (obj) {
+        swaggerApiCircularRefs = obj;
+        callback(swaggerApiCircularRefs);
       }, function (err) {
         callback(err);
       });
