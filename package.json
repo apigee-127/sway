@@ -69,7 +69,7 @@
     "js-base64": "^2.4.3",
     "js-yaml": "^3.10.0",
     "json-refs": "^3.0.4",
-    "json-schema-faker": "^0.5.0-rc8",
+    "json-schema-faker": "^0.5.0-rc13",
     "lodash": "^4.17.5",
     "native-promise-only": "^0.8.1",
     "path-to-regexp": "^1.7.0",
