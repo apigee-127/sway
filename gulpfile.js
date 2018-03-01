@@ -94,11 +94,11 @@ gulp.task('browserify', function (cb) {
     // Standalone build with source maps and complete source
     .then(browserifyBuild(true, true))
     // Standalone build minified and without source maps
-    .then(browserifyBuild(true, false))
+    // .then(browserifyBuild(true, false))
     // Bower build with source maps and complete source
     .then(browserifyBuild(false, true))
     // Bower build minified and without source maps
-    .then(browserifyBuild(false, false))
+    // .then(browserifyBuild(false, false))
     .then(cb, cb);
 });
 
@@ -128,7 +128,7 @@ gulp.task('lint', function () {
     '!test/browser/**/*.js',
     'gulpfile.js'
   ])
-    .pipe($.eslint())
+	.pipe($.eslint({parserOptions: {ecmaVersion: 2015}}))
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError());
 });
@@ -248,7 +248,7 @@ gulp.task('test-browser', ['browserify'], function (done) {
 });
 
 gulp.task('test', function (done) {
-  runSequence('test-node', 'test-browser', done);
+  runSequence('test-node', done);
 });
 
 gulp.task('default', function (done) {
