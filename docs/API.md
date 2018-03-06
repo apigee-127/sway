@@ -23,7 +23,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [new ParameterValue(parameterObject, raw)](#new_module_Sway..ParameterValue_new)
         * [~Path](#module_Sway..Path)
             * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
-            * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+            * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
@@ -35,11 +35,12 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
             * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
-            * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+            * [.getOperation(idOrPathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
             * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
             * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
             * [.getPaths()](#module_Sway..SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_Sway..Path)</code>
+            * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
             * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
             * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~ValidationEntry](#module_Sway..ValidationEntry) : <code>object</code>
@@ -156,11 +157,12 @@ Validates the request.
   * `body`: Used for `body` and `formData` parameters
   * `files`: Used for `formData` parameters whose `type` is `file`
   * `headers`: Used for `header` parameters and consumes
+  * `originalUrl`: used for `path` parameters
   * `query`: Used for `query` parameters
   * `url`: used for `path` parameters
 
-For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url`
-property.
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
+`originalUrl` or `url` property.
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
@@ -240,10 +242,12 @@ Returns the parameter value from the request.
   * `body`: Used for `body` and `formData` parameters
   * `files`: Used for `formData` parameters whose `type` is `file`
   * `headers`: Used for `header` parameters
+  * `originalUrl`: used for `path` parameters
   * `query`: Used for `query` parameters
   * `url`: used for `path` parameters
 
-For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `url` property.
+For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
+`originalUrl` or `url` property.
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
@@ -306,7 +310,7 @@ Object representing a parameter value.
 
 * [~Path](#module_Sway..Path)
     * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Path_new)
-    * [.getOperation(method)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+    * [.getOperation(idOrMethod)](#module_Sway..Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperations()](#module_Sway..Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag(tag)](#module_Sway..Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getParameters()](#module_Sway..Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_Sway..Parameter)</code>
@@ -332,8 +336,8 @@ The Path object.
 
 <a name="module_Sway..Path+getOperation"></a>
 
-#### path.getOperation(method) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
-Return the operation for this path and method.
+#### path.getOperation(idOrMethod) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
+Return the operation for this path and operation id or method.
 
 **Kind**: instance method of <code>[Path](#module_Sway..Path)</code>  
 **Returns**: <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no
@@ -341,7 +345,7 @@ Return the operation for this path and method.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| method | <code>string</code> | The method |
+| idOrMethod | <code>string</code> | The operation id or method |
 
 <a name="module_Sway..Path+getOperations"></a>
 
@@ -468,6 +472,7 @@ information to perform response validation.
 
 | Name | Type | Description |
 | --- | --- | --- |
+| customFormats | <code>object</code> | The key/value pair of custom formats *(The keys are the format name and the values                                    are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))* |
 | customValidators | <code>[Array.&lt;ValidatorCallback&gt;](#module_Sway..ValidatorCallback)</code> | The array of custom validators |
 | definition | <code>object</code> | The original Swagger definition |
 | definitionRemotesResolved | <code>object</code> | The Swagger definition with only its remote references resolved *(This                                                means all references to external/remote documents are replaced with                                                its dereferenced value but all local references are left unresolved.)* |
@@ -481,11 +486,12 @@ information to perform response validation.
 
 * [~SwaggerApi](#module_Sway..SwaggerApi)
     * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
-    * [.getOperation(pathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+    * [.getOperation(idOrPathOrReq, [method])](#module_Sway..SwaggerApi+getOperation) ⇒ <code>[Operation](#module_Sway..Operation)</code>
     * [.getOperations([path])](#module_Sway..SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getOperationsByTag([tag])](#module_Sway..SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_Sway..Operation)</code>
     * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
     * [.getPaths()](#module_Sway..SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_Sway..Path)</code>
+    * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
     * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
     * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
@@ -510,24 +516,25 @@ The Swagger API object.
 
 <a name="module_Sway..SwaggerApi+getOperation"></a>
 
-#### swaggerApi.getOperation(pathOrReq, [method]) ⇒ <code>[Operation](#module_Sway..Operation)</code>
+#### swaggerApi.getOperation(idOrPathOrReq, [method]) ⇒ <code>[Operation](#module_Sway..Operation)</code>
 Returns the operation for the given path and operation.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
 
   * `method`
+  * `originalUrl`
   * `url`
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
-**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided path and method or `undefined` if there is no
-                                 operation for that path and method combination  
+**Returns**: <code>[Operation](#module_Sway..Operation)</code> - The `Operation` for the provided operation id, or path and method or `undefined` if
+                                 there is no operation for that operation id, or path and method combination  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| pathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger path string or the http client request *(or equivalent)* |
-| [method] | <code>string</code> | The Swagger operation method |
+| idOrPathOrReq | <code>string</code> &#124; <code>object</code> | The Swagger opeartion id, path string or the http client request *(or                                        equivalent)* |
+| [method] | <code>string</code> | The Swagger operation method _(not used when providing an operation id)_ |
 
 <a name="module_Sway..SwaggerApi+getOperations"></a>
 
@@ -560,6 +567,7 @@ Returns the path object for the given path or request.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
 
+  * `originalUrl`
   * `url`
 
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
@@ -578,10 +586,22 @@ Returns all path objects for the Swagger API.
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
 **Returns**: <code>[Array.&lt;Path&gt;](#module_Sway..Path)</code> - The `Path` objects  
+<a name="module_Sway..SwaggerApi+registerFormat"></a>
+
+#### swaggerApi.registerFormat(name, validator)
+Registers a custom format.
+
+**Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the format |
+| validator | <code>function</code> | The format validator *(See [ZSchema Custom Format](https://github.com/zaggino/z-schema#register-a-custom-format))* |
+
 <a name="module_Sway..SwaggerApi+registerValidator"></a>
 
 #### swaggerApi.registerValidator(validator)
-Registers a validator.
+Registers a custom validator.
 
 **Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
 **Throws**:

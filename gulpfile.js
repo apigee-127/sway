@@ -79,6 +79,11 @@ gulp.task('browserify', function (cb) {
           b.transform('exposify');
         }
 
+        b.transform('babelify', {
+          global: true,
+          presets: ['es2015']
+        });
+
         b.bundle()
           .pipe(source('sway' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
           .pipe($.if(!useDebug, buffer()))
@@ -131,6 +136,12 @@ gulp.task('lint', function () {
     .pipe($.eslint())
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError());
+});
+
+gulp.task('nsp', function (cb) {
+  $.nsp({
+    package: path.join(__dirname, 'package.json')
+  }, cb);
 });
 
 gulp.task('test-node', function (done) {
@@ -198,6 +209,10 @@ gulp.task('test-browser', ['browserify'], function (done) {
         });
 
         b.transform('brfs')
+         .transform('babelify', {
+           global: true,
+           presets: ['es2015']
+          })
           .bundle()
           .pipe(source('test-browser.js'))
           .pipe(gulp.dest(basePath))
@@ -246,5 +261,5 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'test', 'docs', done);
+  runSequence('lint', 'nsp', 'test', 'docs', done);
 });
