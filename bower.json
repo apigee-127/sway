@@ -24,11 +24,11 @@
     "test"
   ],
   "dependencies": {
-    "js-base64": "~2.3.2",
+    "js-base64": "^2.4.3",
     "js-yaml": "^3.10.0",
-    "json-refs": "~3.0.1",
-    "lodash": "^4.17.4",
-    "z-schema": "^3.18.4"
+    "json-refs": "^3.0.4",
+    "lodash": "^4.17.5",
+    "z-schema": "^3.19.1"
   },
   "devDependencies": {
     "mocha": "^4.0.1"
