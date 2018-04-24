@@ -79,6 +79,11 @@ gulp.task('browserify', function (cb) {
           b.transform('exposify');
         }
 
+        b.transform('babelify', {
+          global: true,
+          presets: ['es2015']
+        });
+
         b.bundle()
           .pipe(source('sway' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
           .pipe($.if(!useDebug, buffer()))
@@ -204,6 +209,10 @@ gulp.task('test-browser', ['browserify'], function (done) {
         });
 
         b.transform('brfs')
+         .transform('babelify', {
+           global: true,
+           presets: ['es2015']
+          })
           .bundle()
           .pipe(source('test-browser.js'))
           .pipe(gulp.dest(basePath))
