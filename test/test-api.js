@@ -158,14 +158,6 @@ describe('SwaggerApi', function () {
 
   describe('#getPath', function () {
     describe('path', function () {
-      it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}')));
-      });
-
-      it('should return no path object', function () {
-        assert.ok(_.isUndefined(swaggerApi.getPath('/petz/{petId}')));
-      });
-
       describe('multiple matches', function () {
         // This test is likely superfluous but while working on Issue 76 this was broken (pre-commit) and so this test
         // is here just to be sure.
@@ -189,21 +181,32 @@ describe('SwaggerApi', function () {
             .then(done, done);
         });
       });
-    });
 
-    describe('http.ClientRequest (or similar)', function () {
+      it('should handle regex characters in path', function (done) {
+        var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+        var path = '/foo/({bar})';
+
+        cSwagger.paths[path] = {};
+
+        Sway.create({
+          definition: cSwagger
+        })
+          .then(function (api) {
+            assert.ok(!_.isUndefined(api.getPath(path)));
+          })
+          .then(done, done);
+      });
+
       it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getPath({
-          url: swaggerApi.basePath + '/pet/1'
-        })));
+        assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}')));
       });
 
       it('should return no path object', function () {
-        assert.ok(_.isUndefined(swaggerApi.getPath({
-          url: swaggerApi.basePath + '/petz/1'
-        })));
+        assert.ok(_.isUndefined(swaggerApi.getPath('/petz/{petId}')));
       });
+    });
 
+    describe('http.ClientRequest (or similar)', function () {
       describe('multiple matches', function () {
         it('complete static match', function (done) {
           var cSwagger = _.cloneDeep(helpers.swaggerDoc);
@@ -297,6 +300,35 @@ describe('SwaggerApi', function () {
             })
             .then(done, done);
         });
+      });
+
+      it('should handle regex characters in path', function (done) {
+        var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+        var path = '/foo/({bar})';
+
+        cSwagger.paths[path] = {};
+
+        Sway.create({
+          definition: cSwagger
+        })
+          .then(function (api) {
+            assert.ok(!_.isUndefined(api.getPath({
+              url: swaggerApi.basePath + '/foo/(bar)'
+            })));
+          })
+          .then(done, done);
+      });
+
+      it('should return the expected path object', function () {
+        assert.ok(!_.isUndefined(swaggerApi.getPath({
+          url: swaggerApi.basePath + '/pet/1'
+        })));
+      });
+
+      it('should return no path object', function () {
+        assert.ok(_.isUndefined(swaggerApi.getPath({
+          url: swaggerApi.basePath + '/petz/1'
+        })));
       });
     });
   });
