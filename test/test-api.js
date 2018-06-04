@@ -165,6 +165,30 @@ describe('SwaggerApi', function () {
       it('should return no path object', function () {
         assert.ok(_.isUndefined(swaggerApi.getPath('/petz/{petId}')));
       });
+
+      describe('multiple matches', function () {
+        // This test is likely superfluous but while working on Issue 76 this was broken (pre-commit) and so this test
+        // is here just to be sure.
+        it('match identical', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+          var matches = [
+            '/foo/{0}/baz',
+            '/foo/{1}/baz'
+          ];
+
+          _.forEach(matches, function (newPath) {
+            cSwagger.paths[newPath] = {};
+          });
+
+          Sway.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              assert.equal(api.getPath('/foo/{1}/baz').path, matches[1]);
+            })
+            .then(done, done);
+        });
+      });
     });
 
     describe('http.ClientRequest (or similar)', function () {
@@ -178,6 +202,101 @@ describe('SwaggerApi', function () {
         assert.ok(_.isUndefined(swaggerApi.getPath({
           url: swaggerApi.basePath + '/petz/1'
         })));
+      });
+
+      describe('multiple matches', function () {
+        it('complete static match', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+          var lesserMatches = [
+            '/foo/bar/{baz}',
+            '/foo/{bar}/baz',
+            '/{foo}/bar/baz'
+          ];
+          var match = '/foo/bar/baz';
+
+          _.forEach(lesserMatches.concat(match), function (newPath) {
+            cSwagger.paths[newPath] = {};
+          });
+
+          Sway.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              assert.equal(api.getPath({
+                url: swaggerApi.basePath + match
+              }).path, match);
+            })
+            .then(done, done);
+        });
+
+        // While this scenario should never happen in a valid Swagger document, we handle it anyways
+        it('match multiple levels deep', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+          var lesserMatches = [
+            '/foo/{bar}/baz/{qux}'
+          ];
+          var match = '/foo/{bar}/baz/qux';
+
+          _.forEach(lesserMatches.concat(match), function (newPath) {
+            cSwagger.paths[newPath] = {};
+          });
+
+          Sway.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              assert.equal(api.getPath({
+                url: swaggerApi.basePath + match
+              }).path, match);
+            })
+            .then(done, done);
+        });
+
+        it('match single level deep', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+          var lesserMatches = [
+            '/foo/{bar}/baz',
+            '/{foo}/bar/baz'
+          ];
+          var match = '/foo/bar/{baz}';
+
+          _.forEach(lesserMatches.concat(match), function (newPath) {
+            cSwagger.paths[newPath] = {};
+          });
+
+          Sway.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              assert.equal(api.getPath({
+                url: swaggerApi.basePath + match
+              }).path, match);
+            })
+            .then(done, done);
+        });
+
+        // While this scenario should never happen in a valid Swagger document, we handle it anyways
+        it('match identical', function (done) {
+          var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+          var matches = [
+            '/foo/{0}/baz',
+            '/foo/{1}/baz'
+          ];
+
+          _.forEach(matches, function (newPath) {
+            cSwagger.paths[newPath] = {};
+          });
+
+          Sway.create({
+            definition: cSwagger
+          })
+            .then(function (api) {
+              assert.ok(!_.isUndefined(api.getPath({
+                url: swaggerApi.basePath + '/foo/bar/baz'
+              })));
+            })
+            .then(done, done);
+        });
       });
     });
   });

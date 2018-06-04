@@ -15,6 +15,7 @@ object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #62, #72, #80, #84, #104, #141)*
 * Updated `Sway#getPath` and `Parameter#getValue` to work with request objects containing `originalUrl` *(Issue #156)*
+* Updated `Sway#getPath` to better handle multiple matches for `http.ClientRequest` _(or similar)_ *(Issue #76)*
 * Updated `Sway#getOperation` and `Path#getOperation` to work with an `operationId` *(Issue #152)*
 
 ### v1.0.0 (2016-04-04)
