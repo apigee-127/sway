@@ -14,6 +14,7 @@ object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #62, #72, #80, #84, #104, #141)*
+* Updated `ParameterValue` to provide better errors for empty values when `allowEmptyValue` is `false` *(Issue #88)*
 * Updated `Sway#getPath` and `Parameter#getValue` to work with request objects containing `originalUrl` *(Issue #156)*
 * Updated `Sway#getPath` to better handle multiple matches for `http.ClientRequest` _(or similar)_ *(Issue #76)*
 * Updated `Sway#getPath` to work with characters special to

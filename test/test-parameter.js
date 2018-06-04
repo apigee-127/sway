@@ -1546,6 +1546,7 @@ describe('Parameter', function () {
             var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
             cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              allowEmptyValue: false,
               type: 'integer',
               format: 'int32',
               name: 'limit',
@@ -1565,7 +1566,7 @@ describe('Parameter', function () {
                 assert.equal(paramValue.raw, '');
                 assert.equal(paramValue.value, undefined);
                 assert.ok(!paramValue.valid);
-                assert.equal(paramValue.error.message, 'Expected type integer but found type string');
+                assert.equal(paramValue.error.message, 'Value is not allowed to be empty');
               })
               .then(done, done);
           });
@@ -1604,6 +1605,7 @@ describe('Parameter', function () {
             var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
             cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              allowEmptyValue: false,
               type: 'number',
               format: 'int32',
               name: 'limit',
@@ -1623,7 +1625,7 @@ describe('Parameter', function () {
                 assert.equal(paramValue.raw, '');
                 assert.equal(paramValue.value, undefined);
                 assert.ok(!paramValue.valid);
-                assert.equal(paramValue.error.message, 'Expected type number but found type string');
+                assert.equal(paramValue.error.message, 'Value is not allowed to be empty');
               })
               .then(done, done);
           });
@@ -1634,6 +1636,63 @@ describe('Parameter', function () {
             cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
               type: 'number',
               format: 'int32',
+              name: 'limit',
+                in: 'query',
+              allowEmptyValue: true
+            });
+
+            Sway.create({
+              definition: cSwaggerDoc
+            })
+              .then(function (api) {
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  query: {
+                    limit: ''
+                  }
+                });
+
+                assert.equal(paramValue.raw, '');
+                assert.equal(paramValue.value, '');
+                assert.ok(paramValue.valid);
+              })
+              .then(done, done);
+          });
+        });
+
+        describe('string', function () {
+          it('allowEmptyValue false', function (done) {
+            var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              allowEmptyValue: false,
+              type: 'string',
+              name: 'limit',
+                in: 'query'
+            });
+
+            Sway.create({
+              definition: cSwaggerDoc
+            })
+              .then(function (api) {
+                var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                  query: {
+                    limit: ''
+                  }
+                });
+
+                assert.equal(paramValue.raw, '');
+                assert.equal(paramValue.value, '');
+                assert.ok(!paramValue.valid);
+                assert.equal(paramValue.error.message, 'Value is not allowed to be empty');
+              })
+              .then(done, done);
+          });
+
+          it('allowEmptyValue true', function (done) {
+            var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+
+            cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              type: 'string',
               name: 'limit',
                 in: 'query',
               allowEmptyValue: true
