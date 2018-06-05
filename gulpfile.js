@@ -43,6 +43,8 @@ var source = require('vinyl-source-stream');
 
 var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
 
+var babelIgnore = /\/node_modules\/underscore\//;
+
 // Load promises polyfill if necessary
 if (typeof Promise === 'undefined') {
   require('native-promise-only');
@@ -81,7 +83,8 @@ gulp.task('browserify', function (cb) {
 
         b.transform('babelify', {
           global: true,
-          presets: ['es2015']
+          presets: ['es2015'],
+          ignore: babelIgnore
         });
 
         b.bundle()
@@ -211,7 +214,8 @@ gulp.task('test-browser', ['browserify'], function (done) {
         b.transform('brfs')
          .transform('babelify', {
            global: true,
-           presets: ['es2015']
+           presets: ['es2015'],
+           ignore: babelIgnore
           })
           .bundle()
           .pipe(source('test-browser.js'))
