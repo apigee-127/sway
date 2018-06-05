@@ -31,6 +31,8 @@ var assert = require('assert');
 var helpers = require('./helpers');
 var Sway = helpers.getSway();
 
+// TODO: Move these to their respective test-*.js files
+
 describe('issues', function () {
   var swaggerApi;
 

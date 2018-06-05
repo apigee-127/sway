@@ -169,6 +169,27 @@ describe('Parameter', function () {
         helpers.shouldNotHadFailed(err);
       }
     });
+
+    it('should handle parameter with date format (Issue 99)', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.paths['/pet'].post.parameters.push({
+          in: 'query',
+        name: 'availableDate',
+        description: 'The date the Pet is available',
+        required: true,
+        type: 'string',
+        format: 'date'
+      });
+
+      Sway.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          assert.ok(_.isString(api.getOperation('/pet', 'post').getParameter('availableDate').getSample()));
+        })
+        .then(done, done);
+    });
   });
 
   describe('#getValue', function () {
