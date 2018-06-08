@@ -15,6 +15,7 @@ object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*
 * Fix bug where sample generation for `format: date` failed *(Issue #99, PR #174)*
+* Fix bug where `Path#getOperation` by `operationId` returned the matching `Path` instead of `Operation` *(Issue #175)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #62, #72, #80, #84, #104, #141)*
 * Updated `ParameterValue` to provide better errors for empty values when `allowEmptyValue` is `false` *(Issue #88)*

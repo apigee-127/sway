@@ -69,9 +69,9 @@ describe('Path', function () {
   describe('#getOperation', function () {
     it('should return the expected operation', function () {
       // By method
-      assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}').getOperation('get')));
+      helpers.checkType(swaggerApi.getPath('/pet/{petId}').getOperation('get'), 'Operation');
       // By operationId
-      assert.ok(!_.isUndefined(swaggerApi.getPath('/pet').getOperation('addPet')));
+      helpers.checkType(swaggerApi.getPath('/pet').getOperation('addPet'), 'Operation');
     });
 
     it('should return no operation for the missing method', function () {

@@ -45,6 +45,10 @@ function fail (msg) {
   assert.fail(msg);
 }
 
+module.exports.checkType = function (obj, expectedType) {
+  assert.equal(obj.constructor.name, expectedType);
+}
+
 module.exports.documentBase = documentBase;
 
 module.exports.fail = fail;

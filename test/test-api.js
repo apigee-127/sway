@@ -87,16 +87,12 @@ describe('SwaggerApi', function () {
 
   describe('#getOperation', function () {
     it('should return the expected operation by id', function () {
-      var operation = swaggerApi.getOperation('addPet');
-
-      assert.ok(!_.isUndefined(operation));
+      helpers.checkType(swaggerApi.getOperation('addPet'), 'Operation');
     });
 
     describe('path + method', function () {
       it('should return the expected operation', function () {
-        var operation = swaggerApi.getOperation('/pet/{petId}', 'get');
-
-        assert.ok(!_.isUndefined(operation));
+        helpers.checkType(swaggerApi.getOperation('/pet/{petId}', 'get'), 'Operation');
       });
 
       it('should return no operation for missing path', function () {
@@ -110,17 +106,17 @@ describe('SwaggerApi', function () {
 
     describe('http.ClientRequest (or similar)', function () {
       it('should return the expected operation', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getOperation({
+        helpers.checkType(swaggerApi.getOperation({
           method: 'GET',
           url: swaggerApi.basePath + '/pet/1'
-        })));
+        }), 'Operation');
       });
 
       it('should return the expected operation (req.originalUrl)', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getOperation({
+        helpers.checkType((swaggerApi.getOperation({
           method: 'GET',
           originalUrl: swaggerApi.basePath + '/pet/1'
-        })));
+        })), 'Operation');
       });
 
       it('should return no operation for missing path', function () {
@@ -192,13 +188,13 @@ describe('SwaggerApi', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            assert.ok(!_.isUndefined(api.getPath(path)));
+            helpers.checkType(api.getPath(path), 'Path');
           })
           .then(done, done);
       });
 
       it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getPath('/pet/{petId}')));
+        helpers.checkType(swaggerApi.getPath('/pet/{petId}'), 'Path');
       });
 
       it('should return no path object', function () {
@@ -294,9 +290,9 @@ describe('SwaggerApi', function () {
             definition: cSwagger
           })
             .then(function (api) {
-              assert.ok(!_.isUndefined(api.getPath({
+              helpers.checkType(api.getPath({
                 url: swaggerApi.basePath + '/foo/bar/baz'
-              })));
+              }), 'Path');
             })
             .then(done, done);
         });
@@ -312,17 +308,17 @@ describe('SwaggerApi', function () {
           definition: cSwagger
         })
           .then(function (api) {
-            assert.ok(!_.isUndefined(api.getPath({
+            helpers.checkType(api.getPath({
               url: swaggerApi.basePath + '/foo/(bar)'
-            })));
+            }), 'Path');
           })
           .then(done, done);
       });
 
       it('should return the expected path object', function () {
-        assert.ok(!_.isUndefined(swaggerApi.getPath({
+        helpers.checkType(swaggerApi.getPath({
           url: swaggerApi.basePath + '/pet/1'
-        })));
+        }), 'Path');
       });
 
       it('should return no path object', function () {
@@ -444,7 +440,7 @@ describe('SwaggerApi', function () {
           try {
             param.getSample();
 
-            assert.fail('Should had failed above');
+            helpers.shouldHadFailed();
           } catch (err) {
             assert.equal(err.message, 'unknown registry key "sway" in /');
           }
