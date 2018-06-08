@@ -41,6 +41,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
             * [.getPaths()](#module_Sway..SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_Sway..Path)</code>
             * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
+            * [.registerFormatGenerator(name, formatGenerator)](#module_Sway..SwaggerApi+registerFormatGenerator)
             * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
             * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~ValidationEntry](#module_Sway..ValidationEntry) : <code>object</code>
@@ -473,6 +474,7 @@ information to perform response validation.
 | Name | Type | Description |
 | --- | --- | --- |
 | customFormats | <code>object</code> | The key/value pair of custom formats *(The keys are the format name and the values                                    are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))* |
+| customFormatGenerators | <code>object</code> | The key/value pair of custom format generators *(The keys are the format name and the values                                    are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))* |
 | customValidators | <code>[Array.&lt;ValidatorCallback&gt;](#module_Sway..ValidatorCallback)</code> | The array of custom validators |
 | definition | <code>object</code> | The original Swagger definition |
 | definitionRemotesResolved | <code>object</code> | The Swagger definition with only its remote references resolved *(This                                                means all references to external/remote documents are replaced with                                                its dereferenced value but all local references are left unresolved.)* |
@@ -492,6 +494,7 @@ information to perform response validation.
     * [.getPath(pathOrReq)](#module_Sway..SwaggerApi+getPath) ⇒ <code>[Path](#module_Sway..Path)</code>
     * [.getPaths()](#module_Sway..SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_Sway..Path)</code>
     * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
+    * [.registerFormatGenerator(name, formatGenerator)](#module_Sway..SwaggerApi+registerFormatGenerator)
     * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
     * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
@@ -597,6 +600,18 @@ Registers a custom format.
 | --- | --- | --- |
 | name | <code>string</code> | The name of the format |
 | validator | <code>function</code> | The format validator *(See [ZSchema Custom Format](https://github.com/zaggino/z-schema#register-a-custom-format))* |
+
+<a name="module_Sway..SwaggerApi+registerFormatGenerator"></a>
+
+#### swaggerApi.registerFormatGenerator(name, formatGenerator)
+Registers a custom format generator.
+
+**Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the format |
+| formatGenerator | <code>function</code> | The format generator *(See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))* |
 
 <a name="module_Sway..SwaggerApi+registerValidator"></a>
 

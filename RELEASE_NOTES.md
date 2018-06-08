@@ -2,6 +2,8 @@
 
 ### TBD
 
+* Added support for registering custom format generators via `options.customFormatGenerators` when creating the
+`SwaggerApi` object and/or calling `SwaggerApi#registerFormatGenerator` *(Issue 100)*
 * Added support for registering custom format validators via `options.customFormats` when creating the `SwaggerApi`
 object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently

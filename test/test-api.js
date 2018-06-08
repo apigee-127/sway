@@ -410,6 +410,56 @@ describe('SwaggerApi', function () {
     });
   });
 
+  describe('#registerFormatGenerator', function () {
+    it('should throw TypeError for invalid arguments', function () {
+      var scenarios = [
+        [[], 'name is required'],
+        [[true], 'name must be a string'],
+        [['test'], 'formatGenerator is required'],
+        [['test', true], 'formatGenerator must be a function']
+      ];
+
+      _.forEach(scenarios, function (scenario) {
+        try {
+          swaggerApi.registerFormatGenerator.apply(swaggerApi, scenario[0]);
+
+          helpers.shouldHadFailed();
+        } catch (err) {
+          assert.equal(scenario[1], err.message);
+        }
+      });
+    });
+
+    it('should add validator to list of format generators', function (done) {
+      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+
+      cSwagger.paths['/user/{username}'].get.parameters[0].format = 'sway';
+
+      Sway.create({
+        definition: cSwagger
+      })
+        .then(function (api) {
+          var param = api.getOperation('/user/{username}', 'get').getParameter('username');
+
+          try {
+            param.getSample();
+
+            assert.fail('Should had failed above');
+          } catch (err) {
+            assert.equal(err.message, 'unknown registry key "sway" in /');
+          }
+
+          // Register the custom format
+          api.registerFormatGenerator('sway', function () {
+            return 'sway';
+          });
+
+          assert.equal(param.getSample(), 'sway');
+        })
+        .then(done, done);
+    });
+  });
+
   describe('#registerValidator', function () {
     it('should throw TypeError for invalid arguments', function () {
       var scenarios = [
