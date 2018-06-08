@@ -48,7 +48,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [~ValidationResults](#module_Sway..ValidationResults) : <code>object</code>
         * [~ValidatorCallback](#module_Sway..ValidatorCallback) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
     * _static_
-        * [.create(options)](#module_Sway.create) ⇒ <code>Promise</code>
+        * [.create(options, customFormats, customFormatGenerators)](#module_Sway.create) ⇒ <code>Promise</code>
 
 <a name="module_Sway..Operation"></a>
 
@@ -686,7 +686,7 @@ Callback used for validation.
 
 <a name="module_Sway.create"></a>
 
-### Sway.create(options) ⇒ <code>Promise</code>
+### Sway.create(options, customFormats, customFormatGenerators) ⇒ <code>Promise</code>
 Creates a SwaggerApi object from its Swagger definition(s).
 
 **Kind**: static method of <code>[Sway](#module_Sway)</code>  
@@ -697,6 +697,8 @@ Creates a SwaggerApi object from its Swagger definition(s).
 | options | <code>object</code> | The options for loading the definition(s) |
 | options.definition | <code>object</code> &#124; <code>string</code> | The Swagger definition location or structure |
 | [options.jsonRefs] | <code>object</code> | *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))* |
+| customFormats | <code>object</code> | The key/value pair of custom formats *(The keys are the format name and the values                                 are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))* |
+| customFormatGenerators | <code>object</code> | The key/value pair of custom format generators *(The keys are the format name and the values                                 are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))* |
 | [options.customValidators] | <code>[Array.&lt;ValidatorCallback&gt;](#module_Sway..ValidatorCallback)</code> | The custom validators |
 
 **Example**  

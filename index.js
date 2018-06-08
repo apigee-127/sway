@@ -104,6 +104,10 @@ if (typeof Promise === 'undefined') {
  * @param {object} options - The options for loading the definition(s)
  * @param {object|string} options.definition - The Swagger definition location or structure
  * @param {object} [options.jsonRefs] - *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
+ * @param {object} customFormats - The key/value pair of custom formats *(The keys are the format name and the values
+ *                                 are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
+ * @param {object} customFormatGenerators - The key/value pair of custom format generators *(The keys are the format name and the values
+ *                                 are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
  * @param {module:Sway~ValidatorCallback[]} [options.customValidators] - The custom validators
  *
  * @returns {Promise} The promise
@@ -120,6 +124,14 @@ module.exports.create = function (options) {
   var allTasks = Promise.resolve();
   var cOptions;
 
+  function validateAllAreFunctions (arr, paramName) {
+    _.forEach(arr, function (item, index) {
+      if (!_.isFunction(item)) {
+        throw new TypeError('options.' + paramName + ' at index ' + index + ' must be a function');
+      }
+    });
+  }
+
   // Validate arguments
   allTasks = allTasks.then(function () {
     return new Promise(function (resolve) {
@@ -133,15 +145,17 @@ module.exports.create = function (options) {
         throw new TypeError('options.definition must be either an object or a string');
       } else if (!_.isUndefined(options.jsonRefs) && !_.isPlainObject(options.jsonRefs)) {
         throw new TypeError('options.jsonRefs must be an object');
+      } else if (!_.isUndefined(options.customFormats) && !_.isArray(options.customFormats)) {
+        throw new TypeError('options.customFormats must be an array');
+      } else if (!_.isUndefined(options.customFormatGenerators) && !_.isArray(options.customFormatGenerators)) {
+        throw new TypeError('options.customFormatGenerators must be an array');
       } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
         throw new TypeError('options.customValidators must be an array');
       }
 
-      _.forEach(options.customValidators, function (validator, index) {
-        if (!_.isFunction(validator)) {
-          throw new TypeError('options.customValidators at index ' + index + ' must be a function');
-        }
-      });
+      validateAllAreFunctions(options.customFormats, 'customFormats');
+      validateAllAreFunctions(options.customFormatGenerators, 'customFormatGenerators');
+      validateAllAreFunctions(options.customValidators, 'customValidators');
 
       resolve();
     });
