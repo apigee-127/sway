@@ -250,7 +250,7 @@ describe('Response', function () {
           });
 
           it('should not return an error for a void response', function () {
-            var results = cSway.getOperation('/user', 'post').validateResponse(undefined, {}, validPet);
+            var results = cSway.getOperation('/user', 'post').validateResponse({});
 
             assert.equal(results.errors.length, 0);
             assert.equal(results.warnings.length, 0);

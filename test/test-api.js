@@ -58,6 +58,8 @@ describe('SwaggerApi', function () {
 
   beforeEach(function () {
     swaggerApi.customValidators = [];
+    swaggerApi.customFormats = {};
+    swaggerApi.customFormatGenerators = {};
   });
 
   describe('#getOperations', function () {

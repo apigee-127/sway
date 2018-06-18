@@ -193,6 +193,24 @@ describe('Parameter', function () {
   });
 
   describe('#getValue', function () {
+    it('should throw TypeError for invalid arguments', function () {
+      var scenarios = [
+        [[], 'req is required'],
+        [[true], 'req must be an object']
+      ];
+      var param = swaggerApi.getOperation('/pet', 'post').getParameter('body');
+
+      _.forEach(scenarios, function (scenario) {
+        try {
+          param.getValue.apply(param, scenario[0]);
+
+          helpers.shouldHadFailed();
+        } catch (err) {
+          assert.equal(scenario[1], err.message);
+        }
+      });
+    });
+
     describe('raw values', function () {
       describe('body', function () {
         var parameter;

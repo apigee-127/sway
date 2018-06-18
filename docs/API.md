@@ -13,8 +13,8 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>[Response](#module_Sway..Response)</code>
             * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_Sway..Response)</code>
             * [.getSecurity()](#module_Sway..Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
-            * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
-            * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+            * [.validateRequest(req, [strictMode])](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+            * [.validateResponse(res, [strictMode])](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~Parameter](#module_Sway..Parameter)
             * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Parameter_new)
             * [.getSample()](#module_Sway..Parameter+getSample) ⇒ <code>\*</code>
@@ -31,7 +31,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Response_new)
             * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
             * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
-            * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+            * [.validateResponse(res, [strictMode])](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~ServerResponseWrapper](#module_Sway..ServerResponseWrapper) : <code>object</code>
         * [~SwaggerApi](#module_Sway..SwaggerApi)
             * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_Sway..SwaggerApi_new)
@@ -75,8 +75,8 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
     * [.getResponse([statusCode])](#module_Sway..Operation+getResponse) ⇒ <code>[Response](#module_Sway..Response)</code>
     * [.getResponses()](#module_Sway..Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_Sway..Response)</code>
     * [.getSecurity()](#module_Sway..Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
-    * [.validateRequest(req)](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
-    * [.validateResponse(res)](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+    * [.validateRequest(req, [strictMode])](#module_Sway..Operation+validateRequest) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+    * [.validateResponse(res, [strictMode])](#module_Sway..Operation+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
 <a name="new_module_Sway..Operation_new"></a>
 
@@ -150,7 +150,7 @@ is undefined.
 **Returns**: <code>Array.&lt;object&gt;</code> - The security for this operation  
 <a name="module_Sway..Operation+validateRequest"></a>
 
-#### operation.validateRequest(req) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+#### operation.validateRequest(req, [strictMode]) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 Validates the request.
 
 **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
@@ -170,21 +170,23 @@ For `path` parameters, we will use the operation's `regexp` property to parse ou
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>[ValidationResults](#module_Sway..ValidationResults)</code> - The validation results  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| req | <code>object</code> | The http client request *(or equivalent)* |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| req | <code>object</code> |  | The http client request *(or equivalent)* |
+| [strictMode] | <code>boolean</code> &#124; <code>object</code> | <code>false</code> | Enablement of strict mode validation.  If `strictMode` is a `boolean`                                              and is `true`, all form fields, headers and query parameters **must** be                                              defined in the Swagger document for this operation.  If `strictMode` is                                              an `object`, the keys correspond to the `in` property values of the                                              [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)                                              and its value is a `boolean` that when `true` turns on strict mode                                              validation for the request location matching the key.  Valid keys are                                              `formData`, `header` and `query`.  _(`body` and `path` are not necessary                                              since `body` strict mode is possible via its schema and `path` is                                              **always** required.)_ |
 
 <a name="module_Sway..Operation+validateResponse"></a>
 
-#### operation.validateResponse(res) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+#### operation.validateResponse(res, [strictMode]) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 Validates the response.
 
 **Kind**: instance method of <code>[Operation](#module_Sway..Operation)</code>  
 **Returns**: <code>[ValidationResults](#module_Sway..ValidationResults)</code> - The validation results  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>[ServerResponseWrapper](#module_Sway..ServerResponseWrapper)</code> | The response or response like object |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| res | <code>[ServerResponseWrapper](#module_Sway..ServerResponseWrapper)</code> |  | The response or response like object |
+| [strictMode] | <code>boolean</code> &#124; <code>object</code> | <code>false</code> | Enablement of strict mode validation.  If `strictMode` is a `boolean`                                              and is `true`, all form fields, headers and query parameters **must** be                                              defined in the Swagger document for this operation.  If `strictMode` is                                              an `object`, the keys correspond to the `in` property values of the                                              [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)                                              and its value is a `boolean` that when `true` turns on strict mode                                              validation for the request location matching the key.  Valid keys are                                              `formData`, `header` and `query`.  _(`body` and `path` are not necessary                                              since `body` strict mode is possible via its schema and `path` is                                              **always** required.)_ |
 
 <a name="module_Sway..Parameter"></a>
 
@@ -394,7 +396,7 @@ Return the parameters for this path.
     * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_Sway..Response_new)
     * [.getExample([mimeType])](#module_Sway..Response+getExample) ⇒ <code>string</code>
     * [.getSample()](#module_Sway..Response+getSample) ⇒ <code>\*</code>
-    * [.validateResponse(res)](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+    * [.validateResponse(res, [strictMode])](#module_Sway..Response+validateResponse) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
 <a name="new_module_Sway..Response_new"></a>
 
@@ -436,15 +438,16 @@ Returns a sample value.
 **Returns**: <code>\*</code> - The sample value for the response, which can be undefined if the response schema is not provided  
 <a name="module_Sway..Response+validateResponse"></a>
 
-#### response.validateResponse(res) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
+#### response.validateResponse(res, [strictMode]) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 Validates the response.
 
 **Kind**: instance method of <code>[Response](#module_Sway..Response)</code>  
 **Returns**: <code>[ValidationResults](#module_Sway..ValidationResults)</code> - The validation results  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| res | <code>[ServerResponseWrapper](#module_Sway..ServerResponseWrapper)</code> | The response or response like object |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| res | <code>[ServerResponseWrapper](#module_Sway..ServerResponseWrapper)</code> |  | The response or response like object |
+| [strictMode] | <code>boolean</code> &#124; <code>object</code> | <code>false</code> | Enablement of strict mode validation.  If `strictMode` is a `boolean`                                              and is `true`, all form fields, headers and query parameters **must** be                                              defined in the Swagger document for this operation.  If `strictMode` is                                              an `object`, the keys correspond to the `in` property values of the                                              [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)                                              and its value is a `boolean` that when `true` turns on strict mode                                              validation for the request location matching the key.  Valid keys are                                              `formData`, `header` and `query`.  _(`body` and `path` are not necessary                                              since `body` strict mode is possible via its schema and `path` is                                              **always** required.)_ |
 
 <a name="module_Sway..ServerResponseWrapper"></a>
 
