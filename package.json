@@ -1,5 +1,5 @@
 {
-  "name": "sway",
+  "name": "yasway",
   "version": "1.0.0",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
@@ -13,18 +13,18 @@
     "swagger"
   ],
   "author": {
-    "name": "Jeremy Whitlock",
-    "email": "jwhitlock@apache.org",
-    "url": "https://github.com/whitlockjc"
+    "name": "Amar Zavery",
+    "email": "amzavery@microsoft.com",
+    "url": "https://github.com/amarzavery"
   },
   "bugs": {
-    "url": "https://github.com/apigee-127/sway/issues"
+    "url": "https://github.com/amarzavery/sway/issues"
   },
-  "homepage": "https://github.com/apigee-127/sway",
+  "homepage": "https://github.com/amarzavery/sway",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/apigee-127/sway.git"
+    "url": "git://github.com/amarzavery/sway.git"
   },
   "files": [
     "index.js",
@@ -41,15 +41,15 @@
     "del": "^3.0.0",
     "exposify": "^0.5.0",
     "glob": "^7.1.2",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^4.0.0",
     "gulp-if": "^2.0.2",
     "gulp-istanbul": "^1.1.2",
     "gulp-jsdoc-to-markdown": "^1.2.2",
     "gulp-load-plugins": "^1.5.0",
-    "gulp-mocha": "~3.0.1",
-    "gulp-nsp": "^2.4.2",
+    "gulp-mocha": "^6.0.0",
+    "gulp-nsp": "^3.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
     "karma": "^2.0.0",
