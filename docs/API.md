@@ -43,6 +43,8 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
             * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
             * [.registerFormatGenerator(name, formatGenerator)](#module_Sway..SwaggerApi+registerFormatGenerator)
             * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
+            * [.unregisterFormat(name)](#module_Sway..SwaggerApi+unregisterFormat)
+            * [.unregisterFormatGenerator(name)](#module_Sway..SwaggerApi+unregisterFormatGenerator)
             * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
         * [~ValidationEntry](#module_Sway..ValidationEntry) : <code>object</code>
         * [~ValidationResults](#module_Sway..ValidationResults) : <code>object</code>
@@ -499,6 +501,8 @@ information to perform response validation.
     * [.registerFormat(name, validator)](#module_Sway..SwaggerApi+registerFormat)
     * [.registerFormatGenerator(name, formatGenerator)](#module_Sway..SwaggerApi+registerFormatGenerator)
     * [.registerValidator(validator)](#module_Sway..SwaggerApi+registerValidator)
+    * [.unregisterFormat(name)](#module_Sway..SwaggerApi+unregisterFormat)
+    * [.unregisterFormatGenerator(name)](#module_Sway..SwaggerApi+unregisterFormatGenerator)
     * [.validate()](#module_Sway..SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_Sway..ValidationResults)</code>
 
 <a name="new_module_Sway..SwaggerApi_new"></a>
@@ -630,6 +634,28 @@ Registers a custom validator.
 | Param | Type | Description |
 | --- | --- | --- |
 | validator | <code>[ValidatorCallback](#module_Sway..ValidatorCallback)</code> | The validator |
+
+<a name="module_Sway..SwaggerApi+unregisterFormat"></a>
+
+#### swaggerApi.unregisterFormat(name)
+Unregisters a custom format.
+
+**Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the format |
+
+<a name="module_Sway..SwaggerApi+unregisterFormatGenerator"></a>
+
+#### swaggerApi.unregisterFormatGenerator(name)
+Unregisters a custom format generator.
+
+**Kind**: instance method of <code>[SwaggerApi](#module_Sway..SwaggerApi)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | The name of the format generator |
 
 <a name="module_Sway..SwaggerApi+validate"></a>
 

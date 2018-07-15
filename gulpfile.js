@@ -82,6 +82,7 @@ gulp.task('browserify', function (cb) {
         }
 
         b.transform('babelify', {
+          compact: false,
           global: true,
           presets: ['es2015'],
           ignore: babelIgnore
@@ -213,6 +214,7 @@ gulp.task('test-browser', ['browserify'], function (done) {
 
         b.transform('brfs')
          .transform('babelify', {
+           compact: false,
            global: true,
            presets: ['es2015'],
            ignore: babelIgnore

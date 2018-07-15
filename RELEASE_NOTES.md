@@ -11,11 +11,15 @@ object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
     second argument _(`strictMode`)_ that dictates whether strict mode validation is on/off and to what portion(s) of
     the request/response needs to be validated _(`formData` is request only, `headers` are request and response and
     `query` is request only.  Please review the API documentation for more details.)_
+* Added support for unregistering custom formats and custom format generators by calling `SwaggerApi#unregisterFormat`
+and `SwaggerApi#unregisterFormatGenerator` respectively
 * Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently
 * Fix bug where default values for arrays were not used when they should be *(Issue #132)*
 * Fix bug where global security definitions never made it to its `Operation` object *(Issue #120)*
 * Fix bug where missing optional file parameters were treated as a validation failure *(Issue #129)*
 * Fix bug where path matching was not case sensitive *(Issue #147)*
+* Fix bug where referenceable objects were were remote documents and references to them were not recorded and resulted
+in `UNUSED_DEFINITION` warnings *(Issue #179)*
 * Fix bug where references were resolved multiple times *(Issue #123)*
 * Fix bug where request validation only worked for `POST` and `PUT` operations *(Issue #134)*
 * Fix bug where resolving `consumes`/`produces` was failing *(Issue #92)*

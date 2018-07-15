@@ -150,7 +150,7 @@
       - name: "name"
         in: "formData"
         description: "Updated name of the pet"
-        required: false
+        required: true
         type: "string"
       - name: "status"
         in: "formData"
@@ -173,7 +173,7 @@
     - name: "api_key"
       in: "header"
       description: ""
-      required: false
+      required: true
       type: "string"
       default: ""
     responses:
@@ -206,6 +206,11 @@
       in: "formData"
       description: "file to upload"
       required: true
+      type: "file"
+    - name: "optionalFile"
+      in: "formData"
+      description: "file to upload"
+      required: false
       type: "file"
     responses:
       200:
