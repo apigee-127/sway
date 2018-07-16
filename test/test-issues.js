@@ -428,4 +428,26 @@ describe('issues', function () {
       assert.equal(results.errors.length, 0);
     });
   });
+
+  describe('should handle circular documents and inputs', function () {
+    var swaggerApiCircular;
+
+    before(function (done) {
+      helpers.getSwaggerApiCircular(function (api) {
+        swaggerApiCircular = api;
+
+        done();
+      });
+    });
+
+    it('SwaggerApi#validate', function () {
+      var circularDef = swaggerApiCircular.definitionFullyResolved.definitions.CircularReference;
+      var results = swaggerApiCircular.validate();
+
+      assert.equal(results.warnings.length, 0);
+      assert.equal(results.errors.length, 0);
+      assert.ok(_.isPlainObject(circularDef.properties.circular));
+      assert.equal(Object.keys(circularDef.properties.circular).length, 0);
+    });
+  });
 });

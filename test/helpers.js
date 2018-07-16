@@ -36,9 +36,15 @@ var YAML = require('js-yaml');
 var documentBase = path.join(__dirname, 'browser', 'documents');
 var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
 var swaggerDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
-var swaggerDocRelativeRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger-relative-refs.yaml'), 'utf8'));
+var swaggerDocCircular = YAML.safeLoad(fs.readFileSync(path.join(__dirname,
+                                                                 './browser/documents/2.0/swagger-circular.yaml'),
+                                                       'utf8'));
+var swaggerDocRelativeRefs = YAML.safeLoad(fs.readFileSync(path.join(__dirname,
+                                                                     './browser/documents/2.0/swagger-relative-refs.yaml'),
+                                                           'utf8'));
 var swaggerDocValidator = helpers.getJSONSchemaValidator();
 var swaggerApi;
+var swaggerApiCircular;
 var swaggerApiRelativeRefs;
 
 function fail (msg) {
@@ -64,6 +70,26 @@ module.exports.getSwaggerApi = function (callback) {
         swaggerApi = obj;
 
         callback(swaggerApi);
+      }, function (err) {
+        callback(err);
+      });
+  }
+};
+
+module.exports.getSwaggerApiCircular = function (callback) {
+  if (swaggerApiCircular) {
+    callback(swaggerApiCircular);
+  } else {
+    Sway.create({
+      definition: swaggerDocCircular,
+      jsonRefs: {
+        resolveCirculars: true
+      }
+    })
+      .then(function (obj) {
+        swaggerApiCircular = obj;
+
+        callback(swaggerApiCircular);
       }, function (err) {
         callback(err);
       });
@@ -105,6 +131,10 @@ module.exports.shouldNotHadFailed = function (err) {
 module.exports.swaggerDoc = swaggerDoc;
 
 module.exports.swaggerDocPath = path.join(relativeBase, './2.0/swagger.yaml');
+
+module.exports.swaggerDocCircular = swaggerDocCircular;
+
+module.exports.swaggerDocCircularPath = path.join(relativeBase, './2.0/swagger-circular.yaml');
 
 module.exports.swaggerDocRelativeRefsPath = path.join(relativeBase, './2.0/swagger-relative-refs.yaml');
 
