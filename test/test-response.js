@@ -301,6 +301,44 @@ function runTests (mode) {
               assert.equal(results.warnings.length, 0);
             });
           });
+
+          it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', function (done) {
+            var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+
+            cSwaggerDoc.paths['/user'].post.produces = ['application/xml'];
+            cSwaggerDoc.paths['/user'].post.responses.default.schema = {
+              type: 'object'
+            };
+
+            Sway.create({
+              definition: cSwaggerDoc
+            })
+              .then(function (api) {
+                var results = api.getOperation('/user', 'post').validateResponse({
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                });
+
+                assert.equal(results.warnings.length, 0);
+                assert.deepEqual(results.errors, [
+                  {
+                    code: 'INVALID_RESPONSE_BODY',
+                    errors: [
+                      {
+                        code: 'INVALID_TYPE',
+                        params: ['object', 'undefined'],
+                        message: 'Expected type object but found type undefined',
+                        path: []
+                      }
+                    ],
+                    message: 'Invalid body: Expected type object but found type undefined',
+                    path: []
+                  }
+                ]);
+              })
+              .then(done, done);
+          });
         });
 
         // We only need one test to make sure that we're using the global produces

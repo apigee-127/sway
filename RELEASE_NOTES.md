@@ -28,6 +28,8 @@ in `UNUSED_DEFINITION` warnings *(Issue #179)*
 * Fix bug where `Path#getOperation` by `operationId` returned the matching `Path` instead of `Operation` *(Issue #175)*
 * Performance improvement by lazily initializing `json-schema-faker` *(PR #153)*
 * Updated dependencies *(Issue #62, #72, #80, #84, #104, #141)*
+* Update `Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` to no longer validate
+`Content-Type` headers when there is no body *(Issue #164)*
 * Updated `ParameterValue` to provide better errors for empty values when `allowEmptyValue` is `false` *(Issue #88)*
 * Updated `Sway#getPath` and `Parameter#getValue` to work with request objects containing `originalUrl` *(Issue #156)*
 * Updated `Sway#getPath` to better handle multiple matches for `http.ClientRequest` _(or similar)_ *(Issue #76)*
