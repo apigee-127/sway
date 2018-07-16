@@ -198,6 +198,11 @@ function runTests (mode) {
           })
           .then(done, done);
       });
+
+      it('should handle parameter with file type (Issue 159)', function () {
+        assert.ok(_.isString(swaggerApi.getOperation('/pet/{petId}/uploadImage',
+                                                     'post').getParameter('file').getSample()));
+      });
     });
 
     describe('#getValue', function () {

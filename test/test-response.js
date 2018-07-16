@@ -129,6 +129,23 @@ function runTests (mode) {
       it('should return undefined for void response', function () {
         assert.ok(_.isUndefined(swaggerApi.getOperation('/pet', 'post').getResponse(405).getSample()));
       });
+
+      it('should handle parameter with file type (Issue 159)', function (done) {
+        var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+        var cPath = '/pet/{petId}/uploadImage';
+
+        cSwaggerDoc.paths[cPath].post.responses['200'].schema = {
+          type: 'file'
+        };
+
+        Sway.create({
+          definition: cSwaggerDoc
+        })
+          .then(function (api) {
+            assert.ok(_.isString(api.getOperation(cPath,'post').getResponse(200).getSample()));
+          })
+          .then(done, done);
+      });
     });
 
     describe('#validateResponse', function () {
