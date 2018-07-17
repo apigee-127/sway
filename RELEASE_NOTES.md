@@ -2,15 +2,20 @@
 
 ### TBD
 
+* Added support for performing custom request/response validation by passing in an `options` object as the optional
+second parameter to `Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` with a
+`customValidators` property containing an `Array` of `Function` objects *(Issue #171)*
+  * The previously-mentioned APIs were updated to move the optional `strictMode` argument to be a property within the
+  `options` object. _(Please review the API documentation for more details.)_
 * Added support for registering custom format generators via `options.customFormatGenerators` when creating the
 `SwaggerApi` object and/or calling `SwaggerApi#registerFormatGenerator` *(Issue #100)*
 * Added support for registering custom format validators via `options.customFormats` when creating the `SwaggerApi`
 object and/or calling `SwaggerApi#registerFormat` *(Issue #74)*
 * Added support for strict request/response validation *(Issue #94)*
-    * `Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` now have an optional
+    * ~~`Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` now have an optional
     second argument _(`strictMode`)_ that dictates whether strict mode validation is on/off and to what portion(s) of
     the request/response needs to be validated _(`formData` is request only, `headers` are request and response and
-    `query` is request only.  Please review the API documentation for more details.)_
+    `query` is request only.  Please review the API documentation for more details.)_~~
 * Added support for unregistering custom formats and custom format generators by calling `SwaggerApi#unregisterFormat`
 and `SwaggerApi#unregisterFormatGenerator` respectively
 * Fix bug where array values in query parameters contained a single item, it could be coerced inadvertently

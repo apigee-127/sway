@@ -500,7 +500,9 @@ function runTests (mode) {
         assert.deepEqual(results.errors, []);
         assert.deepEqual(results.warnings, []);
 
-        swaggerApi.registerValidator(function () {
+        swaggerApi.registerValidator(function (api) {
+          tHelpers.checkType(api, 'SwaggerApi');
+
           return {
             errors: expectedErrors,
             warnings: expectedWarnings

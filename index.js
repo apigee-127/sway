@@ -43,9 +43,9 @@ if (typeof Promise === 'undefined') {
  */
 
 /**
- * Callback used for validation.
+ * Function used for custom validation of Swagger documents
  *
- * @typedef {function} ValidatorCallback
+ * @typedef {function} DocumentValidationFunction
  *
  * @param {module:Sway~SwaggerApi} api - The Swagger API object
  *
@@ -108,7 +108,7 @@ if (typeof Promise === 'undefined') {
  *                                 are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
  * @param {object} customFormatGenerators - The key/value pair of custom format generators *(The keys are the format name and the values
  *                                 are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
- * @param {module:Sway~ValidatorCallback[]} [options.customValidators] - The custom validators
+ * @param {module:Sway~DocumentValidationFunction[]} [options.customValidators] - The custom validators
  *
  * @returns {Promise} The promise
  *
@@ -123,14 +123,6 @@ if (typeof Promise === 'undefined') {
 module.exports.create = function (options) {
   var allTasks = Promise.resolve();
   var cOptions;
-
-  function validateAllAreFunctions (arr, paramName) {
-    _.forEach(arr, function (item, index) {
-      if (!_.isFunction(item)) {
-        throw new TypeError('options.' + paramName + ' at index ' + index + ' must be a function');
-      }
-    });
-  }
 
   // Validate arguments
   allTasks = allTasks.then(function () {
@@ -153,9 +145,9 @@ module.exports.create = function (options) {
         throw new TypeError('options.customValidators must be an array');
       }
 
-      validateAllAreFunctions(options.customFormats, 'customFormats');
-      validateAllAreFunctions(options.customFormatGenerators, 'customFormatGenerators');
-      validateAllAreFunctions(options.customValidators, 'customValidators');
+      helpers.validateOptionsAllAreFunctions(options.customFormats, 'customFormats');
+      helpers.validateOptionsAllAreFunctions(options.customFormatGenerators, 'customFormatGenerators');
+      helpers.validateOptionsAllAreFunctions(options.customValidators, 'customValidators');
 
       resolve();
     });

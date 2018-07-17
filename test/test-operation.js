@@ -231,10 +231,13 @@ function runTests (mode) {
         var scenarios = [
           [[], 'req is required'],
           [[true], 'req must be an object'],
-          [[{}, 'test'], 'strictMode must be a boolean or an object'],
-          [[{}, {formData: 'test'}], 'strictMode.formData must be a boolean'],
-          [[{}, {header: 'test'}], 'strictMode.header must be a boolean'],
-          [[{}, {query: 'test'}], 'strictMode.query must be a boolean']
+          [[{}, 'test'], 'options must be an object'],
+          [[{}, {customValidators: 'test'}], 'options.customValidators must be an array'],
+          [[{}, {customValidators: [function () {}, 'test']}], 'options.customValidators at index 1 must be a function'],
+          [[{}, {strictMode: 'test'}], 'options.strictMode must be a boolean or an object'],
+          [[{}, {strictMode: {formData: 'test'}}], 'options.strictMode.formData must be a boolean'],
+          [[{}, {strictMode: {header: 'test'}}], 'options.strictMode.header must be a boolean'],
+          [[{}, {strictMode: {query: 'test'}}], 'options.strictMode.query must be a boolean']
         ];
         var operation = swaggerApi.getOperation('/pet', 'post');
 
@@ -525,21 +528,31 @@ function runTests (mode) {
         };
         var scenarios = [
           [[], []],
-          [[false], []],
-          [[{}], []],
           [[{
-            formData: false,
-            header: false,
-            query: false
+            strictMode: false
           }], []],
-          [[true], ['formData', 'header', 'query']],
           [[{
-            formData: true,
-            header: true,
-            query: true
+            strictMode: {}
+          }], []],
+          [[{
+            strictMode: {
+              formData: false,
+              header: false,
+              query: false
+            }
+          }], []],
+          [[{strictMode: true}], ['formData', 'header', 'query']],
+          [[{
+            strictMode: {
+              formData: true,
+              header: true,
+              query: true
+            }
           }], ['formData', 'header', 'query']],
           [[{
-            header: true
+            strictMode: {
+              header: true
+            }
           }], ['header']]
         ];
         var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
@@ -579,6 +592,55 @@ function runTests (mode) {
           });
         });
       });
+
+      it('should process custom validators', function () {
+        var error = {
+          code: 'FAKE_ERROR',
+          message: 'This is a fake error!',
+          path: []
+        };
+        var operation = swaggerApi.getOperation('/pet/findByStatus', 'get');
+        var req = {
+          query: {
+            status: 'sold'
+          }
+        };
+        var warning = {
+          code: 'FAKE_WARNING',
+          message: 'This is a fake warning!',
+          path: []
+        };
+
+        assert.deepEqual(operation.validateRequest(req, {
+          customValidators: [
+            function (target, op) {
+              assert.deepEqual(target, req);
+
+              helpers.checkType(op, 'Operation');
+
+              return {
+                errors: [
+                  error
+                ]
+              };
+            },
+            function (target, op) {
+              assert.deepEqual(target, req);
+
+              helpers.checkType(op, 'Operation');
+
+              return {
+                warnings: [
+                  warning
+                ]
+              };
+            }
+          ]
+        }), {
+          errors: [error],
+          warnings: [warning]
+        });
+      });
     });
 
     describe('#validateResponse', function () {
@@ -589,10 +651,13 @@ function runTests (mode) {
         var scenarios = [
           [[], 'res is required'],
           [[true], 'res must be an object'],
-          [[res, 'test'], 'strictMode must be a boolean or an object'],
-          [[res, {formData: 'test'}], 'strictMode.formData must be a boolean'],
-          [[res, {header: 'test'}], 'strictMode.header must be a boolean'],
-          [[res, {query: 'test'}], 'strictMode.query must be a boolean']
+          [[res, 'test'], 'options must be an object'],
+          [[res, {customValidators: 'test'}], 'options.customValidators must be an array'],
+          [[res, {customValidators: [function () {}, 'test']}], 'options.customValidators at index 1 must be a function'],
+          [[res, {strictMode: 'test'}], 'options.strictMode must be a boolean or an object'],
+          [[res, {strictMode: {formData: 'test'}}], 'options.strictMode.formData must be a boolean'],
+          [[res, {strictMode: {header: 'test'}}], 'options.strictMode.header must be a boolean'],
+          [[res, {strictMode: {query: 'test'}}], 'options.strictMode.query must be a boolean']
         ];
         var operation = swaggerApi.getOperation('/pet/findByStatus', 'get');
 
@@ -602,13 +667,13 @@ function runTests (mode) {
 
             helpers.shouldHadFailed();
           } catch (err) {
-            assert.equal(scenario[1], err.message);
+            assert.equal(err.message, scenario[1]);
           }
         });
       });
 
       it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', function (done) {
-        var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
 
         cSwaggerDoc.paths['/user'].post.produces = ['application/xml'];
         cSwaggerDoc.paths['/user'].post.responses.default.schema = {
@@ -670,6 +735,61 @@ function runTests (mode) {
         assert.deepEqual(results.errors, []);
         assert.deepEqual(results.warnings, []);
       });
+
+      it('should process custom validators', function () {
+        var error = {
+          code: 'FAKE_ERROR',
+          message: 'This is a fake error!',
+          path: []
+        };
+        var res = {
+          body: [
+            {
+              name: 'Test Pet',
+              photoUrls: []
+            }
+          ],
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        var resObj = swaggerApi.getOperation('/pet/findByStatus', 'get').getResponse(200);
+        var warning = {
+          code: 'FAKE_WARNING',
+          message: 'This is a fake warning!',
+          path: []
+        };
+
+        assert.deepEqual(resObj.validateResponse(res, {
+          customValidators: [
+            function (target, op) {
+              assert.deepEqual(target, res);
+
+              helpers.checkType(op, 'Response');
+
+              return {
+                errors: [
+                  error
+                ]
+              };
+            },
+            function (target, op) {
+              assert.deepEqual(target, res);
+
+              helpers.checkType(op, 'Response');
+
+              return {
+                warnings: [
+                  warning
+                ]
+              };
+            }
+          ]
+        }), {
+          errors: [error],
+          warnings: [warning]
+        });
+      });
     });
 
     it('should validate strict mode', function (done) {
@@ -689,21 +809,33 @@ function runTests (mode) {
       };
       var scenarios = [
         [[], []],
-        [[false], []],
-        [[{}], []],
         [[{
-          formData: false,
-          header: false,
-          query: false
+          strictMode: false
         }], []],
-        [[true], ['header']],
         [[{
-          formData: true,
-          header: true,
-          query: true
+          strictMode: {}
+        }], []],
+        [[{
+          strictMode: {
+            formData: false,
+            header: false,
+            query: false
+          }
+        }], []],
+        [[{
+          strictMode: true
         }], ['header']],
         [[{
-          header: true
+          strictMode: {
+            formData: true,
+            header: true,
+            query: true
+          }
+        }], ['header']],
+        [[{
+          strictMode: {
+            header: true
+          }
         }], ['header']]
       ];
       var cSwagger = _.cloneDeep(helpers.swaggerDoc);
