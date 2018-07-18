@@ -1,6 +1,6 @@
 ## Release Notes
 
-### TBD
+### 2.0.0 (2018-07-18)
 
 * Added support for performing custom request/response validation by passing in an `options` object as the optional
 second parameter to `Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` with a
