@@ -1,6 +1,6 @@
 {
   "name": "yasway",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -28,6 +28,7 @@
   },
   "files": [
     "index.js",
+    "index.d.ts",
     "lib",
     "LICENSE"
   ],
@@ -41,7 +42,7 @@
     "del": "^3.0.0",
     "exposify": "^0.5.0",
     "glob": "^7.1.2",
-    "gulp": "^4.0.0",
+    "gulp": "^3.0.0",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^4.0.0",
     "gulp-if": "^2.0.2",
