@@ -1,5 +1,9 @@
 ## Release Notes
 
+### 2.0.1 (2018-08-04)
+
+* Upgrade `path-laoder` _(via `json-refs`)_ to upgrade `superagent` to avoid NSP warnings *(Issue #155)*
+
 ### 2.0.0 (2018-07-18)
 
 * Added support for performing custom request/response validation by passing in an `options` object as the optional
