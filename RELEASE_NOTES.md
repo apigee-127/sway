@@ -2,6 +2,8 @@
 
 ### 2.0.1 (2018-08-04)
 
+* Fix bug where non-plain objects passed to `Operation#validateRequest`, `Operation#validateResponse`,
+`Parameter#getValue` and `Response#validateResponse` failed input validation *(Issue #35)*
 * Upgrade `path-laoder` _(via `json-refs`)_ to upgrade `superagent` to avoid NSP warnings *(Issue #155)*
 
 ### 2.0.0 (2018-07-18)
