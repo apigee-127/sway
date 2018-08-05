@@ -27,11 +27,13 @@
     "url": "git://github.com/apigee-127/sway.git"
   },
   "files": [
+    "index.d.ts",
     "index.js",
     "lib",
     "LICENSE"
   ],
   "devDependencies": {
+    "@otris/jsdoc-tsd": "^1.0.0",
     "babel-core": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^8.0.0",
@@ -47,6 +49,7 @@
     "gulp-if": "^2.0.2",
     "gulp-istanbul": "^1.1.2",
     "gulp-jsdoc-to-markdown": "^1.2.2",
+    "gulp-jsdoc3": "^2.0.0",
     "gulp-load-plugins": "^1.5.0",
     "gulp-mocha": "~3.0.1",
     "gulp-nsp": "^2.4.2",

@@ -37,22 +37,6 @@ if (typeof Promise === 'undefined') {
 }
 
 /**
- * A library for simpler [Swagger](http://swagger.io/) integrations.
- *
- * @module Sway
- */
-
-/**
- * Function used for custom validation of Swagger documents
- *
- * @typedef {function} DocumentValidationFunction
- *
- * @param {module:Sway~SwaggerApi} api - The Swagger API object
- *
- * @returns {module:Sway~ValidationResults} The validation results
- */
-
-/**
  * Server response wrapper.
  *
  * Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
@@ -94,21 +78,28 @@ if (typeof Promise === 'undefined') {
  *
  * @typedef {object} ValidationResults
  *
- * @property {module:Sway~ValidationEntry[]} errors - The validation errors
- * @property {module:Sway~ValidationEntry[]} warnings - The validation warnings
+ * @property {ValidationEntry[]} errors - The validation errors
+ * @property {ValidationEntry[]} warnings - The validation warnings
  */
+
+/**
+ * Options used when creating the `SwaggerApi`.
+ *
+ * @typedef {object} CreateOptions
+ *
+ * @property {object|string} definition - The Swagger definition location or structure
+ * @property {object} [jsonRefs] - *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
+ * @property {object} [customFormats] - The key/value pair of custom formats *(The keys are the format name and the
+ * values are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
+ * @property {object} [customFormatGenerators] - The key/value pair of custom format generators *(The keys are the
+ * format name and the values are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
+ * @property {DocumentValidationFunction[]} [customValidators] - The custom validators
+  */
 
 /**
  * Creates a SwaggerApi object from its Swagger definition(s).
  *
- * @param {object} options - The options for loading the definition(s)
- * @param {object|string} options.definition - The Swagger definition location or structure
- * @param {object} [options.jsonRefs] - *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
- * @param {object} customFormats - The key/value pair of custom formats *(The keys are the format name and the values
- *                                 are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
- * @param {object} customFormatGenerators - The key/value pair of custom format generators *(The keys are the format name and the values
- *                                 are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
- * @param {module:Sway~DocumentValidationFunction[]} [options.customValidators] - The custom validators
+ * @param {CreateOptions} options - The options for loading the definition(s)
  *
  * @returns {Promise} The promise
  *

@@ -129,6 +129,19 @@ gulp.task('docs', function () {
     .pipe(gulp.dest('docs'));
 });
 
+gulp.task('docs-ts', function (cb) {
+  gulp.src([
+    './index.js',
+    'lib/types/*.js'
+  ])
+    .pipe($.jsdoc3({
+      opts: {
+        destination: 'index.d.ts',
+        template: 'node_modules/@otris/jsdoc-tsd'
+      }
+    }, cb));
+});
+
 gulp.task('lint', function () {
   return gulp.src([
     'index.js',
@@ -267,5 +280,5 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'nsp', 'test', 'docs', done);
+  runSequence('lint', 'nsp', 'test', 'docs', 'docs-ts', done);
 });
