@@ -119,7 +119,7 @@ declare interface CreateOptions {
  * @param options - The options for loading the definition(s)
  * @returns The promise
  */
-declare function create(options: CreateOptions): Promise;
+declare function create(options: CreateOptions): Promise<SwaggerApi>;
 
 /**
  * Function used for custom validation of Swagger documents
