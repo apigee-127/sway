@@ -298,7 +298,7 @@ describe('SwaggerApi', function () {
 
       results = swaggerApi.validate();
 
-      assert.deepEqual(results.errors, expectedErrors);
+      assert.deepEqual(results.errors, expectedErrors);		
       assert.deepEqual(results.warnings, expectedWarnings);
     });
   });
@@ -330,7 +330,8 @@ describe('SwaggerApi', function () {
                 message: 'Missing required property: paths',
                 params: ['paths'],
                 path: [],
-                schemaId: 'http://swagger.io/v2/schema.json#'
+                schemaId: 'http://swagger.io/v2/schema.json#',
+                title: 'A JSON Schema for Swagger 2.0 API.'
               }
             ]);
           })
