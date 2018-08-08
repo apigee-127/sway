@@ -45,9 +45,9 @@ if (typeof Promise === 'undefined') {
 /**
  * Creates a SwaggerApi object from its Swagger definition(s).
  *
- * @param {CreateOptions} options - The options for loading the definition(s)
+ * @param {module:sway~CreateOptions} options - The options for loading the definition(s)
  *
- * @returns {Promise<SwaggerApi>} The promise
+ * @returns {Promise<module:sway~SwaggerApi>} The promise
  *
  * @example
  * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})

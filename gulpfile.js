@@ -130,7 +130,7 @@ gulp.task('docs', function () {
     .pipe(gulp.dest('docs'));
 });
 
-gulp.task('docs-ts', function (cb) {
+gulp.task('docs-ts-raw', function (cb) {
   gulp.src([
     './index.js',
     'lib/typedefs.js',
@@ -142,6 +142,17 @@ gulp.task('docs-ts', function (cb) {
         template: 'node_modules/@otris/jsdoc-tsd'
       }
     }, cb));
+});
+
+// Due to bugs in @otris/jsdoc-tsd, we need to "fix" the generated TSD.
+//
+//  * https://github.com/otris/jsdoc-tsd/issues/38
+//  * https://github.com/otris/jsdoc-tsd/issues/39
+gulp.task('docs-ts', ['docs-ts-raw'], function () {
+  gulp.src(['index.d.ts'])
+    .pipe($.replace('<*>', '<any>'))
+    .pipe($.replace('module:sway~', ''))
+    .pipe(gulp.dest('.'));
 });
 
 gulp.task('lint', function () {
