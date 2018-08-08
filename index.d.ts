@@ -1,4 +1,110 @@
 /**
+ * A library for simpler [Swagger](http://swagger.io/) integrations.
+ */
+declare module 'sway' {
+    /**
+     * Creates a SwaggerApi object from its Swagger definition(s).
+     * @param options - The options for loading the definition(s)
+     * @returns The promise
+     */
+    export function create(options: CreateOptions): Promise.<SwaggerApi>;
+
+}
+
+/**
+ * Options used when creating the `SwaggerApi`.
+ */
+declare interface CreateOptions {
+    /**
+     * The Swagger definition location or structure
+     */
+    definition: object | string;
+    /**
+     * *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
+     */
+    jsonRefs?: object;
+    /**
+     * The key/value pair of custom formats *(The keys are the format name and the
+     * values are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
+     */
+    customFormats?: object;
+    /**
+     * The key/value pair of custom format generators *(The keys are the
+     * format name and the values are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
+     */
+    customFormatGenerators?: object;
+    /**
+     * The custom validators
+     */
+    customValidators?: DocumentValidationFunction[];
+}
+
+/**
+ * Function used for custom validation of Swagger documents
+ * @param api - The Swagger API object
+ * @returns The validation results
+ */
+declare type DocumentValidationFunction = (api: SwaggerApi)=>ValidationResults;
+
+/**
+ * Request validation function.
+ * @param res - The response or response like object
+ * @param def - The `Response` definition _(useful primarily when calling
+ *        `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object
+ *        already.)_
+ * @returns The validation results
+ */
+declare type RequestValidationFunction = (res: ServerResponseWrapper, def: Response)=>ValidationResults;
+
+/**
+ * Request validation options.
+ */
+declare interface RequestValidationOptions {
+    /**
+     * Enablement of strict mode validation.  If `strictMode` is a
+     * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
+     * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
+     * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
+     * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
+     * key.  Valid keys are `formData`, `header` and `query`.  _(`body` and `path` are not necessary since `body` strict
+     * mode is possible via its schema and `path` is **always** required.)_
+     */
+    strictMode?: boolean | object;
+    /**
+     * The custom validators
+     */
+    customValidators?: RequestValidationFunction;
+}
+
+/**
+ * Response validation function.
+ * @param req - The http client request *(or equivalent)*
+ * @param op - The `Operation` object for the request
+ * @returns The validation results
+ */
+declare type ResponseValidationFunction = (req: object, op: Operation)=>ValidationResults;
+
+/**
+ * Response validation options.
+ */
+declare interface ResponseValidationOptions {
+    /**
+     * Enablement of strict mode validation.  If `strictMode` is a
+     * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
+     * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
+     * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
+     * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
+     * key.  Valid keys are `header`.  _(`body`, `query` and `path` are not necessary since `body` strict mode is possible
+     * via its schema and `path`, `query` do not matter for responses.)_
+     */
+    strictMode?: boolean | object;
+    /**
+     * The custom validators
+     */
+    customValidators?: RequestValidationFunction;
+}
+
+/**
  * Server response wrapper.
  * 
  * Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
@@ -85,48 +191,6 @@ declare interface ValidationResults {
      */
     warnings: ValidationEntry[];
 }
-
-/**
- * Options used when creating the `SwaggerApi`.
- */
-declare interface CreateOptions {
-    /**
-     * The Swagger definition location or structure
-     */
-    definition: object | string;
-    /**
-     * *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))*
-     */
-    jsonRefs?: object;
-    /**
-     * The key/value pair of custom formats *(The keys are the format name and the
-     * values are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))*
-     */
-    customFormats?: object;
-    /**
-     * The key/value pair of custom format generators *(The keys are the
-     * format name and the values are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))*
-     */
-    customFormatGenerators?: object;
-    /**
-     * The custom validators
-     */
-    customValidators?: DocumentValidationFunction[];
-}
-
-/**
- * Creates a SwaggerApi object from its Swagger definition(s).
- * @param options - The options for loading the definition(s)
- * @returns The promise
- */
-declare function create(options: CreateOptions): Promise;
-
-/**
- * Function used for custom validation of Swagger documents
- * @param api - The Swagger API object
- * @returns The validation results
- */
-declare type DocumentValidationFunction = (api: SwaggerApi)=>ValidationResults;
 
 declare class SwaggerApi {
     /**
@@ -235,66 +299,6 @@ declare class SwaggerApi {
      */
     validate(): ValidationResults;
 
-}
-
-/**
- * Request validation function.
- * @param res - The response or response like object
- * @param def - The `Response` definition _(useful primarily when calling
- *        `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object
- *        already.)_
- * @returns The validation results
- */
-declare interface RequestValidationFunction {
-}
-
-/**
- * Response validation function.
- * @param req - The http client request *(or equivalent)*
- * @param op - The `Operation` object for the request
- * @returns The validation results
- */
-declare interface ResponseValidationFunction {
-}
-
-/**
- * Request validation options.
- */
-declare interface RequestValidationOptions {
-    /**
-     * Enablement of strict mode validation.  If `strictMode` is a
-     * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
-     * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
-     * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
-     * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
-     * key.  Valid keys are `formData`, `header` and `query`.  _(`body` and `path` are not necessary since `body` strict
-     * mode is possible via its schema and `path` is **always** required.)_
-     */
-    strictMode?: boolean | object;
-    /**
-     * The custom validators
-     */
-    customValidators?: RequestValidationFunction;
-}
-
-/**
- * Response validation options.
- */
-declare interface ResponseValidationOptions {
-    /**
-     * Enablement of strict mode validation.  If `strictMode` is a
-     * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
-     * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
-     * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
-     * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
-     * key.  Valid keys are `header`.  _(`body`, `query` and `path` are not necessary since `body` strict mode is possible
-     * via its schema and `path`, `query` do not matter for responses.)_
-     */
-    strictMode?: boolean | object;
-    /**
-     * The custom validators
-     */
-    customValidators?: RequestValidationFunction;
 }
 
 declare class Operation {

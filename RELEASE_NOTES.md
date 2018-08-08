@@ -1,5 +1,9 @@
 ## Release Notes
 
+### 2.0.2 (2018-08-08)
+
+* Fix TypeScript definitions
+
 ### 2.0.1 (2018-08-04)
 
 * Fix bug where non-plain objects passed to `Operation#validateRequest`, `Operation#validateResponse`,

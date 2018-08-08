@@ -122,6 +122,7 @@ gulp.task('clean', function (done) {
 gulp.task('docs', function () {
   return gulp.src([
     './index.js',
+    'lib/typedefs.js',
     'lib/types/*.js'
   ])
     .pipe($.concat('API.md'))
@@ -132,6 +133,7 @@ gulp.task('docs', function () {
 gulp.task('docs-ts', function (cb) {
   gulp.src([
     './index.js',
+    'lib/typedefs.js',
     'lib/types/*.js'
   ])
     .pipe($.jsdoc3({
