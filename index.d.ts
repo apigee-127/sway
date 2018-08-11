@@ -170,6 +170,7 @@ declare interface Operation {
   parameterObjects: Parameter[]
   ptr: string
   securityDefinitions: Object
+  readonly "x-ms-long-running-operation": any
 
   validateRequest(request: Request): ValidationResults
   validateResponse(response: LiveResponse): ValidationResults
@@ -203,7 +204,6 @@ declare interface SwaggerApi {
   readonly host: any
   readonly schemes: string[]
   readonly basePath: any
-  readonly "x-ms-long-running-operation": any
 
   getOperation(pathOrRequest: string | Request, method?: string): Operation
   getOperations(path?: string): Operation[]
