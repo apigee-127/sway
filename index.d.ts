@@ -203,6 +203,7 @@ declare interface SwaggerApi {
   readonly host: any
   readonly schemes: string[]
   readonly basePath: any
+  readonly "x-ms-long-running-operation": any
 
   getOperation(pathOrRequest: string | Request, method?: string): Operation
   getOperations(path?: string): Operation[]
