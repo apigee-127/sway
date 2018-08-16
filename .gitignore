@@ -11,3 +11,4 @@ typings/
 .tern-project
 .DS_Store
 jsconfig.json
+.vs

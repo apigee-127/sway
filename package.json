@@ -1,6 +1,6 @@
 {
   "name": "yasway",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A library that simplifies Swagger integrations.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -65,6 +65,7 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "@ts-common/string-map": "0.0.16",
     "debug": "^3.1.0",
     "faker": "^4.1.0",
     "js-base64": "^2.4.3",
@@ -77,6 +78,6 @@
     "rewire": "^4.0.0",
     "swagger-methods": "^1.0.0",
     "swagger-schema-official": "2.0.0-bab6bed",
-    "z-schema": "vladbarosan/z-schema"
+    "z-schema": "^3.23.0"
   }
 }

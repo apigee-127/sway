@@ -1,3 +1,5 @@
+import { MutableStringMap } from "@ts-common/string-map";
+
 interface SwaggerObject {
   "x-ms-paths"?: PathsObject
   paths?: PathsObject
@@ -10,13 +12,9 @@ interface SwaggerObject {
   readonly documents?: any
 }
 
-interface PathsObject {
-  [name: string]: PathItemObject
-}
+type PathsObject = MutableStringMap<PathItemObject>
 
-interface DefinitionsObject {
-  [name: string]: SchemaObject
-}
+type DefinitionsObject = MutableStringMap<SchemaObject>
 
 interface ParameterObject {
   name: string
@@ -27,13 +25,9 @@ interface ParameterObject {
   type?: DataType
 }
 
-interface ParametersDefinitionsObject {
-  [name: string]: ParameterObject
-}
+type ParametersDefinitionsObject = MutableStringMap<ParameterObject>
 
-interface ResponsesDefinitionsObject {
-  [name: string]: ResponseObject
-}
+type ResponsesDefinitionsObject = MutableStringMap<ResponseObject>
 
 interface PathItemObject extends PathItemObjectMethods {
   parameters?: ParameterObject[]
@@ -80,7 +74,7 @@ type PathItemObjectMethods = { [m in Methods]?: OperationObject }
  * JSON Schema "properties"
  */
 interface JsonSchemaProperties {
-  [name: string]: SchemaObject
+  [name: string]: SchemaObject|undefined
 }
 
 type Methods = "get" | "put" | "post" | "delete" | "options" | "head" | "patch"
@@ -95,7 +89,7 @@ interface OperationObject {
 
 interface ResponsesObject {
   default?: ResponseObject
-  [name: string]: ResponseObject | undefined
+  [name: string]: ResponseObject|undefined
 }
 
 declare interface Options {
