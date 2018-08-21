@@ -60,12 +60,17 @@ type DataType =
   | "string"
   | "boolean"
   | "null"
-  | "file"
   | "object"
   | "array"
 
+interface FileSchemaObject {
+  readonly type: "file"
+}
+
+type ResponseSchemaObject = SchemaObject|FileSchemaObject
+
 interface ResponseObject {
-  schema?: SchemaObject
+  schema?: ResponseSchemaObject
 }
 
 type PathItemObjectMethods = { [m in Methods]?: OperationObject }
@@ -73,9 +78,7 @@ type PathItemObjectMethods = { [m in Methods]?: OperationObject }
 /**
  * JSON Schema "properties"
  */
-interface JsonSchemaProperties {
-  [name: string]: SchemaObject|undefined
-}
+type JsonSchemaProperties = MutableStringMap<SchemaObject>
 
 type Methods = "get" | "put" | "post" | "delete" | "options" | "head" | "patch"
 
