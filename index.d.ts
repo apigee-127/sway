@@ -43,7 +43,6 @@ interface SchemaObject {
   oneOf?: SchemaObject[]
   $ref?: string
   required?: string[] | false
-  schema?: SchemaObject
   allOf?: SchemaObject[]
   description?: string
   discriminator?: string
