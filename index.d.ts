@@ -30,7 +30,7 @@ type ParametersDefinitionsObject = MutableStringMap<ParameterObject>
 type ResponsesDefinitionsObject = MutableStringMap<ResponseObject>
 
 interface PathItemObject extends PathItemObjectMethods {
-  parameters?: ParameterObject[]
+  parameters?: ReadonlyArray<ParameterObject>
 }
 
 interface SchemaObject {
@@ -83,7 +83,7 @@ type Methods = "get" | "put" | "post" | "delete" | "options" | "head" | "patch"
 
 interface OperationObject {
   operationId?: string
-  parameters?: ParameterObject[]
+  parameters?: ReadonlyArray<ParameterObject>
   consumes?: string[]
   produces?: string[]
   responses?: ResponsesObject
