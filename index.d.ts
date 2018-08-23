@@ -40,16 +40,16 @@ interface SchemaObject {
   additionalProperties?: SchemaObject | boolean
   "x-nullable"?: boolean
   in?: string
-  oneOf?: SchemaObject[]
+  oneOf?: ReadonlyArray<SchemaObject>
   $ref?: string
   required?: string[] | false
-  allOf?: SchemaObject[]
+  allOf?: ReadonlyArray<SchemaObject>
   description?: string
   discriminator?: string
   "x-ms-discriminator-value"?: string
   enum?: string[]
   "x-ms-azure-resource"?: boolean
-  anyOf?: SchemaObject[]
+  anyOf?: ReadonlyArray<SchemaObject>
   title?: string
 }
 
