@@ -1,16 +1,20 @@
 ## Release Notes
 
-### 2.0.2 (2018-08-08)
+### v2.0.3 (2018-08-26)
 
 * Fix TypeScript definitions
 
-### 2.0.1 (2018-08-04)
+### v2.0.2 (2018-08-08)
+
+* Fix TypeScript definitions
+
+### v2.0.1 (2018-08-04)
 
 * Fix bug where non-plain objects passed to `Operation#validateRequest`, `Operation#validateResponse`,
 `Parameter#getValue` and `Response#validateResponse` failed input validation *(Issue #35)*
 * Upgrade `path-laoder` _(via `json-refs`)_ to upgrade `superagent` to avoid NSP warnings *(Issue #155)*
 
-### 2.0.0 (2018-07-18)
+### v2.0.0 (2018-07-18)
 
 * Added support for performing custom request/response validation by passing in an `options` object as the optional
 second parameter to `Operation#validateRequest`, `Operation#validateResponse` and `Response#validateResponse` with a
