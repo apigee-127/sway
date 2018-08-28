@@ -69,6 +69,7 @@ interface FileSchemaObject {
 type ResponseSchemaObject = SchemaObject|FileSchemaObject
 
 interface ResponseObject {
+  description: string
   schema?: ResponseSchemaObject
 }
 
