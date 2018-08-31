@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v2.0.4 (2018-08-31)
+
+* Another attempt at fixing the TypeScript definitions
+
 ### v2.0.3 (2018-08-26)
 
 * Fix TypeScript definitions

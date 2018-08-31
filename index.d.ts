@@ -12,7 +12,7 @@ declare module 'sway' {
     /**
      * Options used when creating the `SwaggerApi`.
      */
-    declare interface CreateOptions {
+    interface CreateOptions {
         /**
          * The Swagger definition location or structure
          */
@@ -34,7 +34,7 @@ declare module 'sway' {
         /**
          * The custom validators
          */
-        customValidators?: DocumentValidationFunction[];
+        customValidators?: any[];
     }
 
     /**
@@ -57,7 +57,7 @@ declare module 'sway' {
     /**
      * Request validation options.
      */
-    declare interface RequestValidationOptions {
+    interface RequestValidationOptions {
         /**
          * Enablement of strict mode validation.  If `strictMode` is a
          * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
@@ -85,7 +85,7 @@ declare module 'sway' {
     /**
      * Response validation options.
      */
-    declare interface ResponseValidationOptions {
+    interface ResponseValidationOptions {
         /**
          * Enablement of strict mode validation.  If `strictMode` is a
          * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
@@ -109,7 +109,7 @@ declare module 'sway' {
      * to gather the necessary parts of the response to perform validation, this object encapsulates the required response
      * information to perform response validation.
      */
-    declare interface ServerResponseWrapper {
+    interface ServerResponseWrapper {
         /**
          * The response body
          */
@@ -135,7 +135,7 @@ declare module 'sway' {
      * [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
      * documented below.
      */
-    declare interface ValidationEntry {
+    interface ValidationEntry {
         /**
          * The code used to identify the error/warning
          */
@@ -147,7 +147,7 @@ declare module 'sway' {
         /**
          * The nested error(s) encountered during validation
          */
-        errors?: ValidationEntry[];
+        errors?: any[];
         /**
          * Contains the composition lineage for circular composition errors
          */
@@ -164,7 +164,7 @@ declare module 'sway' {
          * The parameters used when validation failed *(This is a z-schema construct and is only
          * set for JSON Schema validation errors.)*
          */
-        params?: any;
+        params?: any[];
         /**
          * The path to the location in the document where the error/warning occurred
          */
@@ -179,18 +179,18 @@ declare module 'sway' {
     /**
      * Validation results object.
      */
-    declare interface ValidationResults {
+    interface ValidationResults {
         /**
          * The validation errors
          */
-        errors: ValidationEntry[];
+        errors: any[];
         /**
          * The validation warnings
          */
-        warnings: ValidationEntry[];
+        warnings: any[];
     }
 
-    declare class SwaggerApi {
+    class SwaggerApi {
         /**
          * The Swagger API object.
          * 
@@ -229,14 +229,14 @@ declare module 'sway' {
          * @param path - The Swagger path
          * @returns All `Operation` objects for the provided path or all API operations
          */
-        getOperations(path?: string): Operation[];
+        getOperations(path?: string): any[];
 
         /**
          * Returns all operations for the provided tag.
          * @param tag - The Swagger tag
          * @returns All `Operation` objects for the provided tag
          */
-        getOperationsByTag(tag?: string): Operation[];
+        getOperationsByTag(tag?: string): any[];
 
         /**
          * Returns the path object for the given path or request.
@@ -256,7 +256,7 @@ declare module 'sway' {
          * Returns all path objects for the Swagger API.
          * @returns The `Path` objects
          */
-        getPaths(): Path[];
+        getPaths(): any[];
 
         /**
          * Registers a custom format.
@@ -299,7 +299,7 @@ declare module 'sway' {
 
     }
 
-    declare class Operation {
+    class Operation {
         /**
          * The Swagger Operation object.
          * 
@@ -329,7 +329,7 @@ declare module 'sway' {
          * Returns all parameters for the operation.
          * @returns All `Parameter` objects for the operation
          */
-        getParameters(): Parameter[];
+        getParameters(): any[];
 
         /**
          * Returns the response for the requested status code or the default response *(if available)* if none is provided.
@@ -342,7 +342,7 @@ declare module 'sway' {
          * Returns all responses for the operation.
          * @returns All `Response` objects for the operation
          */
-        getResponses(): Response[];
+        getResponses(): any[];
 
         /**
          * Returns the composite security definitions for this operation.
@@ -386,7 +386,7 @@ declare module 'sway' {
 
     }
 
-    declare class ParameterValue {
+    class ParameterValue {
         /**
          * Object representing a parameter value.
          * 
@@ -398,7 +398,7 @@ declare module 'sway' {
 
     }
 
-    declare class Parameter {
+    class Parameter {
         /**
          * The Swagger Parameter object.
          * 
@@ -445,7 +445,7 @@ declare module 'sway' {
 
     }
 
-    declare class Path {
+    class Path {
         /**
          * The Path object.
          * 
@@ -468,30 +468,30 @@ declare module 'sway' {
          * @returns The `Operation` objects for this path and method or `undefined` if there is no
          *          operation for the provided method
          */
-        getOperation(idOrMethod: string): Operation[];
+        getOperation(idOrMethod: string): any[];
 
         /**
          * Return the operations for this path.
          * @returns The `Operation` objects for this path
          */
-        getOperations(): Operation[];
+        getOperations(): any[];
 
         /**
          * Return the operations for this path and tag.
          * @param tag - The tag
          * @returns The `Operation` objects for this path and tag
          */
-        getOperationsByTag(tag: string): Operation[];
+        getOperationsByTag(tag: string): any[];
 
         /**
          * Return the parameters for this path.
          * @returns The `Parameter` objects for this path
          */
-        getParameters(): Parameter[];
+        getParameters(): any[];
 
     }
 
-    declare class Response {
+    class Response {
         /**
          * The Swagger Response object.
          * 
