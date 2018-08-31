@@ -543,7 +543,8 @@ function runTests (mode) {
                   message: 'Missing required property: paths',
                   params: ['paths'],
                   path: [],
-                  schemaId: 'http://swagger.io/v2/schema.json#'
+                  schemaId: 'http://swagger.io/v2/schema.json#',
+                  title: 'A JSON Schema for Swagger 2.0 API.'
                 }
               ]);
             })
