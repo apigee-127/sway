@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v3.0.0 (TBD)
+
+* OpenAPI _v3.x_ support *(Issue #128)*
+
 ### v2.0.4 (2018-08-31)
 
 * Another attempt at fixing the TypeScript definitions

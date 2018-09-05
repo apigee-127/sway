@@ -6,7 +6,7 @@
   "authors": [
     "Jeremy Whitlock <jwhitlock@apache.org>"
   ],
-  "description": "A library that simplifies Swagger integrations.",
+  "description": "A library that simplifies OpenAPI integrations.",
   "keywords": [
     "swagger"
   ],

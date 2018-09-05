@@ -1,11 +1,13 @@
-A library that simplifies [Swagger][swagger] integrations.  This library handles the minutiae of loading Swagger
-documents *(local and remote)*, resolving references *(local and remote)*, building an object model and providing you
-with a rich set of APIs for things like Swagger document validation, request/response validation, etc.  For more details
-on the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
+A library that simplifies [OpenAPI][openapi] integrations.  This library handles the minutiae of loading OpenAPI
+documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
+a rich set of APIs for things like OpenAPI document validation, request/response validation, etc.  For more details on
+the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
 
-Sway will always be built around the latest stable release of Swagger, which happens to be version `2.0` right now.
-This means that its APIs and object model will be specific to that version of Swagger and supporting any other versions
-of Swagger will require a conversion step prior to using Sway.
+`master` will always be built to support the latest release of OpenAPI, which right now is `3.x`.  Previous versions are
+in their own respective `v{N}.x` branch:
+
+* _3.x Support:_ `master`
+* _2.x Support:_ [v2.x](https://github.com/apigee-127/sway/tree/v2.x)
 
 ## Installation
 
@@ -86,5 +88,5 @@ no other validation will occur.  But once the structural validation happens, `Se
 
 [bower]: http://bower.io/
 [npm]: https://www.npmjs.org/
+[openapi]: https://www.openapis.org/
 [schema-object]: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schemaObject
-[swagger]: http://swagger.io

@@ -1,11 +1,13 @@
-A library that simplifies [Swagger][swagger] integrations.  This library handles the minutiae of loading Swagger
+A library that simplifies [OpenAPI][openapi] integrations.  This library handles the minutiae of loading OpenAPI
 documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
-a rich set of APIs for things like Swagger document validation, request/response validation, etc.  For more details on
+a rich set of APIs for things like OpenAPI document validation, request/response validation, etc.  For more details on
 the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
 
-Sway will always be built around the latest stable release of Swagger, which happens to be version `2.0` right now.
-This means that its APIs and object model will be specific to that version of Swagger and supporting any other versions
-of Swagger will require a conversion step prior to using Sway.
+`master` will always be built to support the latest release of OpenAPI, which right now is `3.x`.  Previous versions are
+in their own respective `v{N}.x` branch:
+
+* _3.x Support:_ `master`
+* _2.x Support:_ [v2.x](https://github.com/apigee-127/sway/tree/v2.x)
 
 ## Project Badges
 
@@ -63,5 +65,5 @@ project root will lint check the source code and run the unit tests.
 
 [bower]: http://bower.io/
 [gulp]: http://gulpjs.com/
+[openapi]: https://www.openapis.org/
 [npm]: https://www.npmjs.org/
-[swagger]: http://swagger.io

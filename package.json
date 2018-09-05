@@ -1,7 +1,7 @@
 {
   "name": "sway",
-  "version": "2.0.4",
-  "description": "A library that simplifies Swagger integrations.",
+  "version": "3.0.0-wip",
+  "description": "A library that simplifies OpenAPI integrations.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
