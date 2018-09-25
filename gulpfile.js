@@ -151,7 +151,7 @@ gulp.task('docs-ts-raw', function (cb) {
 gulp.task('docs-ts', ['docs-ts-raw'], function () {
   gulp.src(['index.d.ts'])
     .pipe($.replace('<*>', '<any>'))
-    .pipe($.replace('module:sway~', ''))
+    .pipe($.replace('module:sway.', ''))
     .pipe($.replace('Promise.<', 'Promise<'))
     .pipe(gulp.dest('.'));
 });

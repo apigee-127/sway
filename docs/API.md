@@ -6,54 +6,54 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
 
 * [sway](#module_sway)
     * [.CreateOptions](#module_sway.CreateOptions) : <code>object</code>
-    * [.DocumentValidationFunction](#module_sway.DocumentValidationFunction) ⇒ <code>module:sway~ValidationResults</code>
+    * [.DocumentValidationFunction](#module_sway.DocumentValidationFunction) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.Operation](#module_sway.Operation)
         * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
-        * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>module:sway~Parameter</code>
-        * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
-        * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>module:sway~Response</code>
-        * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>Array.&lt;module:sway~Response&gt;</code>
+        * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>[Parameter](#module_sway.Parameter)</code>
+        * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
+        * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>[Response](#module_sway.Response)</code>
+        * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_sway.Response)</code>
         * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
-        * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ <code>module:sway~ValidationResults</code>
-        * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ <code>module:sway~ValidationResults</code>
+        * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
+        * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.Parameter](#module_sway.Parameter)
         * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
         * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
-        * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>module:sway~ParameterValue</code>
+        * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>[ParameterValue](#module_sway.ParameterValue)</code>
     * [.ParameterValue](#module_sway.ParameterValue)
         * [new ParameterValue(parameterObject, raw)](#new_module_sway.ParameterValue_new)
     * [.Path](#module_sway.Path)
         * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Path_new)
-        * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-        * [.getOperations()](#module_sway.Path+getOperations) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-        * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-        * [.getParameters()](#module_sway.Path+getParameters) ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
-    * [.RequestValidationFunction](#module_sway.RequestValidationFunction) ⇒ <code>module:sway~ValidationResults</code>
+        * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+        * [.getOperations()](#module_sway.Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+        * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+        * [.getParameters()](#module_sway.Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
+    * [.RequestValidationFunction](#module_sway.RequestValidationFunction) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.RequestValidationOptions](#module_sway.RequestValidationOptions) : <code>object</code>
     * [.Response](#module_sway.Response)
         * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
         * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
         * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
-        * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>module:sway~ValidationResults</code>
-    * [.ResponseValidationFunction](#module_sway.ResponseValidationFunction) ⇒ <code>module:sway~ValidationResults</code>
+        * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
+    * [.ResponseValidationFunction](#module_sway.ResponseValidationFunction) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.ResponseValidationOptions](#module_sway.ResponseValidationOptions) : <code>object</code>
     * [.ServerResponseWrapper](#module_sway.ServerResponseWrapper) : <code>object</code>
     * [.SwaggerApi](#module_sway.SwaggerApi)
         * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_sway.SwaggerApi_new)
-        * [.getOperation(idOrPathOrReq, [method])](#module_sway.SwaggerApi+getOperation) ⇒ <code>module:sway~Operation</code>
-        * [.getOperations([path])](#module_sway.SwaggerApi+getOperations) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-        * [.getOperationsByTag([tag])](#module_sway.SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-        * [.getPath(pathOrReq)](#module_sway.SwaggerApi+getPath) ⇒ <code>module:sway~Path</code>
-        * [.getPaths()](#module_sway.SwaggerApi+getPaths) ⇒ <code>Array.&lt;module:sway~Path&gt;</code>
+        * [.getOperation(idOrPathOrReq, [method])](#module_sway.SwaggerApi+getOperation) ⇒ <code>[Operation](#module_sway.Operation)</code>
+        * [.getOperations([path])](#module_sway.SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+        * [.getOperationsByTag([tag])](#module_sway.SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+        * [.getPath(pathOrReq)](#module_sway.SwaggerApi+getPath) ⇒ <code>[Path](#module_sway.Path)</code>
+        * [.getPaths()](#module_sway.SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_sway.Path)</code>
         * [.registerFormat(name, validator)](#module_sway.SwaggerApi+registerFormat)
         * [.registerFormatGenerator(name, formatGenerator)](#module_sway.SwaggerApi+registerFormatGenerator)
         * [.registerValidator(validator)](#module_sway.SwaggerApi+registerValidator)
         * [.unregisterFormat(name)](#module_sway.SwaggerApi+unregisterFormat)
         * [.unregisterFormatGenerator(name)](#module_sway.SwaggerApi+unregisterFormatGenerator)
-        * [.validate()](#module_sway.SwaggerApi+validate) ⇒ <code>module:sway~ValidationResults</code>
+        * [.validate()](#module_sway.SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.ValidationEntry](#module_sway.ValidationEntry) : <code>object</code>
     * [.ValidationResults](#module_sway.ValidationResults) : <code>object</code>
-    * [.create(options)](#module_sway.create) ⇒ <code>Promise.&lt;module:sway~SwaggerApi&gt;</code>
+    * [.create(options)](#module_sway.create) ⇒ <code>[Promise.&lt;SwaggerApi&gt;](#module_sway.SwaggerApi)</code>
 
 <a name="module_sway.CreateOptions"></a>
 
@@ -69,19 +69,19 @@ Options used when creating the `SwaggerApi`.
 | jsonRefs | <code>object</code> | *(See [JsonRefs~JsonRefsOptions](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..JsonRefsOptions))* |
 | customFormats | <code>object</code> | The key/value pair of custom formats *(The keys are the format name and the values are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))* |
 | customFormatGenerators | <code>object</code> | The key/value pair of custom format generators *(The keys are the format name and the values are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))* |
-| customValidators | <code>Array.&lt;module:sway~DocumentValidationFunction&gt;</code> | The custom validators |
+| customValidators | <code>[Array.&lt;DocumentValidationFunction&gt;](#module_sway.DocumentValidationFunction)</code> | The custom validators |
 
 <a name="module_sway.DocumentValidationFunction"></a>
 
-### sway.DocumentValidationFunction ⇒ <code>module:sway~ValidationResults</code>
+### sway.DocumentValidationFunction ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Function used for custom validation of Swagger documents
 
 **Kind**: static typedef of <code>[sway](#module_sway)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| api | <code>module:sway~SwaggerApi</code> | The Swagger API object |
+| api | <code>[SwaggerApi](#module_sway.SwaggerApi)</code> | The Swagger API object |
 
 <a name="module_sway.Operation"></a>
 
@@ -94,22 +94,22 @@ Function used for custom validation of Swagger documents
 | definition | <code>object</code> | The operation definition *(The raw operation definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
 | method | <code>string</code> | The HTTP method for this operation |
-| pathObject | <code>module:sway~Path</code> | The `Path` object |
+| pathObject | <code>[Path](#module_sway.Path)</code> | The `Path` object |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the operation definition |
-| parameterObjects | <code>Array.&lt;module:sway~Parameter&gt;</code> | The `Parameter` objects |
+| parameterObjects | <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code> | The `Parameter` objects |
 | ptr | <code>string</code> | The JSON Pointer to the operation |
 | securityDefinitions | <code>object</code> | The security definitions used by this operation |
 
 
 * [.Operation](#module_sway.Operation)
     * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
-    * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>module:sway~Parameter</code>
-    * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
-    * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>module:sway~Response</code>
-    * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>Array.&lt;module:sway~Response&gt;</code>
+    * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>[Parameter](#module_sway.Parameter)</code>
+    * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
+    * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>[Response](#module_sway.Response)</code>
+    * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_sway.Response)</code>
     * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
-    * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ <code>module:sway~ValidationResults</code>
-    * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ <code>module:sway~ValidationResults</code>
+    * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
+    * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 
 <a name="new_module_sway.Operation_new"></a>
 
@@ -124,7 +124,7 @@ The Swagger Operation object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| pathObject | <code>module:sway~Path</code> | The Path object |
+| pathObject | <code>[Path](#module_sway.Path)</code> | The Path object |
 | method | <code>string</code> | The operation method |
 | definition | <code>object</code> | The operation definition *(The raw operation definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The operation definition with all of its resolvable references resolved |
@@ -132,11 +132,11 @@ The Swagger Operation object.
 
 <a name="module_sway.Operation+getParameter"></a>
 
-#### operation.getParameter(name, [location]) ⇒ <code>module:sway~Parameter</code>
+#### operation.getParameter(name, [location]) ⇒ <code>[Parameter](#module_sway.Parameter)</code>
 Returns the parameter with the provided name and location when provided.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>module:sway~Parameter</code> - The `Parameter` matching the location and name combination or `undefined` if there
+**Returns**: <code>[Parameter](#module_sway.Parameter)</code> - The `Parameter` matching the location and name combination or `undefined` if there
 is no match  
 
 | Param | Type | Description |
@@ -146,18 +146,18 @@ is no match
 
 <a name="module_sway.Operation+getParameters"></a>
 
-#### operation.getParameters() ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
+#### operation.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
 Returns all parameters for the operation.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>Array.&lt;module:sway~Parameter&gt;</code> - All `Parameter` objects for the operation  
+**Returns**: <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code> - All `Parameter` objects for the operation  
 <a name="module_sway.Operation+getResponse"></a>
 
-#### operation.getResponse([statusCode]) ⇒ <code>module:sway~Response</code>
+#### operation.getResponse([statusCode]) ⇒ <code>[Response](#module_sway.Response)</code>
 Returns the response for the requested status code or the default response *(if available)* if none is provided.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>module:sway~Response</code> - The `Response` or `undefined` if one cannot be found  
+**Returns**: <code>[Response](#module_sway.Response)</code> - The `Response` or `undefined` if one cannot be found  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -165,11 +165,11 @@ Returns the response for the requested status code or the default response *(if 
 
 <a name="module_sway.Operation+getResponses"></a>
 
-#### operation.getResponses() ⇒ <code>Array.&lt;module:sway~Response&gt;</code>
+#### operation.getResponses() ⇒ <code>[Array.&lt;Response&gt;](#module_sway.Response)</code>
 Returns all responses for the operation.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>Array.&lt;module:sway~Response&gt;</code> - All `Response` objects for the operation  
+**Returns**: <code>[Array.&lt;Response&gt;](#module_sway.Response)</code> - All `Response` objects for the operation  
 <a name="module_sway.Operation+getSecurity"></a>
 
 #### operation.getSecurity() ⇒ <code>Array.&lt;object&gt;</code>
@@ -183,7 +183,7 @@ is undefined.
 **Returns**: <code>Array.&lt;object&gt;</code> - The security for this operation  
 <a name="module_sway.Operation+validateRequest"></a>
 
-#### operation.validateRequest(req, [options]) ⇒ <code>module:sway~ValidationResults</code>
+#### operation.validateRequest(req, [options]) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Validates the request.
 
 **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
@@ -201,25 +201,25 @@ For `path` parameters, we will use the operation's `regexp` property to parse ou
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | req | <code>object</code> | The http client request *(or equivalent)* |
-| [options] | <code>module:sway~RequestValidationOptions</code> | The validation options |
+| [options] | <code>[RequestValidationOptions](#module_sway.RequestValidationOptions)</code> | The validation options |
 
 <a name="module_sway.Operation+validateResponse"></a>
 
-#### operation.validateResponse(res, [options]) ⇒ <code>module:sway~ValidationResults</code>
+#### operation.validateResponse(res, [options]) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Validates the response.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| res | <code>module:sway~ServerResponseWrapper</code> | The response or response like object |
-| [options] | <code>module:sway~ResponseValidationOptions</code> | The validation options |
+| res | <code>[ServerResponseWrapper](#module_sway.ServerResponseWrapper)</code> | The response or response like object |
+| [options] | <code>[ResponseValidationOptions](#module_sway.ResponseValidationOptions)</code> | The validation options |
 
 <a name="module_sway.Parameter"></a>
 
@@ -231,8 +231,8 @@ Validates the response.
 | --- | --- | --- |
 | definition | <code>object</code> | The parameter definition *(The raw parameter definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
-| operationObject | <code>module:sway~Operation</code> | The `Operation` object the parameter belongs to *(Can be `undefined` for path-level parameters)* |
-| pathObject | <code>module:sway~Path</code> | The `Path` object the parameter belongs to |
+| operationObject | <code>[Operation](#module_sway.Operation)</code> | The `Operation` object the parameter belongs to *(Can be `undefined` for path-level parameters)* |
+| pathObject | <code>[Path](#module_sway.Path)</code> | The `Path` object the parameter belongs to |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 | ptr | <code>string</code> | The JSON Pointer to the parameter definition |
 | schema | <code>object</code> | The JSON Schema for the parameter *(For non-body parameters, this is a computed value)* |
@@ -241,7 +241,7 @@ Validates the response.
 * [.Parameter](#module_sway.Parameter)
     * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
     * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
-    * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>module:sway~ParameterValue</code>
+    * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>[ParameterValue](#module_sway.ParameterValue)</code>
 
 <a name="new_module_sway.Parameter_new"></a>
 
@@ -256,7 +256,7 @@ object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| opOrPathObject | <code>module:sway~Operation</code> &#124; <code>module:sway~Path</code> | The `Operation` or `Path` object |
+| opOrPathObject | <code>[Operation](#module_sway.Operation)</code> &#124; <code>[Path](#module_sway.Path)</code> | The `Operation` or `Path` object |
 | definition | <code>object</code> | The parameter definition *(The raw parameter definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
@@ -270,7 +270,7 @@ Returns a sample value for the parameter based on its schema;
 **Returns**: <code>\*</code> - The sample value  
 <a name="module_sway.Parameter+getValue"></a>
 
-#### parameter.getValue(req) ⇒ <code>module:sway~ParameterValue</code>
+#### parameter.getValue(req) ⇒ <code>[ParameterValue](#module_sway.ParameterValue)</code>
 Returns the parameter value from the request.
 
 **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
@@ -288,7 +288,7 @@ For `path` parameters, we will use the operation's `regexp` property to parse ou
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[Parameter](#module_sway.Parameter)</code>  
-**Returns**: <code>module:sway~ParameterValue</code> - The parameter value object  
+**Returns**: <code>[ParameterValue](#module_sway.ParameterValue)</code> - The parameter value object  
 **Throws**:
 
 - <code>Error</code> If the `in` value of the parameter's schema is not valid or if the `req` property to retrieve the
@@ -308,7 +308,7 @@ parameter is missing
 | Name | Type | Description |
 | --- | --- | --- |
 | error | <code>Error</code> | The error(s) encountered during processing/validating the parameter value |
-| parameterObject | <code>module:sway~Parameter</code> | The `Parameter` object |
+| parameterObject | <code>[Parameter](#module_sway.Parameter)</code> | The `Parameter` object |
 | raw | <code>\*</code> | The original parameter value *(Does not take default values into account)* |
 | valid | <code>boolean</code> | Whether or not this parameter is valid based on its JSON Schema |
 | value | <code>\*</code> | The processed value *(Takes default values into account and does type coercion when necessary and possible)*.  This can the original value in the event that processing the value is impossible *(missing schema type)* or `undefined` if processing the value failed *(invalid types, etc.)*. |
@@ -323,7 +323,7 @@ Object representing a parameter value.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| parameterObject | <code>module:sway~Parameter</code> | The `Parameter` object |
+| parameterObject | <code>[Parameter](#module_sway.Parameter)</code> | The `Parameter` object |
 | raw | <code>\*</code> | The original/raw value |
 
 <a name="module_sway.Path"></a>
@@ -334,11 +334,11 @@ Object representing a parameter value.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| api | <code>module:sway~SwaggerApi</code> | The `SwaggerApi` object |
+| api | <code>[SwaggerApi](#module_sway.SwaggerApi)</code> | The `SwaggerApi` object |
 | definition | <code>object</code> | The path definition *(The raw path definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
-| operationObjects | <code>Array.&lt;module:sway~Operation&gt;</code> | The `Operation` objects |
-| parameterObjects | <code>Array.&lt;module:sway~Parameter&gt;</code> | The path-level `Parameter` objects |
+| operationObjects | <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> | The `Operation` objects |
+| parameterObjects | <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code> | The path-level `Parameter` objects |
 | path | <code>string</code> | The path string |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 | ptr | <code>ptr</code> | The JSON Pointer to the path |
@@ -347,10 +347,10 @@ Object representing a parameter value.
 
 * [.Path](#module_sway.Path)
     * [new Path(api, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Path_new)
-    * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-    * [.getOperations()](#module_sway.Path+getOperations) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-    * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-    * [.getParameters()](#module_sway.Path+getParameters) ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
+    * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+    * [.getOperations()](#module_sway.Path+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+    * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+    * [.getParameters()](#module_sway.Path+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
 
 <a name="new_module_sway.Path_new"></a>
 
@@ -365,7 +365,7 @@ The Path object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| api | <code>module:sway~SwaggerApi</code> | The `SwaggerApi` object |
+| api | <code>[SwaggerApi](#module_sway.SwaggerApi)</code> | The `SwaggerApi` object |
 | path | <code>string</code> | The path string |
 | definition | <code>object</code> | The path definition *(The raw path definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The path definition with all of its resolvable references resolved |
@@ -373,11 +373,11 @@ The Path object.
 
 <a name="module_sway.Path+getOperation"></a>
 
-#### path.getOperation(idOrMethod) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
+#### path.getOperation(idOrMethod) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
 Return the operation for this path and operation id or method.
 
 **Kind**: instance method of <code>[Path](#module_sway.Path)</code>  
-**Returns**: <code>Array.&lt;module:sway~Operation&gt;</code> - The `Operation` objects for this path and method or `undefined` if there is no
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> - The `Operation` objects for this path and method or `undefined` if there is no
 operation for the provided method  
 
 | Param | Type | Description |
@@ -386,18 +386,18 @@ operation for the provided method
 
 <a name="module_sway.Path+getOperations"></a>
 
-#### path.getOperations() ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
+#### path.getOperations() ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
 Return the operations for this path.
 
 **Kind**: instance method of <code>[Path](#module_sway.Path)</code>  
-**Returns**: <code>Array.&lt;module:sway~Operation&gt;</code> - The `Operation` objects for this path  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> - The `Operation` objects for this path  
 <a name="module_sway.Path+getOperationsByTag"></a>
 
-#### path.getOperationsByTag(tag) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
+#### path.getOperationsByTag(tag) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
 Return the operations for this path and tag.
 
 **Kind**: instance method of <code>[Path](#module_sway.Path)</code>  
-**Returns**: <code>Array.&lt;module:sway~Operation&gt;</code> - The `Operation` objects for this path and tag  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> - The `Operation` objects for this path and tag  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -405,23 +405,23 @@ Return the operations for this path and tag.
 
 <a name="module_sway.Path+getParameters"></a>
 
-#### path.getParameters() ⇒ <code>Array.&lt;module:sway~Parameter&gt;</code>
+#### path.getParameters() ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
 Return the parameters for this path.
 
 **Kind**: instance method of <code>[Path](#module_sway.Path)</code>  
-**Returns**: <code>Array.&lt;module:sway~Parameter&gt;</code> - The `Parameter` objects for this path  
+**Returns**: <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code> - The `Parameter` objects for this path  
 <a name="module_sway.RequestValidationFunction"></a>
 
-### sway.RequestValidationFunction ⇒ <code>module:sway~ValidationResults</code>
+### sway.RequestValidationFunction ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Request validation function.
 
 **Kind**: static typedef of <code>[sway](#module_sway)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| res | <code>module:sway~ServerResponseWrapper</code> | The response or response like object |
-| def | <code>module:sway~Response</code> | The `Response` definition _(useful primarily when calling `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object already.)_ |
+| res | <code>[ServerResponseWrapper](#module_sway.ServerResponseWrapper)</code> | The response or response like object |
+| def | <code>[Response](#module_sway.Response)</code> | The `Response` definition _(useful primarily when calling `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object already.)_ |
 
 <a name="module_sway.RequestValidationOptions"></a>
 
@@ -434,7 +434,7 @@ Request validation options.
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | strictMode | <code>boolean</code> &#124; <code>object</code> | <code>false</code> | Enablement of strict mode validation.  If `strictMode` is a `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject) and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the key.  Valid keys are `formData`, `header` and `query`.  _(`body` and `path` are not necessary since `body` strict mode is possible via its schema and `path` is **always** required.)_ |
-| customValidators | <code>module:sway~RequestValidationFunction</code> |  | The custom validators |
+| customValidators | <code>[RequestValidationFunction](#module_sway.RequestValidationFunction)</code> |  | The custom validators |
 
 <a name="module_sway.Response"></a>
 
@@ -446,7 +446,7 @@ Request validation options.
 | --- | --- | --- |
 | definition | <code>object</code> | The response definition *(The raw responsedefinition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
-| operationObject | <code>module:sway~Operation</code> | The Operation object |
+| operationObject | <code>[Operation](#module_sway.Operation)</code> | The Operation object |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the path definition |
 | ptr | <code>string</code> | The JSON Pointer to the response definition |
 | statusCode | <code>string</code> | The status code |
@@ -456,7 +456,7 @@ Request validation options.
     * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
     * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
     * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
-    * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>module:sway~ValidationResults</code>
+    * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 
 <a name="new_module_sway.Response_new"></a>
 
@@ -471,7 +471,7 @@ The Swagger Response object.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| operationObject | <code>module:sway~Operation</code> | The `Operation` object |
+| operationObject | <code>[Operation](#module_sway.Operation)</code> | The `Operation` object |
 | statusCode | <code>string</code> | The status code |
 | definition | <code>object</code> | The response definition *(The raw response definition __after__ remote references were resolved)* |
 | definitionFullyResolved | <code>object</code> | The response definition with all of its resolvable references resolved |
@@ -498,29 +498,29 @@ Returns a sample value.
 **Returns**: <code>\*</code> - The sample value for the response, which can be undefined if the response schema is not provided  
 <a name="module_sway.Response+validateResponse"></a>
 
-#### response.validateResponse(res, [options]) ⇒ <code>module:sway~ValidationResults</code>
+#### response.validateResponse(res, [options]) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Validates the response.
 
 **Kind**: instance method of <code>[Response](#module_sway.Response)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| res | <code>module:sway~ServerResponseWrapper</code> | The response or response like object |
-| [options] | <code>module:sway~ResponseValidationOptions</code> | The validation options |
+| res | <code>[ServerResponseWrapper](#module_sway.ServerResponseWrapper)</code> | The response or response like object |
+| [options] | <code>[ResponseValidationOptions](#module_sway.ResponseValidationOptions)</code> | The validation options |
 
 <a name="module_sway.ResponseValidationFunction"></a>
 
-### sway.ResponseValidationFunction ⇒ <code>module:sway~ValidationResults</code>
+### sway.ResponseValidationFunction ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Response validation function.
 
 **Kind**: static typedef of <code>[sway](#module_sway)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | req | <code>object</code> | The http client request *(or equivalent)* |
-| op | <code>module:sway~Operation</code> | The `Operation` object for the request |
+| op | <code>[Operation](#module_sway.Operation)</code> | The `Operation` object for the request |
 
 <a name="module_sway.ResponseValidationOptions"></a>
 
@@ -533,7 +533,7 @@ Response validation options.
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | strictMode | <code>boolean</code> &#124; <code>object</code> | <code>false</code> | Enablement of strict mode validation.  If `strictMode` is a `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject) and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the key.  Valid keys are `header`.  _(`body`, `query` and `path` are not necessary since `body` strict mode is possible via its schema and `path`, `query` do not matter for responses.)_ |
-| customValidators | <code>module:sway~RequestValidationFunction</code> |  | The custom validators |
+| customValidators | <code>[RequestValidationFunction](#module_sway.RequestValidationFunction)</code> |  | The custom validators |
 
 <a name="module_sway.ServerResponseWrapper"></a>
 
@@ -564,12 +564,12 @@ information to perform response validation.
 | --- | --- | --- |
 | customFormats | <code>object</code> | The key/value pair of custom formats *(The keys are the format name and the values are async functions.  See [ZSchema Custom Formats](https://github.com/zaggino/z-schema#register-a-custom-format))* |
 | customFormatGenerators | <code>object</code> | The key/value pair of custom format generators *(The keys are the format name and the values are functions.  See [json-schema-mocker Custom Format](https://github.com/json-schema-faker/json-schema-faker#custom-formats))* |
-| customValidators | <code>Array.&lt;module:sway~DocumentValidationFunction&gt;</code> | The array of custom validators |
+| customValidators | <code>[Array.&lt;DocumentValidationFunction&gt;](#module_sway.DocumentValidationFunction)</code> | The array of custom validators |
 | definition | <code>object</code> | The original Swagger definition |
 | definitionRemotesResolved | <code>object</code> | The Swagger definition with only its remote references resolved *(This means all references to external/remote documents are replaced with its dereferenced value but all local references are left unresolved.)* |
 | definitionFullyResolved | <code>object</code> | The Swagger definition with all of its resolvable references resolved *(This means that all resolvable references are replaced with their dereferenced value.)* |
 | documentationUrl | <code>string</code> | The URL to the Swagger documentation |
-| pathObjects | <code>Array.&lt;module:sway~Path&gt;</code> | The unique `Path` objects |
+| pathObjects | <code>[Array.&lt;Path&gt;](#module_sway.Path)</code> | The unique `Path` objects |
 | options | <code>object</code> | The options passed to the constructor |
 | references | <code>object</code> | The reference metadata *(See [JsonRefs~ResolvedRefDetails](https://github.com/whitlockjc/json-refs/blob/master/docs/API.md#module_JsonRefs..ResolvedRefDetails))* |
 | version | <code>string</code> | The Swagger API version |
@@ -577,17 +577,17 @@ information to perform response validation.
 
 * [.SwaggerApi](#module_sway.SwaggerApi)
     * [new SwaggerApi(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_sway.SwaggerApi_new)
-    * [.getOperation(idOrPathOrReq, [method])](#module_sway.SwaggerApi+getOperation) ⇒ <code>module:sway~Operation</code>
-    * [.getOperations([path])](#module_sway.SwaggerApi+getOperations) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-    * [.getOperationsByTag([tag])](#module_sway.SwaggerApi+getOperationsByTag) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
-    * [.getPath(pathOrReq)](#module_sway.SwaggerApi+getPath) ⇒ <code>module:sway~Path</code>
-    * [.getPaths()](#module_sway.SwaggerApi+getPaths) ⇒ <code>Array.&lt;module:sway~Path&gt;</code>
+    * [.getOperation(idOrPathOrReq, [method])](#module_sway.SwaggerApi+getOperation) ⇒ <code>[Operation](#module_sway.Operation)</code>
+    * [.getOperations([path])](#module_sway.SwaggerApi+getOperations) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+    * [.getOperationsByTag([tag])](#module_sway.SwaggerApi+getOperationsByTag) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
+    * [.getPath(pathOrReq)](#module_sway.SwaggerApi+getPath) ⇒ <code>[Path](#module_sway.Path)</code>
+    * [.getPaths()](#module_sway.SwaggerApi+getPaths) ⇒ <code>[Array.&lt;Path&gt;](#module_sway.Path)</code>
     * [.registerFormat(name, validator)](#module_sway.SwaggerApi+registerFormat)
     * [.registerFormatGenerator(name, formatGenerator)](#module_sway.SwaggerApi+registerFormatGenerator)
     * [.registerValidator(validator)](#module_sway.SwaggerApi+registerValidator)
     * [.unregisterFormat(name)](#module_sway.SwaggerApi+unregisterFormat)
     * [.unregisterFormatGenerator(name)](#module_sway.SwaggerApi+unregisterFormatGenerator)
-    * [.validate()](#module_sway.SwaggerApi+validate) ⇒ <code>module:sway~ValidationResults</code>
+    * [.validate()](#module_sway.SwaggerApi+validate) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 
 <a name="new_module_sway.SwaggerApi_new"></a>
 
@@ -610,7 +610,7 @@ object.
 
 <a name="module_sway.SwaggerApi+getOperation"></a>
 
-#### swaggerApi.getOperation(idOrPathOrReq, [method]) ⇒ <code>module:sway~Operation</code>
+#### swaggerApi.getOperation(idOrPathOrReq, [method]) ⇒ <code>[Operation](#module_sway.Operation)</code>
 Returns the operation for the given path and operation.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
@@ -622,7 +622,7 @@ Returns the operation for the given path and operation.
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>module:sway~Operation</code> - The `Operation` for the provided operation id, or path and method or `undefined` if
+**Returns**: <code>[Operation](#module_sway.Operation)</code> - The `Operation` for the provided operation id, or path and method or `undefined` if
 there is no operation for that operation id, or path and method combination  
 
 | Param | Type | Description |
@@ -632,11 +632,11 @@ there is no operation for that operation id, or path and method combination
 
 <a name="module_sway.SwaggerApi+getOperations"></a>
 
-#### swaggerApi.getOperations([path]) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
+#### swaggerApi.getOperations([path]) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
 Returns all operations for the provided path or all operations in the API.
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;module:sway~Operation&gt;</code> - All `Operation` objects for the provided path or all API operations  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> - All `Operation` objects for the provided path or all API operations  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -644,11 +644,11 @@ Returns all operations for the provided path or all operations in the API.
 
 <a name="module_sway.SwaggerApi+getOperationsByTag"></a>
 
-#### swaggerApi.getOperationsByTag([tag]) ⇒ <code>Array.&lt;module:sway~Operation&gt;</code>
+#### swaggerApi.getOperationsByTag([tag]) ⇒ <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code>
 Returns all operations for the provided tag.
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;module:sway~Operation&gt;</code> - All `Operation` objects for the provided tag  
+**Returns**: <code>[Array.&lt;Operation&gt;](#module_sway.Operation)</code> - All `Operation` objects for the provided tag  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -656,7 +656,7 @@ Returns all operations for the provided tag.
 
 <a name="module_sway.SwaggerApi+getPath"></a>
 
-#### swaggerApi.getPath(pathOrReq) ⇒ <code>module:sway~Path</code>
+#### swaggerApi.getPath(pathOrReq) ⇒ <code>[Path](#module_sway.Path)</code>
 Returns the path object for the given path or request.
 
 **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
@@ -667,7 +667,7 @@ Returns the path object for the given path or request.
 *(See: [https://nodejs.org/api/http.html#http_class_http_clientrequest](https://nodejs.org/api/http.html#http_class_http_clientrequest))*
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>module:sway~Path</code> - The corresponding `Path` object for the requested path or request  
+**Returns**: <code>[Path](#module_sway.Path)</code> - The corresponding `Path` object for the requested path or request  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -675,11 +675,11 @@ Returns the path object for the given path or request.
 
 <a name="module_sway.SwaggerApi+getPaths"></a>
 
-#### swaggerApi.getPaths() ⇒ <code>Array.&lt;module:sway~Path&gt;</code>
+#### swaggerApi.getPaths() ⇒ <code>[Array.&lt;Path&gt;](#module_sway.Path)</code>
 Returns all path objects for the Swagger API.
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>Array.&lt;module:sway~Path&gt;</code> - The `Path` objects  
+**Returns**: <code>[Array.&lt;Path&gt;](#module_sway.Path)</code> - The `Path` objects  
 <a name="module_sway.SwaggerApi+registerFormat"></a>
 
 #### swaggerApi.registerFormat(name, validator)
@@ -717,7 +717,7 @@ Registers a custom validator.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| validator | <code>module:sway~DocumentValidationFunction</code> | The validator |
+| validator | <code>[DocumentValidationFunction](#module_sway.DocumentValidationFunction)</code> | The validator |
 
 <a name="module_sway.SwaggerApi+unregisterFormat"></a>
 
@@ -743,11 +743,11 @@ Unregisters a custom format generator.
 
 <a name="module_sway.SwaggerApi+validate"></a>
 
-#### swaggerApi.validate() ⇒ <code>module:sway~ValidationResults</code>
+#### swaggerApi.validate() ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 Performs validation of the Swagger API document(s).
 
 **Kind**: instance method of <code>[SwaggerApi](#module_sway.SwaggerApi)</code>  
-**Returns**: <code>module:sway~ValidationResults</code> - The validation results  
+**Returns**: <code>[ValidationResults](#module_sway.ValidationResults)</code> - The validation results  
 <a name="module_sway.ValidationEntry"></a>
 
 ### sway.ValidationEntry : <code>object</code>
@@ -764,7 +764,7 @@ documented below.
 | --- | --- | --- |
 | code | <code>string</code> | The code used to identify the error/warning |
 | error | <code>string</code> | Whenever there is an upstream `Error` encountered, its message is here |
-| errors | <code>Array.&lt;module:sway~ValidationEntry&gt;</code> | The nested error(s) encountered during validation |
+| errors | <code>[Array.&lt;ValidationEntry&gt;](#module_sway.ValidationEntry)</code> | The nested error(s) encountered during validation |
 | lineage | <code>Array.&lt;string&gt;</code> | Contains the composition lineage for circular composition errors |
 | message | <code>string</code> | The human readable description of the error/warning |
 | name | <code>string</code> | The header name for header validation errors |
@@ -782,20 +782,20 @@ Validation results object.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| errors | <code>Array.&lt;module:sway~ValidationEntry&gt;</code> | The validation errors |
-| warnings | <code>Array.&lt;module:sway~ValidationEntry&gt;</code> | The validation warnings |
+| errors | <code>[Array.&lt;ValidationEntry&gt;](#module_sway.ValidationEntry)</code> | The validation errors |
+| warnings | <code>[Array.&lt;ValidationEntry&gt;](#module_sway.ValidationEntry)</code> | The validation warnings |
 
 <a name="module_sway.create"></a>
 
-### sway.create(options) ⇒ <code>Promise.&lt;module:sway~SwaggerApi&gt;</code>
+### sway.create(options) ⇒ <code>[Promise.&lt;SwaggerApi&gt;](#module_sway.SwaggerApi)</code>
 Creates a SwaggerApi object from its Swagger definition(s).
 
 **Kind**: static method of <code>[sway](#module_sway)</code>  
-**Returns**: <code>Promise.&lt;module:sway~SwaggerApi&gt;</code> - The promise  
+**Returns**: <code>[Promise.&lt;SwaggerApi&gt;](#module_sway.SwaggerApi)</code> - The promise  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| options | <code>module:sway~CreateOptions</code> | The options for loading the definition(s) |
+| options | <code>[CreateOptions](#module_sway.CreateOptions)</code> | The options for loading the definition(s) |
 
 **Example**  
 ```js
