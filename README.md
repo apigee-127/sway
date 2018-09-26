@@ -6,7 +6,7 @@ the available APIs, please view the [API Documentation](https://github.com/apige
 `master` will always be built to support the latest release of OpenAPI, which right now is `3.x`.  Previous versions are
 in their own respective `v{N}.x` branch:
 
-* _3.x Support:_ `master`
+* _3.x Support (WIP):_ `master`
 * _2.x Support:_ [v2.x](https://github.com/apigee-127/sway/tree/v2.x)
 
 ## Project Badges
