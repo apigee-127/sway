@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v2.0.5 (2018-10-04)
+
+* Lock `json-schema-faker` to `0.5.0-rc15` to avoid breaking changes *(Issue #188)*
+
 ### v2.0.4 (2018-08-31)
 
 * Another attempt at fixing the TypeScript definitions
