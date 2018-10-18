@@ -1,5 +1,5 @@
 
-**Yet another sway**
+## Yet another sway
 A library that simplifies [Swagger][swagger] integrations.  This library handles the minutiae of loading Swagger
 documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
 a rich set of APIs for things like Swagger document validation, request/response validation, etc.  For more details on
@@ -56,7 +56,7 @@ npm install sway --save
 
 The documentation for this project can be found here: [/docs/README](/docs/README.md)
 
-Of course, if you just want a quick link to the API documentation, that would be here:[/docs/API.md](/docs/API.md)
+Of course, if you just want a quick link to the API documentation, that would be here: [/docs/API.md](/docs/API.md)
 
 ## Contributing
 
