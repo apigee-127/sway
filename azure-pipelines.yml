@@ -11,7 +11,6 @@ steps:
   inputs:
     verbose: false
 
-steps:
 - task: Gulp@0
   displayName: 'gulp '
   inputs:
