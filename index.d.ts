@@ -1,6 +1,12 @@
 import { MutableStringMap } from "@ts-common/string-map";
 
+// https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#info-object
+interface InfoObject {
+  readonly title: string
+}
+
 interface SwaggerObject {
+  readonly info: InfoObject
   "x-ms-paths"?: PathsObject
   paths?: PathsObject
   definitions?: DefinitionsObject
