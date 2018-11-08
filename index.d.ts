@@ -6,6 +6,7 @@ interface InfoObject {
 }
 
 interface SwaggerObject {
+  readonly swagger: "2.0"
   readonly info: InfoObject
   "x-ms-paths"?: PathsObject
   paths?: PathsObject
