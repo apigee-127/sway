@@ -3,6 +3,11 @@ import { MutableStringMap } from "@ts-common/string-map";
 // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#info-object
 interface InfoObject {
   readonly title: string
+  readonly version: string
+  readonly description?: string
+  readonly termsOfService?: string
+  readonly contact?: unknown
+  readonly license?: unknown
 }
 
 interface SwaggerObject {
