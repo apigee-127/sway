@@ -99,7 +99,7 @@ interface OperationObject {
   parameters?: ReadonlyArray<ParameterObject>
   consumes?: string[]
   produces?: string[]
-  responses?: ResponsesObject
+  responses: ResponsesObject
 }
 
 interface ResponsesObject {
