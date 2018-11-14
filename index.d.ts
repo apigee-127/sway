@@ -1,4 +1,4 @@
-import { MutableStringMap } from "@ts-common/string-map";
+import { MutableStringMap, StringMap } from "@ts-common/string-map";
 
 // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#info-object
 interface InfoObject {
@@ -83,7 +83,10 @@ type ResponseSchemaObject = SchemaObject|FileSchemaObject
 interface ResponseObject {
   description: string
   schema?: ResponseSchemaObject
+  examples?: ExampleObject
 }
+
+type ExampleObject = StringMap<unknown>
 
 type PathItemObjectMethods = { [m in Methods]?: OperationObject }
 
