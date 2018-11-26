@@ -12,3 +12,6 @@ typings/
 .DS_Store
 jsconfig.json
 .vs
+
+package-lock.json
+*.tgz
