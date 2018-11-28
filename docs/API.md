@@ -11,6 +11,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
         * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>[Parameter](#module_sway.Parameter)</code>
         * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
+        * [.getRequestBody()](#module_sway.Operation+getRequestBody) ⇒ <code>module:Sway~RequestBody</code>
         * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>[Response](#module_sway.Response)</code>
         * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_sway.Response)</code>
         * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
@@ -18,6 +19,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
         * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.Parameter](#module_sway.Parameter)
         * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
+        * [.getExamples()](#module_sway.Parameter+getExamples) ⇒ <code>string</code>
         * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
         * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>[ParameterValue](#module_sway.ParameterValue)</code>
     * [.ParameterValue](#module_sway.ParameterValue)
@@ -33,6 +35,7 @@ A library for simpler [Swagger](http://swagger.io/) integrations.
     * [.Response](#module_sway.Response)
         * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
         * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
+        * [.getExamples([mimeType])](#module_sway.Response+getExamples) ⇒ <code>string</code>
         * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
         * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
     * [.ResponseValidationFunction](#module_sway.ResponseValidationFunction) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
@@ -105,6 +108,7 @@ Function used for custom validation of Swagger documents
     * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
     * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ <code>[Parameter](#module_sway.Parameter)</code>
     * [.getParameters()](#module_sway.Operation+getParameters) ⇒ <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code>
+    * [.getRequestBody()](#module_sway.Operation+getRequestBody) ⇒ <code>module:Sway~RequestBody</code>
     * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ <code>[Response](#module_sway.Response)</code>
     * [.getResponses()](#module_sway.Operation+getResponses) ⇒ <code>[Array.&lt;Response&gt;](#module_sway.Response)</code>
     * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
@@ -151,6 +155,13 @@ Returns all parameters for the operation.
 
 **Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
 **Returns**: <code>[Array.&lt;Parameter&gt;](#module_sway.Parameter)</code> - All `Parameter` objects for the operation  
+<a name="module_sway.Operation+getRequestBody"></a>
+
+#### operation.getRequestBody() ⇒ <code>module:Sway~RequestBody</code>
+Returns the request body
+
+**Kind**: instance method of <code>[Operation](#module_sway.Operation)</code>  
+**Returns**: <code>module:Sway~RequestBody</code> - The request body or `undefined` if one cannot be found  
 <a name="module_sway.Operation+getResponse"></a>
 
 #### operation.getResponse([statusCode]) ⇒ <code>[Response](#module_sway.Response)</code>
@@ -240,6 +251,7 @@ Validates the response.
 
 * [.Parameter](#module_sway.Parameter)
     * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
+    * [.getExamples()](#module_sway.Parameter+getExamples) ⇒ <code>string</code>
     * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
     * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ <code>[ParameterValue](#module_sway.ParameterValue)</code>
 
@@ -261,6 +273,13 @@ object.
 | definitionFullyResolved | <code>object</code> | The parameter definition with all of its resolvable references resolved |
 | pathToDefinition | <code>Array.&lt;string&gt;</code> | The path segments to the parameter definition |
 
+<a name="module_sway.Parameter+getExamples"></a>
+
+#### parameter.getExamples() ⇒ <code>string</code>
+Returns the parameter examples.
+
+**Kind**: instance method of <code>[Parameter](#module_sway.Parameter)</code>  
+**Returns**: <code>string</code> - The parameter examples as object or `undefined`  
 <a name="module_sway.Parameter+getSample"></a>
 
 #### parameter.getSample() ⇒ <code>\*</code>
@@ -455,6 +474,7 @@ Request validation options.
 * [.Response](#module_sway.Response)
     * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
     * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
+    * [.getExamples([mimeType])](#module_sway.Response+getExamples) ⇒ <code>string</code>
     * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
     * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ <code>[ValidationResults](#module_sway.ValidationResults)</code>
 
@@ -484,6 +504,18 @@ Returns the response example for the mime-type.
 
 **Kind**: instance method of <code>[Response](#module_sway.Response)</code>  
 **Returns**: <code>string</code> - The response example as a string or `undefined` if the response code and/or mime-type is missing  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [mimeType] | <code>string</code> | The mime type |
+
+<a name="module_sway.Response+getExamples"></a>
+
+#### response.getExamples([mimeType]) ⇒ <code>string</code>
+Returns the response examples for the mime-type.
+
+**Kind**: instance method of <code>[Response](#module_sway.Response)</code>  
+**Returns**: <code>string</code> - The response examples as a object or `undefined` if the response code and/or mime-type is missing  
 
 | Param | Type | Description |
 | --- | --- | --- |

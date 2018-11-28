@@ -339,6 +339,12 @@ declare module 'sway' {
         getResponse(statusCode?: number | string): Response;
 
         /**
+         * Returns the request body
+         * @returns The request body or `undefined` if one cannot be found
+         */
+        getRequestBody(): module:Sway~RequestBody;
+
+        /**
          * Returns all responses for the operation.
          * @returns All `Response` objects for the operation
          */
@@ -413,6 +419,12 @@ declare module 'sway' {
          * @param pathToDefinition - The path segments to the parameter definition
          */
         constructor(opOrPathObject: Operation | Path, definition: object, definitionFullyResolved: object, pathToDefinition: string[]);
+
+        /**
+         * Returns the parameter examples.
+         * @returns The parameter examples as object or `undefined`
+         */
+        getExamples(): string;
 
         /**
          * Returns a sample value for the parameter based on its schema;
@@ -514,6 +526,13 @@ declare module 'sway' {
          * @returns The response example as a string or `undefined` if the response code and/or mime-type is missing
          */
         getExample(mimeType?: string): string;
+
+        /**
+         * Returns the response examples for the mime-type.
+         * @param mimeType - The mime type
+         * @returns The response examples as a object or `undefined` if the response code and/or mime-type is missing
+         */
+        getExamples(mimeType?: string): string;
 
         /**
          * Returns a sample value.
