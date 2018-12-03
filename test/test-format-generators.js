@@ -33,9 +33,9 @@ var Sway = helpers.getSway();
 
 describe('format generators', function () {
   it('byte', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
         in: 'query',
       type: 'string',
@@ -43,18 +43,18 @@ describe('format generators', function () {
     });
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-      })
-      .then(done, done);
+    .then(function (apiDef) {
+      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+    })
+    .then(done, done);
   });
 
   it('password', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
         in: 'query',
       type: 'string',
@@ -62,11 +62,11 @@ describe('format generators', function () {
     });
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.ok(_.isString(api.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-      })
-      .then(done, done);
+    .then(function (apiDef) {
+      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+    })
+    .then(done, done);
   });
 });

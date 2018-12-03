@@ -34,28 +34,28 @@ var Sway = tHelpers.getSway();
 
 function runTests (mode) {
   var label = mode === 'with-refs' ? 'with' : 'without';
-  var swaggerApi;
+  var apiDefinition;
 
   before(function (done) {
-    function callback (api) {
-      swaggerApi = api;
+    function callback (apiDef) {
+      apiDefinition = apiDef;
 
       done();
     }
 
     if (mode === 'with-refs') {
-      tHelpers.getSwaggerApiRelativeRefs(callback);
+      tHelpers.getApiDefinitionRelativeRefs(callback);
     } else {
-      tHelpers.getSwaggerApi(callback);
+      tHelpers.getApiDefinition(callback);
     }
   });
 
-  describe('should handle Swagger document ' + label + ' relative references', function () {
+  describe('should handle OpenAPI document ' + label + ' relative references', function () {
     it('should have proper structure', function () {
       var path = '/pet/{petId}';
-      var pathDef = swaggerApi.definitionFullyResolved.paths[path];
+      var pathDef = apiDefinition.definitionFullyResolved.paths[path];
 
-      _.each(swaggerApi.getOperation(path, 'post').getParameters(), function (parameter, index) {
+      _.each(apiDefinition.getOperation(path, 'post').getParameters(), function (parameter, index) {
         var ptr = '#/paths/~1pet~1{petId}/';
         var def;
 
@@ -74,14 +74,14 @@ function runTests (mode) {
 
     describe('#getSchema', function () {
       it('should handle parameter with explicit schema definition (body parameter)', function () {
-        var schema = swaggerApi.getOperation('/pet', 'post').getParameter('body').schema;
+        var schema = apiDefinition.getOperation('/pet', 'post').getParameter('body').schema;
 
         // Make sure the generated JSON Schema is identical to its referenced schema
-        assert.deepEqual(schema, swaggerApi.definitionFullyResolved.definitions.Pet);
+        assert.deepEqual(schema, apiDefinition.definitionFullyResolved.definitions.Pet);
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator, schema, {});
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, {});
         } catch (err) {
           assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
           assert.equal(err.message, 'JSON Schema validation failed');
@@ -102,7 +102,7 @@ function runTests (mode) {
 
         // Make sure the generated JSON Schema validates a valid object properly
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator, schema, {
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, {
             photoUrls: [],
             name: 'Test Pet'
           });
@@ -112,7 +112,7 @@ function runTests (mode) {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', function () {
-        var schema = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
+        var schema = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').schema;
 
         // Make sure the generated JSON Schema is as expected
         assert.deepEqual(schema, {
@@ -125,7 +125,7 @@ function runTests (mode) {
 
         // Make sure the generated JSON Schema validates an invalid object properly
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator, schema, 1);
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, 1);
         } catch (err) {
           assert.equal(err.code, 'SCHEMA_VALIDATION_FAILED');
           assert.equal(err.message, 'JSON Schema validation failed');
@@ -142,7 +142,7 @@ function runTests (mode) {
 
         // Make sure the generated JSON Schema validates a valid object properly
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator, schema, [
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator, schema, [
             'tag1',
             'tag2',
             'tag3'
@@ -155,10 +155,10 @@ function runTests (mode) {
 
     describe('#getSample', function () {
       it('should handle parameter with explicit schema definition (body parameter)', function () {
-        var parameter = swaggerApi.getOperation('/pet', 'post').getParameter('body');
+        var parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator,
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator,
                                         parameter.schema,
                                         parameter.getSample());
         } catch (err) {
@@ -167,10 +167,10 @@ function runTests (mode) {
       });
 
       it('should handle parameter with schema-like definition (non-body parameter)', function () {
-        var parameter = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags');
+        var parameter = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags');
 
         try {
-          helpers.validateAgainstSchema(tHelpers.swaggerDocValidator,
+          helpers.validateAgainstSchema(tHelpers.oaiDocValidator,
                                         parameter.schema,
                                         parameter.getSample());
         } catch (err) {
@@ -179,9 +179,9 @@ function runTests (mode) {
       });
 
       it('should handle parameter with date format (Issue 99)', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-        cSwagger.paths['/pet'].post.parameters.push({
+        cOAIDoc.paths['/pet'].post.parameters.push({
             in: 'query',
           name: 'availableDate',
           description: 'The date the Pet is available',
@@ -191,16 +191,16 @@ function runTests (mode) {
         });
 
         Sway.create({
-          definition: cSwagger
+          definition: cOAIDoc
         })
-          .then(function (api) {
-            assert.ok(_.isString(api.getOperation('/pet', 'post').getParameter('availableDate').getSample()));
+          .then(function (apiDef) {
+            assert.ok(_.isString(apiDef.getOperation('/pet', 'post').getParameter('availableDate').getSample()));
           })
           .then(done, done);
       });
 
       it('should handle parameter with file type (Issue 159)', function () {
-        assert.ok(_.isString(swaggerApi.getOperation('/pet/{petId}/uploadImage',
+        assert.ok(_.isString(apiDefinition.getOperation('/pet/{petId}/uploadImage',
                                                      'post').getParameter('file').getSample()));
       });
     });
@@ -211,7 +211,7 @@ function runTests (mode) {
           [[], 'req is required'],
           [[true], 'req must be an object']
         ];
-        var param = swaggerApi.getOperation('/pet', 'post').getParameter('body');
+        var param = apiDefinition.getOperation('/pet', 'post').getParameter('body');
 
         _.forEach(scenarios, function (scenario) {
           try {
@@ -229,7 +229,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet', 'post').getParameter('body');
+            parameter = apiDefinition.getOperation('/pet', 'post').getParameter('body');
           });
 
           it('missing value', function () {
@@ -251,7 +251,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
+            parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file');
           });
 
           it('missing req.files', function () {
@@ -283,7 +283,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
+            parameter = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('optionalFile');
           });
 
           it('missing req.files', function () {
@@ -299,7 +299,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('name');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
           });
 
           it('missing req.body', function () {
@@ -332,7 +332,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('status');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('status');
           });
 
           it('missing req.body', function () {
@@ -348,7 +348,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('api_key');
           });
 
           it('missing req.headers', function () {
@@ -394,7 +394,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'delete').getParameter('optional_header');
           });
 
           it('missing req.headers', function () {
@@ -410,7 +410,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('petId');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('petId');
           });
 
           it('missing req.url', function () {
@@ -442,9 +442,9 @@ function runTests (mode) {
           });
 
           it('provided value (multiple)', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.paths['/pet/{petId}/family/{memberId}'] = {
+            cOAIDoc.paths['/pet/{petId}/family/{memberId}'] = {
               parameters: [
                 {
                   name: 'petId',
@@ -464,15 +464,15 @@ function runTests (mode) {
                 }
               ],
               get: {
-                responses: cSwagger.paths['/pet/{petId}'].get.responses
+                responses: cOAIDoc.paths['/pet/{petId}'].get.responses
               }
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                _.each(api.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), function (param) {
+              .then(function (apiDef) {
+                _.each(apiDef.getOperation('/pet/{petId}/family/{memberId}', 'get').getParameters(), function (param) {
                   var expected;
 
                   switch (param.name) {
@@ -511,7 +511,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status');
+            parameter = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status');
           });
 
           it('missing req.query', function () {
@@ -542,16 +542,16 @@ function runTests (mode) {
         });
 
         it('invalid \'in\' value', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet/{petId}'].parameters[0].in = 'invalid';
+          cOAIDoc.paths['/pet/{petId}'].parameters[0].in = 'invalid';
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
+            .then(function (apiDef) {
               try {
-                api.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({});
+                apiDef.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({});
 
                 tHelpers.shouldHadFailed();
               } catch (err) {
@@ -563,7 +563,7 @@ function runTests (mode) {
 
         it('missing request', function () {
           try {
-            swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
+            apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue();
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -577,7 +577,7 @@ function runTests (mode) {
           var parameter;
 
           before(function () {
-            parameter = swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId');
+            parameter = apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId');
           });
 
           it('never processed', function () {
@@ -601,9 +601,9 @@ function runTests (mode) {
 
           describe('default values', function () {
             it('provided (array items array)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+              cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
                   type: 'string',
                   default: 'available'
@@ -614,10 +614,10 @@ function runTests (mode) {
               ];
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value, ['available', undefined]);
                 })
@@ -625,13 +625,13 @@ function runTests (mode) {
             });
 
             it('provided (array items object)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value, ['available']);
                 })
@@ -639,13 +639,13 @@ function runTests (mode) {
             });
 
             it('provided (non-array)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.equal(api.getOperation('/pet/{petId}', 'delete').getParameter('api_key').getValue({
+                .then(function (apiDef) {
+                  assert.equal(apiDef.getOperation('/pet/{petId}', 'delete').getParameter('api_key').getValue({
                     headers: {}
                   }).value, '');
                 })
@@ -653,20 +653,20 @@ function runTests (mode) {
             });
 
             it('provided (global array default)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+              cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
                   type: 'string',
                 }
               ];
-              cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+              cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value, ['available', 'pending']);
                 })
@@ -674,15 +674,15 @@ function runTests (mode) {
             });
 
             it('provided (global array default + items default) : should take the items default', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
+              cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].default = ['available', 'pending'];
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value, ['available']);
                 })
@@ -690,9 +690,9 @@ function runTests (mode) {
             });
 
             it('missing (array items array)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+              cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                 {
                   type: 'string'
                 },
@@ -702,10 +702,10 @@ function runTests (mode) {
               ];
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.ok(_.isUndefined(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value));
                 })
@@ -713,15 +713,15 @@ function runTests (mode) {
             });
 
             it('missing (array items object)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].items.default;
+              delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items.default;
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.ok(_.isUndefined(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                .then(function (apiDef) {
+                  assert.ok(_.isUndefined(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                     query: {}
                   }).value));
                 })
@@ -729,13 +729,13 @@ function runTests (mode) {
             });
 
             it('missing (non-array)', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  assert.ok(_.isUndefined(api.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({
+                .then(function (apiDef) {
+                  assert.ok(_.isUndefined(apiDef.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue({
                     url: '/v2/pet'
                   }).value));
                 })
@@ -744,9 +744,9 @@ function runTests (mode) {
           });
 
           it('optional value', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.paths['/pet/findByStatus'].get.parameters.push({
+            cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
               name: 'age',
               type: 'integer',
                 in: 'query',
@@ -754,10 +754,10 @@ function runTests (mode) {
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var optionalValue = api.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
+              .then(function (apiDef) {
+                var optionalValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('age').getValue({
                   query: {}
                 });
 
@@ -781,9 +781,9 @@ function runTests (mode) {
             var singleStrBooleanLikeValue;
 
             before(function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 name: 'versions',
                   in: 'query',
                 type: 'array',
@@ -794,9 +794,9 @@ function runTests (mode) {
 
               // Test primitive values, because req.query.PARAM will return a primitive
               // if only one is passed to the query param.
-              Sway.create({definition: cSwaggerDoc})
-                .then(function (api) {
-                  var parameter = api.getOperation('/pet/findByStatus', 'get').getParameter('versions');
+              Sway.create({definition: coaiDoc})
+                .then(function (apiDef) {
+                  var parameter = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('versions');
 
                   // Test a string value that JSON.parse would coerse to Number
                   singleNumParamValue = parameter.getValue({
@@ -828,9 +828,9 @@ function runTests (mode) {
 
             describe('array', function () {
               it('items array', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/findByStatus'].get.parameters[0].items = [
+                cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items = [
                   {
                     type: 'string'
                   },
@@ -840,10 +840,10 @@ function runTests (mode) {
                 ];
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                  .then(function (apiDef) {
+                    assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                       query: {
                         status: [
                           'one', 'two'
@@ -855,7 +855,7 @@ function runTests (mode) {
               });
 
               it('items object', function () {
-                assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
                     status: [
                       'available', 'pending'
@@ -865,7 +865,7 @@ function runTests (mode) {
               });
 
               it('non-array JSON string request value', function () {
-                assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
                     status: '["pending"]'
                   }
@@ -873,7 +873,7 @@ function runTests (mode) {
               });
 
               it('non-array string request value', function () {
-                assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
                     status: 'pending'
                   }
@@ -885,7 +885,7 @@ function runTests (mode) {
               });
 
               it('array request value', function () {
-                assert.deepEqual(swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                assert.deepEqual(apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                   query: {
                     status: ['available', 'pending']
                   }
@@ -906,15 +906,15 @@ function runTests (mode) {
 
               describe('collectionFormat', function () {
                 it('default (csv)', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
+                  delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat;
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                    .then(function (apiDef) {
+                      assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available,pending'
                         }
@@ -924,15 +924,15 @@ function runTests (mode) {
                 });
 
                 it('csv', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
+                  cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'csv';
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                    .then(function (apiDef) {
+                      assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available,pending'
                         }
@@ -943,13 +943,13 @@ function runTests (mode) {
 
                 describe('multi', function () {
                   it('multiple values', function (done) {
-                    var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                    var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
-                      definition: cSwagger
+                      definition: cOAIDoc
                     })
-                      .then(function (api) {
-                        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                      .then(function (apiDef) {
+                        assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                           query: {
                             status: [
                               'available', 'pending'
@@ -963,13 +963,13 @@ function runTests (mode) {
                   // This test is required to make sure that when the query string parser only sees one item that an
                   // array is still returned.
                   it('single value', function (done) {
-                    var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                    var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
                     Sway.create({
-                      definition: cSwagger
+                      definition: cOAIDoc
                     })
-                      .then(function (api) {
-                        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                      .then(function (apiDef) {
+                        assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                           query: {
                             status: 'available'
                           }
@@ -980,15 +980,15 @@ function runTests (mode) {
                 });
 
                 it('pipes', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
+                  cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'pipes';
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                    .then(function (apiDef) {
+                      assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available|pending'
                         }
@@ -998,15 +998,15 @@ function runTests (mode) {
                 });
 
                 it('ssv', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
+                  cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'ssv';
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                    .then(function (apiDef) {
+                      assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available pending'
                         }
@@ -1016,15 +1016,15 @@ function runTests (mode) {
                 });
 
                 it('tsv', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
+                  cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'tsv';
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+                    .then(function (apiDef) {
+                      assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
                         query: {
                           status: 'available\tpending'
                         }
@@ -1034,15 +1034,15 @@ function runTests (mode) {
                 });
 
                 it('invalid', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
+                  cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].collectionFormat = 'invalid';
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      var paramValue = api.getOperation('/pet/findByStatus', 'get')
+                    .then(function (apiDef) {
+                      var paramValue = apiDef.getOperation('/pet/findByStatus', 'get')
                             .getParameter('status')
                             .getValue({
                               query: {
@@ -1062,9 +1062,9 @@ function runTests (mode) {
               var cParam;
 
               before(function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/available'] = {
+                cOAIDoc.paths['/pet/available'] = {
                   parameters: [
                     {
                       name: 'status',
@@ -1075,15 +1075,15 @@ function runTests (mode) {
                     }
                   ],
                   get: {
-                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
                   }
                 };
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    cParam = api.getOperation('/pet/available', 'get').getParameter('status');
+                  .then(function (apiDef) {
+                    cParam = apiDef.getOperation('/pet/available', 'get').getParameter('status');
                   })
                   .then(done, done);
               });
@@ -1126,11 +1126,11 @@ function runTests (mode) {
               var cParam;
 
               before(function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/{petId}/friends'] = {
+                cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
-                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
                         in: 'query',
@@ -1139,15 +1139,15 @@ function runTests (mode) {
                     }
                   ],
                   get: {
-                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
                   }
                 };
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
+                  .then(function (apiDef) {
+                    cParam = apiDef.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                   })
                   .then(done, done);
               });
@@ -1169,11 +1169,11 @@ function runTests (mode) {
               });
 
               it('invalid request value', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/{petId}/friends'] = {
+                cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
-                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
                         in: 'query',
@@ -1182,15 +1182,15 @@ function runTests (mode) {
                     }
                   ],
                   get: {
-                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
                   }
                 };
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    var paramValue = api
+                  .then(function (apiDef) {
+                    var paramValue = apiDef
                           .getOperation('/pet/{petId}/friends', 'get')
                           .getParameter('limit')
                           .getValue({
@@ -1213,7 +1213,7 @@ function runTests (mode) {
               var cParam;
 
               before(function () {
-                cParam = swaggerApi.getOperation('/pet', 'post').getParameter('body');
+                cParam = apiDefinition.getOperation('/pet', 'post').getParameter('body');
               });
 
               it('object request value', function () {
@@ -1285,11 +1285,11 @@ function runTests (mode) {
               var cParam;
 
               before(function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/{petId}/friends'] = {
+                cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
-                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
                         in: 'query',
@@ -1298,15 +1298,15 @@ function runTests (mode) {
                     }
                   ],
                   get: {
-                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
                   }
                 };
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    cParam = api.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
+                  .then(function (apiDef) {
+                    cParam = apiDef.getOperation('/pet/{petId}/friends', 'get').getParameter('limit');
                   })
                   .then(done, done);
               });
@@ -1327,11 +1327,11 @@ function runTests (mode) {
                 }).value, 5.5);
               });
               it('invalid request value', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/{petId}/friends'] = {
+                cOAIDoc.paths['/pet/{petId}/friends'] = {
                   parameters: [
-                    cSwagger.paths['/pet/{petId}'].parameters[0],
+                    cOAIDoc.paths['/pet/{petId}'].parameters[0],
                     {
                       name: 'limit',
                         in: 'query',
@@ -1340,15 +1340,15 @@ function runTests (mode) {
                     }
                   ],
                   get: {
-                    responses: cSwagger.paths['/pet/{petId}'].get.responses
+                    responses: cOAIDoc.paths['/pet/{petId}'].get.responses
                   }
                 };
 
                 Sway.create({
-                  definition: cSwagger
+                  definition: cOAIDoc
                 })
-                  .then(function (api) {
-                    var paramValue = api
+                  .then(function (apiDef) {
+                    var paramValue = apiDef
                           .getOperation('/pet/{petId}/friends', 'get')
                           .getParameter('limit')
                           .getValue({
@@ -1368,7 +1368,7 @@ function runTests (mode) {
               var cParam;
 
               before(function () {
-                cParam = swaggerApi.getOperation('/pet/{petId}', 'post').getParameter('name');
+                cParam = apiDefinition.getOperation('/pet/{petId}', 'post').getParameter('name');
               });
 
               it('string request value', function () {
@@ -1397,9 +1397,9 @@ function runTests (mode) {
                   '2015-00-09', '2015-13-09', '2015-04-00', '2015-04-32', '10000-01-01'];
 
                 before(function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/{petId}'].parameters.push({
+                  cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
                       in: 'query',
                     description: 'Find pets created before',
@@ -1408,10 +1408,10 @@ function runTests (mode) {
                   });
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      cParam = api.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
+                    .then(function (apiDef) {
+                      cParam = apiDef.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                     })
                     .then(done, done);
                 });
@@ -1465,9 +1465,9 @@ function runTests (mode) {
                   '2015-04-09T14:07:61-06:00', '2015-04-09T14:07:26-25:00', '2015-04-09T14:07:26+25:00'];
 
                 before(function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.paths['/pet/{petId}'].parameters.push({
+                  cOAIDoc.paths['/pet/{petId}'].parameters.push({
                     name: 'createdBefore',
                       in: 'query',
                     description: 'Find pets created before',
@@ -1476,10 +1476,10 @@ function runTests (mode) {
                   });
 
                   Sway.create({
-                    definition: cSwagger
+                    definition: cOAIDoc
                   })
-                    .then(function (api) {
-                      cParam = api.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
+                    .then(function (apiDef) {
+                      cParam = apiDef.getOperation('/pet/{petId}', 'get').getParameter('createdBefore');
                     })
                     .then(done, done);
                 });
@@ -1525,17 +1525,17 @@ function runTests (mode) {
             });
 
             it('invalid type', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet'].post.parameters[0].schema = {
+              cOAIDoc.paths['/pet'].post.parameters[0].schema = {
                 type: 'invalid'
               };
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
                     body: {}
                   });
 
@@ -1548,15 +1548,15 @@ function runTests (mode) {
             });
 
             it('missing type', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet'].post.parameters[0].schema = {};
+              cOAIDoc.paths['/pet'].post.parameters[0].schema = {};
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue({
                     body: {}
                   });
 
@@ -1571,7 +1571,7 @@ function runTests (mode) {
 
       describe('validation', function () {
         it('missing required value (with default)', function () {
-          var paramValue = swaggerApi.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
+          var paramValue = apiDefinition.getOperation('/pet/findByStatus', 'get').getParameter('status').getValue({
             query: {}
           });
 
@@ -1581,7 +1581,7 @@ function runTests (mode) {
         });
 
         it('missing required value (without default)', function () {
-          var paramValue = swaggerApi.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
+          var paramValue = apiDefinition.getOperation('/pet/findByTags', 'get').getParameter('tags').getValue({
             query: {}
           });
           var error = paramValue.error;
@@ -1596,9 +1596,9 @@ function runTests (mode) {
         describe('provided empty value', function () {
           describe('integer', function () {
             it('allowEmptyValue false', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
                 type: 'integer',
                 format: 'int32',
@@ -1607,10 +1607,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1625,9 +1625,9 @@ function runTests (mode) {
             });
 
             it('allowEmptyValue true', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'integer',
                 format: 'int32',
                 name: 'limit',
@@ -1636,10 +1636,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1655,9 +1655,9 @@ function runTests (mode) {
 
           describe('number', function () {
             it('allowEmptyValue false', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
                 type: 'number',
                 format: 'int32',
@@ -1666,10 +1666,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1684,9 +1684,9 @@ function runTests (mode) {
             });
 
             it('allowEmptyValue true', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'number',
                 format: 'int32',
                 name: 'limit',
@@ -1695,10 +1695,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1714,9 +1714,9 @@ function runTests (mode) {
 
           describe('string', function () {
             it('allowEmptyValue false', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 allowEmptyValue: false,
                 type: 'string',
                 name: 'limit',
@@ -1724,10 +1724,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1742,9 +1742,9 @@ function runTests (mode) {
             });
 
             it('allowEmptyValue true', function (done) {
-              var cSwaggerDoc = _.cloneDeep(tHelpers.swaggerDoc);
+              var coaiDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+              coaiDoc.paths['/pet/findByStatus'].get.parameters.push({
                 type: 'string',
                 name: 'limit',
                   in: 'query',
@@ -1752,10 +1752,10 @@ function runTests (mode) {
               });
 
               Sway.create({
-                definition: cSwaggerDoc
+                definition: coaiDoc
               })
-                .then(function (api) {
-                  var paramValue = api.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
+                .then(function (apiDef) {
+                  var paramValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('limit').getValue({
                     query: {
                       limit: ''
                     }
@@ -1775,7 +1775,7 @@ function runTests (mode) {
             name: 'Sparky',
             photoUrls: []
           };
-          var paramValue = swaggerApi.getOperation('/pet', 'post').getParameter('body').getValue({
+          var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
             body: pet
           });
 
@@ -1785,7 +1785,7 @@ function runTests (mode) {
         });
 
         it('provided value fails JSON Schema validation', function () {
-          var paramValue = swaggerApi.getOperation('/pet', 'post').getParameter('body').getValue({
+          var paramValue = apiDefinition.getOperation('/pet', 'post').getParameter('body').getValue({
             body: {}
           });
           var error = paramValue.error;

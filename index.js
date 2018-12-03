@@ -27,7 +27,7 @@
 var _ = require('lodash');
 var helpers = require('./lib/helpers');
 var JsonRefs = require('json-refs');
-var SwaggerApi = require('./lib/types/api');
+var ApiDefinition = require('./lib/types/api-definition');
 var YAML = require('js-yaml');
 
 // Load promises polyfill if necessary
@@ -37,25 +37,27 @@ if (typeof Promise === 'undefined') {
 }
 
 /**
- * A library for simpler [Swagger](http://swagger.io/) integrations.
+ * A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.
  *
  * @module sway
  */
 
 /**
- * Creates a SwaggerApi object from its Swagger definition(s).
+ * Creates an ApiDefinition object from the provided OpenAPI definition.
  *
  * @param {module:sway.CreateOptions} options - The options for loading the definition(s)
  *
- * @returns {Promise<module:sway.SwaggerApi>} The promise
+ * @returns {Promise<module:sway.ApiDefinition>} The promise
  *
  * @example
- * SwaggerApi.create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
- *   .then(function (api) {
- *     console.log('Documentation URL: ', api.documentationUrl);
- *   }, function (err) {
- *     console.error(err.stack);
- *   });
+ * Sway.create({
+ *   definition: 'https://github.com/OAI/OpenAPI-Specification/blob/master/examples/v3.0/petstore.yaml'
+ * })
+ * .then(function (apiDefinition) {
+ *   console.log('Documentation URL: ', api.documentationUrl);
+ * }, function (err) {
+ *   console.error(err.stack);
+ * });
  */
 module.exports.create = function (options) {
   var allTasks = Promise.resolve();
@@ -138,18 +140,18 @@ module.exports.create = function (options) {
           });
 
           return {
-            // The original Swagger definition
+            // The original OpenAPI definition
             definition: _.isString(cOptions.definition) ? remoteResults.value : cOptions.definition,
-            // The original Swagger definition with its remote references resolved
+            // The original OpenAPI definition with its remote references resolved
             definitionRemotesResolved: remoteResults.resolved,
-            // The original Swagger definition with all its references resolved
+            // The original OpenAPI definition with all its references resolved
             definitionFullyResolved: results.resolved,
             // Merge the local reference details with the remote reference details
             refs: results.refs
           }
         });
     })
-    // Process the Swagger document and return the API
+    // Process the OpenAPI document and return an ApiDefinition
     .then(function (results) {
       // We need to remove all circular objects as z-schema does not work with them:
       //   https://github.com/zaggino/z-schema/issues/137
@@ -158,7 +160,7 @@ module.exports.create = function (options) {
       helpers.removeCirculars(results.definitionFullyResolved);
 
       // Create object model
-      return new SwaggerApi(results.definition,
+      return new ApiDefinition(results.definition,
                             results.definitionRemotesResolved,
                             results.definitionFullyResolved,
                             results.refs,

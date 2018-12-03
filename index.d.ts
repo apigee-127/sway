@@ -1,20 +1,20 @@
 /**
- * A library for simpler [Swagger](http://swagger.io/) integrations.
+ * A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.
  */
 declare module 'sway' {
     /**
-     * Creates a SwaggerApi object from its Swagger definition(s).
+     * Creates an ApiDefinition object from the provided OpenAPI definition.
      * @param options - The options for loading the definition(s)
      * @returns The promise
      */
-    export function create(options: CreateOptions): Promise<SwaggerApi>;
+    export function create(options: CreateOptions): Promise<ApiDefinition>;
 
     /**
-     * Options used when creating the `SwaggerApi`.
+     * Options used when creating the `ApiDefinition`.
      */
     interface CreateOptions {
         /**
-         * The Swagger definition location or structure
+         * The OpenAPI definition location or structure
          */
         definition: object | string;
         /**
@@ -38,11 +38,11 @@ declare module 'sway' {
     }
 
     /**
-     * Function used for custom validation of Swagger documents
-     * @param api - The Swagger API object
+     * Function used for custom validation of OpenAPI documents
+     * @param apiDefinition - The `ApiDefinition` object
      * @returns The validation results
      */
-    export type DocumentValidationFunction = (api: SwaggerApi)=>ValidationResults;
+    export type DocumentValidationFunction = (apiDefinition: ApiDefinition)=>ValidationResults;
 
     /**
      * Request validation function.
@@ -60,9 +60,9 @@ declare module 'sway' {
     interface RequestValidationOptions {
         /**
          * Enablement of strict mode validation.  If `strictMode` is a
-         * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
+         * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the OpenAPI document
          * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
-         * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
+         * [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject)
          * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
          * key.  Valid keys are `formData`, `header` and `query`.  _(`body` and `path` are not necessary since `body` strict
          * mode is possible via its schema and `path` is **always** required.)_
@@ -88,9 +88,9 @@ declare module 'sway' {
     interface ResponseValidationOptions {
         /**
          * Enablement of strict mode validation.  If `strictMode` is a
-         * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the Swagger document
+         * `boolean` and is `true`, all form fields, headers and query parameters **must** be defined in the OpenAPI definition
          * for this operation.  If `strictMode` is an `object`, the keys correspond to the `in` property values of the
-         * [Swagger Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
+         * [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#parameterObject)
          * and its value is a `boolean` that when `true` turns on strict mode validation for the request location matching the
          * key.  Valid keys are `header`.  _(`body`, `query` and `path` are not necessary since `body` strict mode is possible
          * via its schema and `path`, `query` do not matter for responses.)_
@@ -190,19 +190,19 @@ declare module 'sway' {
         warnings: any[];
     }
 
-    class SwaggerApi {
+    class ApiDefinition {
         /**
-         * The Swagger API object.
+         * The OpenAPI Definition object.
          * 
          * **Note:** Do not use directly.
          * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
-         * object.
-         * @param definition - The original Swagger definition
-         * @param definitionRemotesResolved - The Swagger definition with all of its remote references resolved
-         * @param definitionFullyResolved - The Swagger definition with all of its references resolved
-         * @param references - The location and resolution of the resolved references in the Swagger definition
-         * @param options - The options passed to swaggerApi.create
+         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+         * [OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
+         * @param definition - The original OpenAPI definition
+         * @param definitionRemotesResolved - The OpenAPI definition with all of its remote references resolved
+         * @param definitionFullyResolved - The OpenAPI definition with all of its references resolved
+         * @param references - The location and resolution of the resolved references in the OpenAPI definition
+         * @param options - The options passed to ApiDefinition.create
          */
         constructor(definition: object, definitionRemotesResolved: object, definitionFullyResolved: object, references: object, options: object);
 
@@ -216,9 +216,9 @@ declare module 'sway' {
          * * `url`
          * 
          * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
-         * @param idOrPathOrReq - The Swagger opeartion id, path string or the http client request *(or
+         * @param idOrPathOrReq - The OpenAPI opeartion id, path string or the http client request *(or
          *        equivalent)*
-         * @param method - The Swagger operation method _(not used when providing an operation id)_
+         * @param method - The OpenAPI operation method _(not used when providing an operation id)_
          * @returns The `Operation` for the provided operation id, or path and method or `undefined` if
          *          there is no operation for that operation id, or path and method combination
          */
@@ -226,14 +226,14 @@ declare module 'sway' {
 
         /**
          * Returns all operations for the provided path or all operations in the API.
-         * @param path - The Swagger path
+         * @param path - The OpenAPI path
          * @returns All `Operation` objects for the provided path or all API operations
          */
         getOperations(path?: string): any[];
 
         /**
          * Returns all operations for the provided tag.
-         * @param tag - The Swagger tag
+         * @param tag - The OpenAPI tag
          * @returns All `Operation` objects for the provided tag
          */
         getOperationsByTag(tag?: string): any[];
@@ -247,13 +247,13 @@ declare module 'sway' {
          * * `url`
          * 
          * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
-         * @param pathOrReq - The Swagger path string or the http client request *(or equivalent)*
+         * @param pathOrReq - The OpenAPI path string or the http client request *(or equivalent)*
          * @returns The corresponding `Path` object for the requested path or request
          */
         getPath(pathOrReq: string | object): Path;
 
         /**
-         * Returns all path objects for the Swagger API.
+         * Returns all path objects for the OpenAPI definition.
          * @returns The `Path` objects
          */
         getPaths(): any[];
@@ -292,7 +292,7 @@ declare module 'sway' {
         registerValidator(validator: DocumentValidationFunction): void;
 
         /**
-         * Performs validation of the Swagger API document(s).
+         * Performs validation of the OpenAPI definition.
          * @returns The validation results
          */
         validate(): ValidationResults;
@@ -301,12 +301,12 @@ declare module 'sway' {
 
     class Operation {
         /**
-         * The Swagger Operation object.
+         * The OpenAPI Operation object.
          * 
          * **Note:** Do not use directly.
          * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
-         * object.
+         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+         * [OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
          * @param pathObject - The Path object
          * @param method - The operation method
          * @param definition - The operation definition *(The raw operation definition __after__ remote references were
@@ -400,12 +400,12 @@ declare module 'sway' {
 
     class Parameter {
         /**
-         * The Swagger Parameter object.
+         * The OpenAPI Parameter object.
          * 
          * **Note:** Do not use directly.
          * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the definition
-         * object.
+         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+         * [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
          * @param opOrPathObject - The `Operation` or `Path` object
          * @param definition - The parameter definition *(The raw parameter definition __after__ remote references were
          *        resolved)*
@@ -452,15 +452,15 @@ declare module 'sway' {
          * **Note:** Do not use directly.
          * 
          * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * definition object.
-         * @param api - The `SwaggerApi` object
+         * [OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
+         * @param apiDefinition - The `ApiDefinition` object
          * @param path - The path string
          * @param definition - The path definition *(The raw path definition __after__ remote references were
          *        resolved)*
          * @param definitionFullyResolved - The path definition with all of its resolvable references resolved
          * @param pathToDefinition - The path segments to the path definition
          */
-        constructor(api: SwaggerApi, path: string, definition: object, definitionFullyResolved: object, pathToDefinition: string[]);
+        constructor(apiDefinition: ApiDefinition, path: string, definition: object, definitionFullyResolved: object, pathToDefinition: string[]);
 
         /**
          * Return the operation for this path and operation id or method.
@@ -493,12 +493,12 @@ declare module 'sway' {
 
     class Response {
         /**
-         * The Swagger Response object.
+         * The OpenAPI Response object.
          * 
          * **Note:** Do not use directly.
          * 
          * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * definition object.
+         * [OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
          * @param operationObject - The `Operation` object
          * @param statusCode - The status code
          * @param definition - The response definition *(The raw response definition __after__ remote references were

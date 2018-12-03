@@ -33,29 +33,29 @@ var Sway = helpers.getSway();
 
 function runTests (mode) {
   var label = mode === 'with-refs' ? 'with' : 'without';
-  var swaggerApi;
+  var apiDefinition;
 
   before(function (done) {
-    function callback (api) {
-      swaggerApi = api;
+    function callback (apiDef) {
+      apiDefinition = apiDef;
 
       done();
     }
 
     if (mode === 'with-refs') {
-      helpers.getSwaggerApiRelativeRefs(callback);
+      helpers.getApiDefinitionRelativeRefs(callback);
     } else {
-      helpers.getSwaggerApi(callback);
+      helpers.getApiDefinition(callback);
     }
   });
 
-  describe('should handle Swagger document ' + label + ' relative references', function () {
+  describe('should handle OpenAPI document ' + label + ' relative references', function () {
     it('should handle composite parameters', function () {
       var method = 'post';
       var path = '/pet/{petId}';
 
-      var operation = swaggerApi.getOperation(path, method);
-      var pathDef = swaggerApi.definitionFullyResolved.paths['/pet/{petId}'];
+      var operation = apiDefinition.getOperation(path, method);
+      var pathDef = apiDefinition.definitionFullyResolved.paths['/pet/{petId}'];
 
       assert.equal(operation.pathObject.path, path);
       assert.equal(operation.method, method);
@@ -71,9 +71,9 @@ function runTests (mode) {
     it('should handle explicit parameters', function () {
       var method = 'post';
       var path = '/pet/{petId}/uploadImage';
-      var operation = swaggerApi.getOperation(path, method);
-      var pathDef = swaggerApi.definitionRemotesResolved.paths[path];
-      var pathDefFullyResolved = swaggerApi.definitionFullyResolved.paths[path];
+      var operation = apiDefinition.getOperation(path, method);
+      var pathDef = apiDefinition.definitionRemotesResolved.paths[path];
+      var pathDefFullyResolved = apiDefinition.definitionFullyResolved.paths[path];
 
       assert.equal(operation.pathObject.path, path);
       assert.equal(operation.method, method);
@@ -113,15 +113,15 @@ function runTests (mode) {
     it('should take global security definitions', function () {
       var method = 'post';
       var path = '/pet/{petId}/uploadImage';
-      var operation = swaggerApi.getOperation(path, method);
+      var operation = apiDefinition.getOperation(path, method);
 
       assert.ok(typeof operation.securityDefinitions !== 'undefined', 'Should define securityDefinitions');
       assert.ok(typeof operation.securityDefinitions['petstore_auth'] !== 'undefined', 'Should take \'petstore_auth\' from global security');
-      assert.deepEqual(operation.securityDefinitions['petstore_auth'], swaggerApi.securityDefinitions['petstore_auth']);
+      assert.deepEqual(operation.securityDefinitions['petstore_auth'], apiDefinition.securityDefinitions['petstore_auth']);
     });
 
     it('should handle explicit parameters', function () {
-      assert.deepEqual(swaggerApi.getOperation('/user/{username}', 'get').security, [
+      assert.deepEqual(apiDefinition.getOperation('/user/{username}', 'get').security, [
         {
           'api_key': []
         }
@@ -149,38 +149,38 @@ function runTests (mode) {
     }
 
     it('should create proper regexp (with basePath)', function () {
-      validateRegExps(swaggerApi, swaggerApi.basePath);
+      validateRegExps(apiDefinition, apiDefinition.basePath);
     });
 
     it('should create proper regexp (with basePath ending in slash)', function (done) {
-      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-      cSwagger.basePath = '/';
+      cOAIDoc.basePath = '/';
 
-      Sway.create({definition: cSwagger})
-            .then(function (api) {
-              validateRegExps(api, '');
+      Sway.create({definition: cOAIDoc})
+            .then(function (apiDef) {
+              validateRegExps(apiDef, '');
             })
             .then(done, done);
     });
 
     it('should create proper regexp (without basePath)', function (done) {
-      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-      delete cSwagger.basePath;
+      delete cOAIDoc.basePath;
 
-      Sway.create({definition: cSwagger})
-            .then(function (api) {
-              validateRegExps(api, '');
+      Sway.create({definition: cOAIDoc})
+            .then(function (apiDef) {
+              validateRegExps(apiDef, '');
             })
             .then(done, done);
     });
 
     describe('#getParameter', function () {
       it('should return the proper response', function (done) {
-        var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-        cSwagger.paths['/pet/{petId}'].get.parameters = [
+        cOAIDoc.paths['/pet/{petId}'].get.parameters = [
           {
             description: 'This is a duplicate name but different location',
             name: 'petId',
@@ -189,17 +189,17 @@ function runTests (mode) {
           }
         ];
 
-        Sway.create({definition: cSwagger})
-          .then(function (api) {
-            var operation = api.getOperation('/pet/{petId}', 'get');
+        Sway.create({definition: cOAIDoc})
+          .then(function (apiDef) {
+            var operation = apiDef.getOperation('/pet/{petId}', 'get');
 
             assert.ok(_.isUndefined(operation.getParameter()));
             assert.ok(_.isUndefined(operation.getParameter('missing')));
             assert.ok(_.isUndefined(operation.getParameter('petId', 'header')));
             assert.deepEqual(operation.getParameter('petId', 'path').definition,
-                            cSwagger.paths['/pet/{petId}'].parameters[0]);
+                            cOAIDoc.paths['/pet/{petId}'].parameters[0]);
             assert.deepEqual(operation.getParameter('petId', 'query').definition,
-                            cSwagger.paths['/pet/{petId}'].get.parameters[0]);
+                            cOAIDoc.paths['/pet/{petId}'].get.parameters[0]);
           })
           .then(done, done);
       });
@@ -208,7 +208,7 @@ function runTests (mode) {
     // More vigorous testing of the Parameter object itself and the parameter composition are done elsewhere
     describe('#getParameters', function () {
       it('should return the proper parameter objects', function () {
-        var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
+        var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
 
         assert.deepEqual(operation.getParameters(), operation.parameterObjects);
       });
@@ -216,11 +216,11 @@ function runTests (mode) {
 
     describe('#getSecurity', function () {
       it('should return the proper parameter objects', function () {
-        var op1 = swaggerApi.getOperation('/pet/{petId}', 'post');
-        var op2 = swaggerApi.getOperation('/store/inventory', 'get');
+        var op1 = apiDefinition.getOperation('/pet/{petId}', 'post');
+        var op2 = apiDefinition.getOperation('/store/inventory', 'get');
 
         assert.notDeepEqual(op1.getSecurity, op1.security);
-        assert.deepEqual(op1.getSecurity(), swaggerApi.definition.security);
+        assert.deepEqual(op1.getSecurity(), apiDefinition.definition.security);
 
         assert.deepEqual(op2.getSecurity(), op2.security);
       });
@@ -239,7 +239,7 @@ function runTests (mode) {
           [[{}, {strictMode: {header: 'test'}}], 'options.strictMode.header must be a boolean'],
           [[{}, {strictMode: {query: 'test'}}], 'options.strictMode.query must be a boolean']
         ];
-        var operation = swaggerApi.getOperation('/pet', 'post');
+        var operation = apiDefinition.getOperation('/pet', 'post');
 
         _.forEach(scenarios, function (scenario) {
           try {
@@ -266,7 +266,7 @@ function runTests (mode) {
 
           before(function () {
             // this path+op doesn't specify 'consumes'
-            operation = swaggerApi.getOperation('/pet/findByStatus', 'get');
+            operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
           });
 
           it('should not return an unsupported content-type error', function () {
@@ -290,7 +290,7 @@ function runTests (mode) {
           var operation;
 
           before(function () {
-            operation = swaggerApi.getOperation('/pet', 'post');
+            operation = apiDefinition.getOperation('/pet', 'post');
           });
 
           it('should return an error for an unsupported value', function () {
@@ -344,17 +344,17 @@ function runTests (mode) {
         // We only need one test to make sure that we're using the global consumes
 
         it('should handle global level consumes', function (done) {
-          var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-          cSwaggerDoc.consumes = cSwaggerDoc.paths['/pet'].post.consumes;
+          cOAIDoc.consumes = cOAIDoc.paths['/pet'].post.consumes;
 
-          delete cSwaggerDoc.paths['/pet'].post.consumes;
+          delete cOAIDoc.paths['/pet'].post.consumes;
 
           Sway.create({
-            definition: cSwaggerDoc
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var operation = api.getOperation('/pet', 'post');
+            .then(function (apiDef) {
+              var operation = apiDef.getOperation('/pet', 'post');
               var request = _.cloneDeep(baseRequest);
               var results;
 
@@ -378,15 +378,15 @@ function runTests (mode) {
         });
 
         it('should handle mime-type parameters (exact match)', function (done) {
-          var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
           var mimeType = 'application/x-yaml; charset=utf-8';
 
-          cSwaggerDoc.paths['/pet'].post.consumes.push(mimeType);
+          cOAIDoc.paths['/pet'].post.consumes.push(mimeType);
 
           Sway.create({
-            definition: cSwaggerDoc
+            definition: cOAIDoc
           })
-            .then(function (api) {
+            .then(function (apiDef) {
               var request = _.cloneDeep(baseRequest);
               var results;
 
@@ -394,7 +394,7 @@ function runTests (mode) {
                 'content-type': mimeType
               };
 
-              results = api.getOperation('/pet', 'post').validateRequest(request);
+              results = apiDef.getOperation('/pet', 'post').validateRequest(request);
 
               assert.equal(results.warnings.length, 0);
               assert.equal(results.errors.length, 0);
@@ -403,16 +403,16 @@ function runTests (mode) {
         });
 
         it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', function (done) {
-          var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-          cSwaggerDoc.paths['/user'].post.parameters[0].required = false;
-          cSwaggerDoc.paths['/user'].post.consumes = ['application/json'];
+          cOAIDoc.paths['/user'].post.parameters[0].required = false;
+          cOAIDoc.paths['/user'].post.consumes = ['application/json'];
 
           Sway.create({
-            definition: cSwaggerDoc
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.getOperation('/user', 'post').validateRequest({});
+            .then(function (apiDef) {
+              var results = apiDef.getOperation('/user', 'post').validateRequest({});
 
               assert.equal(results.warnings.length, 0);
               assert.equal(results.errors.length, 0);
@@ -426,7 +426,7 @@ function runTests (mode) {
         // ParameterValue's validation and which is heavily tested elsewhere.
 
         it('should return an error for invalid non-primitive parameters', function () {
-          var operation = swaggerApi.getOperation('/pet', 'post');
+          var operation = apiDefinition.getOperation('/pet', 'post');
           var results = operation.validateRequest({
             url: '/v2/pet',
             headers: {
@@ -463,7 +463,7 @@ function runTests (mode) {
         });
 
         it('should return an error for invalid primitive parameters', function () {
-          var operation = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post');
+          var operation = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post');
           var results = operation.validateRequest({
             url: '/v2/pet/notANumber/uploadImage',
             headers: {
@@ -495,7 +495,7 @@ function runTests (mode) {
         });
 
         it('should not return an error for valid parameters', function () {
-          var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
+          var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
           var results = operation.validateRequest({
             url: '/v2/pet/1',
             headers: {
@@ -555,7 +555,7 @@ function runTests (mode) {
             }
           }], ['header']]
         ];
-        var operation = swaggerApi.getOperation('/pet/{petId}', 'post');
+        var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
 
         _.forEach(scenarios, function (scenario) {
           var results = operation.validateRequest.apply(operation, [invalidRequest].concat(scenario[0]));
@@ -599,7 +599,7 @@ function runTests (mode) {
           message: 'This is a fake error!',
           path: []
         };
-        var operation = swaggerApi.getOperation('/pet/findByStatus', 'get');
+        var operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
         var req = {
           query: {
             status: 'sold'
@@ -659,7 +659,7 @@ function runTests (mode) {
           [[res, {strictMode: {header: 'test'}}], 'options.strictMode.header must be a boolean'],
           [[res, {strictMode: {query: 'test'}}], 'options.strictMode.query must be a boolean']
         ];
-        var operation = swaggerApi.getOperation('/pet/findByStatus', 'get');
+        var operation = apiDefinition.getOperation('/pet/findByStatus', 'get');
 
         _.forEach(scenarios, function (scenario) {
           try {
@@ -673,18 +673,18 @@ function runTests (mode) {
       });
 
       it('should not return an INVALID_CONENT_TYPE error for empty body (Issue 164)', function (done) {
-        var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-        cSwaggerDoc.paths['/user'].post.produces = ['application/xml'];
-        cSwaggerDoc.paths['/user'].post.responses.default.schema = {
+        cOAIDoc.paths['/user'].post.produces = ['application/xml'];
+        cOAIDoc.paths['/user'].post.responses.default.schema = {
           type: 'object'
         };
 
         Sway.create({
-          definition: cSwaggerDoc
+          definition: cOAIDoc
         })
-          .then(function (api) {
-            var results = api.getOperation('/user', 'post').validateResponse({
+          .then(function (apiDef) {
+            var results = apiDef.getOperation('/user', 'post').validateResponse({
               headers: {
                 'Content-Type': 'application/json'
               }
@@ -713,7 +713,7 @@ function runTests (mode) {
       // We only test that Operation#validateResponse handles missing responses because the testing of the remainder
       // is in test-response.js.
       it('should return an error for undefined response', function () {
-        var results = swaggerApi.getOperation('/pet/{petId}', 'post').validateResponse({
+        var results = apiDefinition.getOperation('/pet/{petId}', 'post').validateResponse({
           statusCode: 201
         });
 
@@ -728,7 +728,7 @@ function runTests (mode) {
       });
 
       it('should use the \'default\' response for undefined response status code', function () {
-        var results = swaggerApi.getOperation('/user', 'post').validateResponse({
+        var results = apiDefinition.getOperation('/user', 'post').validateResponse({
           statusCode: 201
         });
 
@@ -753,7 +753,7 @@ function runTests (mode) {
             'Content-Type': 'application/json'
           }
         };
-        var resObj = swaggerApi.getOperation('/pet/findByStatus', 'get').getResponse(200);
+        var resObj = apiDefinition.getOperation('/pet/findByStatus', 'get').getResponse(200);
         var warning = {
           code: 'FAKE_WARNING',
           message: 'This is a fake warning!',
@@ -838,19 +838,19 @@ function runTests (mode) {
           }
         }], ['header']]
       ];
-      var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-      cSwagger.paths['/pet/{petId}'].post.responses['default'] = {
+      cOAIDoc.paths['/pet/{petId}'].post.responses['default'] = {
         description: 'successful operation',
         schema: {
           $ref: '#/definitions/Pet'
         }
       };
 
-      Sway.create({definition: cSwagger})
-            .then(function (api) {
+      Sway.create({definition: cOAIDoc})
+            .then(function (apiDef) {
               _.forEach(scenarios, function (scenario) {
-                var operation = api.getOperation('/pet/{petId}', 'post');
+                var operation = apiDef.getOperation('/pet/{petId}', 'post');
                 var results = operation.validateResponse.apply(operation, [invalidRequest].concat(scenario[0]));
 
                 assert.equal(results.warnings.length, 0);
@@ -873,8 +873,8 @@ function runTests (mode) {
 }
 
 describe('Operation', function () {
-  // Swagger document without references
+  // OpenAPI document without references
   runTests('no-refs');
-  // Swagger document with references
+  // OpenAPI document with references
   runTests('with-refs');
 });

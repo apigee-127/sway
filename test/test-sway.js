@@ -48,9 +48,9 @@ var invalidCreateScenarios = [
 
 describe('sway', function () {
   describe('sway#create', function () {
-    function validateCreateSwaggerApi (options) {
+    function validateCreateApiDefinition (options) {
       return function (theApi) {
-        assert.deepEqual(theApi.definition, helpers.swaggerDoc);
+        assert.deepEqual(theApi.definition, helpers.oaiDoc);
         assert.equal(theApi.documentationUrl,
                      'https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md');
         assert.deepEqual(theApi.options, options);
@@ -61,8 +61,8 @@ describe('sway', function () {
           assert.ok(!_.has(details, 'missing'));
         });
 
-        // Validate the merging of the Swagger definition properties and the SwaggerApi properties
-        _.forEach(helpers.swaggerDoc, function (val, key) {
+        // Validate the merging of the OpenAPI definition properties and the OpenAPI properties
+        _.forEach(helpers.oaiDoc, function (val, key) {
           assert.deepEqual(theApi[key], val);
         });
 
@@ -70,17 +70,17 @@ describe('sway', function () {
         assert.ok(_.isArray(theApi.pathObjects));
         assert.ok(theApi.pathObjects.length > 0);
 
-        // Validate the registration of customValidator on SwaggerApi
+        // Validate the registration of customValidator on ApiDefinition
         assert.deepEqual(theApi.customValidators, options.customValidators || [])
       };
     }
 
     it('should always return a promise', function () {
       assert.ok(Sway.create({
-        definition: helpers.swaggerDoc
+        definition: helpers.oaiDoc
       }) instanceof Promise);
       assert.ok(Sway.create({
-        definition: helpers.swaggerDoc
+        definition: helpers.oaiDoc
       }, function () {}) instanceof Promise);
     });
 
@@ -113,27 +113,27 @@ describe('sway', function () {
 
     it('should handle definition object', function (done) {
       var options = {
-        definition: helpers.swaggerDoc
+        definition: helpers.oaiDoc
       };
 
       Sway.create(options)
-        .then(validateCreateSwaggerApi(options))
+        .then(validateCreateApiDefinition(options))
         .then(done, done);
     });
 
     it('should handle definition file location', function (done) {
       var options = {
-        definition: helpers.swaggerDocPath
+        definition: helpers.oaiDocPath
       };
 
       Sway.create(options)
-        .then(validateCreateSwaggerApi(options))
+        .then(validateCreateApiDefinition(options))
         .then(done, done);
     });
 
     it('should register customValidators', function (done) {
       var options = {
-        definition: helpers.swaggerDoc,
+        definition: helpers.oaiDoc,
         customValidators: [
           function validator1 () {
             return {
@@ -145,7 +145,7 @@ describe('sway', function () {
       };
 
       Sway.create(options)
-        .then(validateCreateSwaggerApi(options))
+        .then(validateCreateApiDefinition(options))
         .then(done, done);
     });
 

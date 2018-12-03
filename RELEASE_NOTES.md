@@ -3,6 +3,9 @@
 ### v3.0.0 (TBD)
 
 * OpenAPI _v3.x_ support *(Issue #128)*
+* API Changes
+    * `Path.api` -> `Path.apiDefinition`
+    * `SwaggerApi` -> `ApiDefinition`
 
 ### v2.0.4 (2018-08-31)
 

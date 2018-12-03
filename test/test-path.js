@@ -34,32 +34,32 @@ var Sway = tHelpers.getSway();
 
 function runTests (mode) {
   var label = mode === 'with-refs' ? 'with' : 'without';
-  var swaggerApi;
+  var apiDefinition;
 
   before(function (done) {
-    function callback (api) {
-      swaggerApi = api;
+    function callback (apiDef) {
+      apiDefinition = apiDef;
 
       done();
     }
 
     if (mode === 'with-refs') {
-      tHelpers.getSwaggerApiRelativeRefs(callback);
+      tHelpers.getApiDefinitionRelativeRefs(callback);
     } else {
-      tHelpers.getSwaggerApi(callback);
+      tHelpers.getApiDefinition(callback);
     }
   });
 
-  describe('should handle Swagger document ' + label + ' relative references', function () {
+  describe('should handle OpenAPI document ' + label + ' relative references', function () {
     it('should have proper structure', function () {
       var path = '/pet/{petId}';
-      var pathObject = swaggerApi.getOperation(path, 'get').pathObject;
+      var pathObject = apiDefinition.getOperation(path, 'get').pathObject;
 
-      assert.deepEqual(pathObject.api, swaggerApi);
+      assert.deepEqual(pathObject.apiDefinition, apiDefinition);
       assert.equal(pathObject.path, path);
       assert.equal(pathObject.ptr, JsonRefs.pathToPtr(['paths', path]));
-      assert.deepEqual(pathObject.definition, swaggerApi.definitionRemotesResolved.paths[path]);
-      assert.deepEqual(pathObject.definitionFullyResolved, swaggerApi.definitionFullyResolved.paths[path]);
+      assert.deepEqual(pathObject.definition, apiDefinition.definitionRemotesResolved.paths[path]);
+      assert.deepEqual(pathObject.definitionFullyResolved, apiDefinition.definitionFullyResolved.paths[path]);
 
       // Make sure they are of the proper type
       assert.ok(pathObject.regexp instanceof RegExp);
@@ -69,70 +69,70 @@ function runTests (mode) {
       assert.equal('petId', pathObject.regexp.keys[0].name);
 
       // Make sure they match the expected URLs
-      assert.ok(_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pet/1')));
-      assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/pets/1')));
-      assert.ok(!_.isArray(pathObject.regexp.exec(swaggerApi.definitionFullyResolved.basePath + '/Pet/1')));
+      assert.ok(_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/pet/1')));
+      assert.ok(!_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/pets/1')));
+      assert.ok(!_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/Pet/1')));
     });
 
     describe('#getOperation', function () {
       it('should return the expected operation', function () {
         // By method
-        tHelpers.checkType(swaggerApi.getPath('/pet/{petId}').getOperation('get'), 'Operation');
+        tHelpers.checkType(apiDefinition.getPath('/pet/{petId}').getOperation('get'), 'Operation');
         // By operationId
-        tHelpers.checkType(swaggerApi.getPath('/pet').getOperation('addPet'), 'Operation');
+        tHelpers.checkType(apiDefinition.getPath('/pet').getOperation('addPet'), 'Operation');
       });
 
       it('should return no operation for the missing method', function () {
-        assert.ok(_.isUndefined(swaggerApi.getPath('/pet/{petId}').getOperation('head')));
+        assert.ok(_.isUndefined(apiDefinition.getPath('/pet/{petId}').getOperation('head')));
       });
     });
 
     describe('#getOperations', function () {
       it('should return the expected operations', function () {
-        assert.equal(swaggerApi.getPath('/pet/{petId}').getOperations().length, 3);
+        assert.equal(apiDefinition.getPath('/pet/{petId}').getOperations().length, 3);
       });
 
       it('should return no operations', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
         var path = '/petz';
 
-        cSwagger.paths[path] = {};
+        cOAIDoc.paths[path] = {};
 
         Sway.create({
-          definition: cSwagger
-        }).then(function (api) {
-          assert.equal(api.getPath(path).getOperations().length, 0);
+          definition: cOAIDoc
+        }).then(function (apiDef) {
+          assert.equal(apiDef.getPath(path).getOperations().length, 0);
         }).then(done, done);
       });
     });
 
     describe('#getOperationsByTag', function () {
       it('should return the expected operations', function () {
-        assert.equal(swaggerApi.getPath('/pet/{petId}').getOperationsByTag('pet').length, 3);
+        assert.equal(apiDefinition.getPath('/pet/{petId}').getOperationsByTag('pet').length, 3);
       });
 
       it('should return no operations', function () {
-        assert.equal(swaggerApi.getPath('/pet/{petId}').getOperationsByTag('petz').length, 0);
+        assert.equal(apiDefinition.getPath('/pet/{petId}').getOperationsByTag('petz').length, 0);
       });
     });
 
     describe('#getParameters', function () {
       it('should return the expected parameters', function () {
-        var parameters = swaggerApi.getPath('/pet/{petId}').getParameters();
+        var parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
 
         assert.equal(parameters.length, 1);
       });
 
       it('should return no parameters', function () {
-        assert.equal(swaggerApi.getPath('/pet').getParameters().length, 0);
+        assert.equal(apiDefinition.getPath('/pet').getParameters().length, 0);
       });
     });
   });
 }
 
 describe('Path', function () {
-  // Swagger document without references
+  // OpenAPI document without references
   runTests('no-refs');
-  // Swagger document with references
+  // OpenAPI document with references
   runTests('with-refs');
 });

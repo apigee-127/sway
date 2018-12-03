@@ -34,23 +34,23 @@ var Sway = helpers.getSway();
 // TODO: Move these to their respective test-*.js files
 
 describe('issues', function () {
-  var swaggerApi;
+  var apiDefinition;
 
   before(function (done) {
-    helpers.getSwaggerApi(function (api) {
-      swaggerApi = api;
+    helpers.getApiDefinition(function (apiDef) {
+      apiDefinition = apiDef;
 
       done();
     });
   });
 
   it('should trap document processing errors (Issue 16)', function (done) {
-    var cSwagger = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwagger.paths['/pet/{petId}'].get = null;
+    cOAIDoc.paths['/pet/{petId}'].get = null;
 
     Sway.create({
-      definition: cSwagger
+      definition: cOAIDoc
     })
       .then(function () {
         helpers.shouldHadFailed();
@@ -67,15 +67,15 @@ describe('issues', function () {
   });
 
   it('should support relative references (and to YAML files) (Issue 17)', function (done) {
-    helpers.getSwaggerApiRelativeRefs(function (swaggerApiRelativeRefs) {
-      assert.ok(_.isUndefined(swaggerApiRelativeRefs.definitionFullyResolved.info.$ref));
-      assert.ok(Object.keys(swaggerApiRelativeRefs.definitionFullyResolved.definitions).length > 1);
-      assert.ok(Object.keys(swaggerApiRelativeRefs.definitionFullyResolved.paths).length > 1);
-      assert.equal(swaggerApiRelativeRefs.definitionFullyResolved.info.title, 'Swagger Petstore');
-      assert.ok(_.isPlainObject(swaggerApiRelativeRefs.definitionFullyResolved.definitions.Pet));
-      assert.ok(_.isPlainObject(swaggerApiRelativeRefs.definitionFullyResolved.paths['/pet/{petId}'].get));
+    helpers.getApiDefinitionRelativeRefs(function (apiDefinitionRelativeRefs) {
+      assert.ok(_.isUndefined(apiDefinitionRelativeRefs.definitionFullyResolved.info.$ref));
+      assert.ok(Object.keys(apiDefinitionRelativeRefs.definitionFullyResolved.definitions).length > 1);
+      assert.ok(Object.keys(apiDefinitionRelativeRefs.definitionFullyResolved.paths).length > 1);
+      assert.equal(apiDefinitionRelativeRefs.definitionFullyResolved.info.title, 'Swagger Petstore');
+      assert.ok(_.isPlainObject(apiDefinitionRelativeRefs.definitionFullyResolved.definitions.Pet));
+      assert.ok(_.isPlainObject(apiDefinitionRelativeRefs.definitionFullyResolved.paths['/pet/{petId}'].get));
 
-      _.each(swaggerApiRelativeRefs.references, function (entry) {
+      _.each(apiDefinitionRelativeRefs.references, function (entry) {
         assert.ok(typeof entry.missing === 'undefined');
       });
 
@@ -84,29 +84,29 @@ describe('issues', function () {
   });
 
   it('should not throw an error for unknown formats (Issue 20)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.definitions.Pet.properties.name.format = 'unknown';
+    cOAIDoc.definitions.Pet.properties.name.format = 'unknown';
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.ok(api.validate());
+      .then(function (apiDef) {
+        assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
   it('should handle default and id fields (Issue 29)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.definitions.Pet.properties.default = {type: 'string'};
+    cOAIDoc.definitions.Pet.properties.default = {type: 'string'};
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.ok(api.validate());
+      .then(function (apiDef) {
+        assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
@@ -117,7 +117,7 @@ describe('issues', function () {
     mockReq.url = '/pet/1';
 
     try {
-      swaggerApi.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue(mockReq);
+      apiDefinition.getOperation('/pet/{petId}', 'get').getParameter('petId').getValue(mockReq);
     } catch (err) {
       helpers.shouldNotHadFailed();
     }
@@ -128,7 +128,7 @@ describe('issues', function () {
       originalname: 'swagger.yaml',
       mimetype: 'application/x-yaml'
     };
-    var paramValue = swaggerApi.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
+    var paramValue = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
       url: '/pet/1/uploadImage',
       files: {
         file: mockFile
@@ -142,9 +142,9 @@ describe('issues', function () {
   });
 
   it('should handle allOf $ref to a definition with circular reference (Issue 38)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.definitions.A = {
+    cOAIDoc.definitions.A = {
       allOf: [
         {
           $ref: '#/definitions/B'
@@ -157,7 +157,7 @@ describe('issues', function () {
       }
     };
 
-    cSwaggerDoc.definitions.B = {
+    cOAIDoc.definitions.B = {
       properties: {
         a: {
           $ref: '#/definitions/A'
@@ -165,7 +165,7 @@ describe('issues', function () {
       }
     };
 
-    cSwaggerDoc.definitions.C = {
+    cOAIDoc.definitions.C = {
       allOf: [
         {
           $ref: '#/definitions/A'
@@ -174,18 +174,18 @@ describe('issues', function () {
     };
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.ok(api.validate());
+      .then(function (apiDef) {
+        assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
   it('string value for object type (Issue #46)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/user/login'].get.responses['200'].schema = {
+    cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
         message: {
           type: 'string'
@@ -195,12 +195,12 @@ describe('issues', function () {
     };
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
+      .then(function (apiDef) {
         var results;
 
-        results = api.getOperation('/user/login', 'get').validateResponse({
+        results = apiDef.getOperation('/user/login', 'get').validateResponse({
           body: 'If-Match header required',
           encoding: 'utf-8',
           headers: {
@@ -233,9 +233,9 @@ describe('issues', function () {
   });
 
   it('Buffer value for object type (Issue #46)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/user/login'].get.responses['200'].schema = {
+    cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
         message: {
           type: 'string'
@@ -245,9 +245,9 @@ describe('issues', function () {
     };
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
+      .then(function (apiDef) {
         var rawValue = 'If-Match header required';
         var results;
         var value;
@@ -259,7 +259,7 @@ describe('issues', function () {
           value = rawValue;
         }
 
-        results = api.getOperation('/user/login', 'get').validateResponse({
+        results = apiDef.getOperation('/user/login', 'get').validateResponse({
           body: value,
           encoding: 'utf-8',
           headers: {
@@ -292,15 +292,15 @@ describe('issues', function () {
   });
 
   it('should handle hierchical query parameters (Issue 39)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'page[limit]',
         in: 'query',
       description: 'The maximum number of records to return',
       type: 'integer'
     });
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'page[nested][offset]',
         in: 'query',
       description: 'The page',
@@ -308,9 +308,9 @@ describe('issues', function () {
     });
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
+      .then(function (apiDef) {
         var req = {
           query: {
             page: {
@@ -321,9 +321,9 @@ describe('issues', function () {
             }
           }
         };
-        var pageLimitParam = api.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
+        var pageLimitParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
         var pageLimitParamValue = pageLimitParam.getValue(req);
-        var pageOffsetParam = api.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
+        var pageOffsetParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
         var pageOffsetParamValue = pageOffsetParam.getValue(req);
 
         assert.equal(pageLimitParamValue.raw, req.query.page.limit)
@@ -336,9 +336,9 @@ describe('issues', function () {
   });
 
   it('should not validate optional parameters that are undefined (Issue 60)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'alive',
         in: 'query',
       description: 'Whether the animal is alive or not',
@@ -346,10 +346,10 @@ describe('issues', function () {
     });
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').validateRequest({
+      .then(function (apiDef) {
+        assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').validateRequest({
           query: {}
         }), {
           errors: [],
@@ -360,9 +360,9 @@ describe('issues', function () {
   });
 
   it('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'nickname',
         in: 'query',
       description: 'The pet\' nickname',
@@ -370,10 +370,10 @@ describe('issues', function () {
     });
 
     Sway.create({
-      definition: cSwaggerDoc
+      definition: cOAIDoc
     })
-      .then(function (api) {
-        assert.deepEqual(api.getOperation('/pet/findByStatus', 'get').validateRequest({
+      .then(function (apiDef) {
+        assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').validateRequest({
           query: {}
         }), {
           errors: [],
@@ -385,7 +385,7 @@ describe('issues', function () {
 
   describe('should handle mixed-case headers for validation (Issue 67)', function () {
     it('parameter processing', function () {
-      var parameterValue = swaggerApi.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
+      var parameterValue = apiDefinition.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
         headers: {
           'ApI_KeY': 'Testing'
         }
@@ -395,7 +395,7 @@ describe('issues', function () {
     });
 
     it('request validation', function () {
-      var results = swaggerApi.getOperation('/pet', 'POST').validateRequest({
+      var results = apiDefinition.getOperation('/pet', 'POST').validateRequest({
         url: '/pet',
         body: {
           name: 'Test Pet',
@@ -411,7 +411,7 @@ describe('issues', function () {
     });
 
     it('response validation', function () {
-      var results = swaggerApi.getOperation('/pet/findByStatus', 'GET').validateResponse({
+      var results = apiDefinition.getOperation('/pet/findByStatus', 'GET').validateResponse({
         headers: {
           'CoNtEnT-TyPe': 'application/json'
         },
@@ -430,19 +430,19 @@ describe('issues', function () {
   });
 
   describe('should handle circular documents and inputs', function () {
-    var swaggerApiCircular;
+    var apiDefinitionCircular;
 
     before(function (done) {
-      helpers.getSwaggerApiCircular(function (api) {
-        swaggerApiCircular = api;
+      helpers.getApiDefinitionCircular(function (apiDef) {
+        apiDefinitionCircular = apiDef;
 
         done();
       });
     });
 
-    it('SwaggerApi#validate', function () {
-      var circularDef = swaggerApiCircular.definitionFullyResolved.definitions.CircularReference;
-      var results = swaggerApiCircular.validate();
+    it('ApiDefinition#validate', function () {
+      var circularDef = apiDefinitionCircular.definitionFullyResolved.definitions.CircularReference;
+      var results = apiDefinitionCircular.validate();
 
       assert.equal(results.warnings.length, 0);
       assert.equal(results.errors.length, 0);

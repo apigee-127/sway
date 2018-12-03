@@ -33,9 +33,9 @@ var Sway = helpers.getSway();
 
 describe('format validators', function () {
   it('always truthy', function (done) {
-    var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
         in: 'query',
       type: 'string',
@@ -43,7 +43,7 @@ describe('format validators', function () {
       default: 'pretendThisIsABase64EncodedString'
     });
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'double',
         in: 'query',
       type: 'number',
@@ -51,7 +51,7 @@ describe('format validators', function () {
       default: 1.1
     });
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'float',
         in: 'query',
       type: 'number',
@@ -59,7 +59,7 @@ describe('format validators', function () {
       default: 1.1
     });
 
-    cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+    cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'password',
         in: 'query',
       type: 'string',
@@ -67,9 +67,9 @@ describe('format validators', function () {
       default: 'somepassword'
     });
 
-    Sway.create({definition: cSwaggerDoc})
-      .then(function (api) {
-        assert.ok(api.validate());
+    Sway.create({definition: cOAIDoc})
+      .then(function (apiDef) {
+        assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
@@ -79,9 +79,9 @@ describe('format validators', function () {
     var goodParamValue;
 
     before(function (done) {
-      var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-      cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int32',
           in: 'query',
         type: 'integer',
@@ -89,14 +89,14 @@ describe('format validators', function () {
       });
 
       // Test the format validator using parameter validation
-      Sway.create({definition: cSwaggerDoc})
-        .then(function (api) {
-            badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
+      Sway.create({definition: cOAIDoc})
+        .then(function (apiDef) {
+            badParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
               int32: 1.1
             }
           });
-          goodParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
+          goodParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
               int32: 1
             }
@@ -143,9 +143,9 @@ describe('format validators', function () {
     var goodParamValue;
 
     before(function (done) {
-      var cSwaggerDoc = _.cloneDeep(helpers.swaggerDoc);
+      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-      cSwaggerDoc.paths['/pet/findByStatus'].get.parameters.push({
+      cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int64',
           in: 'query',
         type: 'integer',
@@ -153,14 +153,14 @@ describe('format validators', function () {
       });
 
       // Test the format validator using parameter validation
-      Sway.create({definition: cSwaggerDoc})
-        .then(function (api) {
-          badParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
+      Sway.create({definition: cOAIDoc})
+        .then(function (apiDef) {
+          badParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
               int64: 1.1
             }
           });
-          goodParamValue = api.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
+          goodParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
               int64: 1
             }

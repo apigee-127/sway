@@ -47,38 +47,38 @@ function getOperationCount (pathDef) {
 
 function runTests (mode) {
   var label = mode === 'with-refs' ? 'with' : 'without';
-  var swaggerApi;
+  var apiDefinition;
 
   before(function (done) {
-    function callback (api) {
-      swaggerApi = api;
+    function callback (apiDef) {
+      apiDefinition = apiDef;
 
       done();
     }
 
     if (mode === 'with-refs') {
-      tHelpers.getSwaggerApiRelativeRefs(callback);
+      tHelpers.getApiDefinitionRelativeRefs(callback);
     } else {
-      tHelpers.getSwaggerApi(callback);
+      tHelpers.getApiDefinition(callback);
     }
   });
 
   beforeEach(function () {
-    swaggerApi.customValidators = [];
-    swaggerApi.customFormats = {};
-    swaggerApi.customFormatGenerators = {};
+    apiDefinition.customValidators = [];
+    apiDefinition.customFormats = {};
+    apiDefinition.customFormatGenerators = {};
 
-    // When we test SwaggerApi#registerFormat, it registers globally in ZSchema and it has to be unregistered
-    swaggerApi.unregisterFormat('alwaysFails');
-    swaggerApi.unregisterFormatGenerator('sway');
+    // When we test ApiDefinition#registerFormat, it registers globally in ZSchema and it has to be unregistered
+    apiDefinition.unregisterFormat('alwaysFails');
+    apiDefinition.unregisterFormatGenerator('sway');
   });
 
-  describe('should handle Swagger document ' + label + ' relative references', function () {
+  describe('should handle OpenAPI document ' + label + ' relative references', function () {
     describe('#getOperations', function () {
       it('should return all operations', function () {
-        var operations = swaggerApi.getOperations();
+        var operations = apiDefinition.getOperations();
 
-        assert.equal(operations.length, _.reduce(swaggerApi.definitionFullyResolved.paths, function (count, path) {
+        assert.equal(operations.length, _.reduce(apiDefinition.definitionFullyResolved.paths, function (count, path) {
           count += getOperationCount(path);
 
           return count;
@@ -88,62 +88,62 @@ function runTests (mode) {
       });
 
       it('should return return all operations for the given path', function () {
-        var operations = swaggerApi.getOperations('/pet/{petId}');
+        var operations = apiDefinition.getOperations('/pet/{petId}');
 
-        assert.ok(swaggerApi.getOperations().length > operations.length);
-        assert.equal(operations.length, getOperationCount(swaggerApi.definitionFullyResolved.paths['/pet/{petId}']));
+        assert.ok(apiDefinition.getOperations().length > operations.length);
+        assert.equal(operations.length, getOperationCount(apiDefinition.definitionFullyResolved.paths['/pet/{petId}']));
       });
 
       it('should return return no operations for a missing path', function () {
-        assert.equal(swaggerApi.getOperations('/some/fake/path').length, 0);
+        assert.equal(apiDefinition.getOperations('/some/fake/path').length, 0);
       });
     });
 
     describe('#getOperation', function () {
       it('should return the expected operation by id', function () {
-        tHelpers.checkType(swaggerApi.getOperation('addPet'), 'Operation');
+        tHelpers.checkType(apiDefinition.getOperation('addPet'), 'Operation');
       });
 
       describe('path + method', function () {
         it('should return the expected operation', function () {
-          tHelpers.checkType(swaggerApi.getOperation('/pet/{petId}', 'get'), 'Operation');
+          tHelpers.checkType(apiDefinition.getOperation('/pet/{petId}', 'get'), 'Operation');
         });
 
         it('should return no operation for missing path', function () {
-          assert.ok(_.isUndefined(swaggerApi.getOperation('/petz/{petId}', 'get')));
+          assert.ok(_.isUndefined(apiDefinition.getOperation('/petz/{petId}', 'get')));
         });
 
         it('should return no operation for missing method', function () {
-          assert.ok(_.isUndefined(swaggerApi.getOperation('/pet/{petId}', 'head')));
+          assert.ok(_.isUndefined(apiDefinition.getOperation('/pet/{petId}', 'head')));
         });
       });
 
       describe('http.ClientRequest (or similar)', function () {
         it('should return the expected operation', function () {
-          tHelpers.checkType(swaggerApi.getOperation({
+          tHelpers.checkType(apiDefinition.getOperation({
             method: 'GET',
-            url: swaggerApi.basePath + '/pet/1'
+            url: apiDefinition.basePath + '/pet/1'
           }), 'Operation');
         });
 
         it('should return the expected operation (req.originalUrl)', function () {
-          tHelpers.checkType((swaggerApi.getOperation({
+          tHelpers.checkType((apiDefinition.getOperation({
             method: 'GET',
-            originalUrl: swaggerApi.basePath + '/pet/1'
+            originalUrl: apiDefinition.basePath + '/pet/1'
           })), 'Operation');
         });
 
         it('should return no operation for missing path', function () {
-          assert.ok(_.isUndefined(swaggerApi.getOperation({
+          assert.ok(_.isUndefined(apiDefinition.getOperation({
             method: 'GET',
-            url: swaggerApi.basePath + '/petz/1'
+            url: apiDefinition.basePath + '/petz/1'
           })));
         });
 
         it('should return no operation for missing method', function () {
-          assert.ok(_.isUndefined(swaggerApi.getOperation({
+          assert.ok(_.isUndefined(apiDefinition.getOperation({
             method: 'HEAD',
-            url: swaggerApi.basePath + '/pet/1'
+            url: apiDefinition.basePath + '/pet/1'
           })));
         });
       });
@@ -151,18 +151,18 @@ function runTests (mode) {
 
     describe('#getOperationsByTag', function () {
       it('should return no operation for incorrect tag', function () {
-        var operations = swaggerApi.getOperationsByTag('incorrect tag');
+        var operations = apiDefinition.getOperationsByTag('incorrect tag');
 
         assert.equal(operations.length, 0);
       });
 
       it('should return all operations for the given tag', function () {
-        var operations = swaggerApi.getOperationsByTag('store');
+        var operations = apiDefinition.getOperationsByTag('store');
 
         assert.equal(operations.length,
-                    getOperationCount(swaggerApi.definitionFullyResolved.paths['/store/inventory']) +
-                    getOperationCount(swaggerApi.definitionFullyResolved.paths['/store/order']) +
-                    getOperationCount(swaggerApi.definitionFullyResolved.paths['/store/order/{orderId}']));
+                    getOperationCount(apiDefinition.definitionFullyResolved.paths['/store/inventory']) +
+                    getOperationCount(apiDefinition.definitionFullyResolved.paths['/store/order']) +
+                    getOperationCount(apiDefinition.definitionFullyResolved.paths['/store/order/{orderId}']));
       });
     });
 
@@ -172,54 +172,54 @@ function runTests (mode) {
           // This test is likely superfluous but while working on Issue 76 this was broken (pre-commit) and so this test
           // is here just to be sure.
           it('match identical', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
             var matches = [
               '/foo/{0}/baz',
               '/foo/{1}/baz'
             ];
 
             _.forEach(matches, function (newPath) {
-              cSwagger.paths[newPath] = {};
+              cOAIDoc.paths[newPath] = {};
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                assert.equal(api.getPath('/foo/{1}/baz').path, matches[1]);
+              .then(function (apiDef) {
+                assert.equal(apiDef.getPath('/foo/{1}/baz').path, matches[1]);
               })
               .then(done, done);
           });
         });
 
         it('should handle regex characters in path', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
           var path = '/foo/({bar})';
 
-          cSwagger.paths[path] = {};
+          cOAIDoc.paths[path] = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              tHelpers.checkType(api.getPath(path), 'Path');
+            .then(function (apiDef) {
+              tHelpers.checkType(apiDef.getPath(path), 'Path');
             })
             .then(done, done);
         });
 
         it('should return the expected path object', function () {
-          tHelpers.checkType(swaggerApi.getPath('/pet/{petId}'), 'Path');
+          tHelpers.checkType(apiDefinition.getPath('/pet/{petId}'), 'Path');
         });
 
         it('should return no path object', function () {
-          assert.ok(_.isUndefined(swaggerApi.getPath('/petz/{petId}')));
+          assert.ok(_.isUndefined(apiDefinition.getPath('/petz/{petId}')));
         });
       });
 
       describe('http.ClientRequest (or similar)', function () {
         describe('multiple matches', function () {
           it('complete static match', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
             var lesserMatches = [
               '/foo/bar/{baz}',
               '/foo/{bar}/baz',
@@ -228,45 +228,45 @@ function runTests (mode) {
             var match = '/foo/bar/baz';
 
             _.forEach(lesserMatches.concat(match), function (newPath) {
-              cSwagger.paths[newPath] = {};
+              cOAIDoc.paths[newPath] = {};
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                assert.equal(api.getPath({
-                  url: swaggerApi.basePath + match
+              .then(function (apiDef) {
+                assert.equal(apiDef.getPath({
+                  url: apiDefinition.basePath + match
                 }).path, match);
               })
               .then(done, done);
           });
 
-          // While this scenario should never happen in a valid Swagger document, we handle it anyways
+          // While this scenario should never happen in a valid OpenAPI document, we handle it anyways
           it('match multiple levels deep', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
             var lesserMatches = [
               '/foo/{bar}/baz/{qux}'
             ];
             var match = '/foo/{bar}/baz/qux';
 
             _.forEach(lesserMatches.concat(match), function (newPath) {
-              cSwagger.paths[newPath] = {};
+              cOAIDoc.paths[newPath] = {};
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                assert.equal(api.getPath({
-                  url: swaggerApi.basePath + match
+              .then(function (apiDef) {
+                assert.equal(apiDef.getPath({
+                  url: apiDefinition.basePath + match
                 }).path, match);
               })
               .then(done, done);
           });
 
           it('match single level deep', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
             var lesserMatches = [
               '/foo/{bar}/baz',
               '/{foo}/bar/baz'
@@ -274,38 +274,38 @@ function runTests (mode) {
             var match = '/foo/bar/{baz}';
 
             _.forEach(lesserMatches.concat(match), function (newPath) {
-              cSwagger.paths[newPath] = {};
+              cOAIDoc.paths[newPath] = {};
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                assert.equal(api.getPath({
-                  url: swaggerApi.basePath + match
+              .then(function (apiDef) {
+                assert.equal(apiDef.getPath({
+                  url: apiDefinition.basePath + match
                 }).path, match);
               })
               .then(done, done);
           });
 
-          // While this scenario should never happen in a valid Swagger document, we handle it anyways
+          // While this scenario should never happen in a valid OpenAPI document, we handle it anyways
           it('match identical', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
             var matches = [
               '/foo/{0}/baz',
               '/foo/{1}/baz'
             ];
 
             _.forEach(matches, function (newPath) {
-              cSwagger.paths[newPath] = {};
+              cOAIDoc.paths[newPath] = {};
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                tHelpers.checkType(api.getPath({
-                  url: swaggerApi.basePath + '/foo/bar/baz'
+              .then(function (apiDef) {
+                tHelpers.checkType(apiDef.getPath({
+                  url: apiDefinition.basePath + '/foo/bar/baz'
                 }), 'Path');
               })
               .then(done, done);
@@ -313,31 +313,31 @@ function runTests (mode) {
         });
 
         it('should handle regex characters in path', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
           var path = '/foo/({bar})';
 
-          cSwagger.paths[path] = {};
+          cOAIDoc.paths[path] = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              tHelpers.checkType(api.getPath({
-                url: swaggerApi.basePath + '/foo/(bar)'
+            .then(function (apiDef) {
+              tHelpers.checkType(apiDef.getPath({
+                url: apiDefinition.basePath + '/foo/(bar)'
               }), 'Path');
             })
             .then(done, done);
         });
 
         it('should return the expected path object', function () {
-          tHelpers.checkType(swaggerApi.getPath({
-            url: swaggerApi.basePath + '/pet/1'
+          tHelpers.checkType(apiDefinition.getPath({
+            url: apiDefinition.basePath + '/pet/1'
           }), 'Path');
         });
 
         it('should return no path object', function () {
-          assert.ok(_.isUndefined(swaggerApi.getPath({
-            url: swaggerApi.basePath + '/petz/1'
+          assert.ok(_.isUndefined(apiDefinition.getPath({
+            url: apiDefinition.basePath + '/petz/1'
           })));
         });
       });
@@ -345,7 +345,7 @@ function runTests (mode) {
 
     describe('#getPaths', function () {
       it('should return the expected path objects', function () {
-        assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionFullyResolved.paths).length);
+        assert.equal(apiDefinition.getPaths().length, Object.keys(apiDefinition.definitionFullyResolved.paths).length);
       });
     });
 
@@ -360,7 +360,7 @@ function runTests (mode) {
 
         _.forEach(scenarios, function (scenario) {
           try {
-            swaggerApi.registerFormat.apply(swaggerApi, scenario[0]);
+            apiDefinition.registerFormat.apply(apiDefinition, scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -370,17 +370,17 @@ function runTests (mode) {
       });
 
       it('should add validator to list of validators', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-        cSwagger.definitions.Pet.properties.customFormat = {
+        cOAIDoc.definitions.Pet.properties.customFormat = {
           format: 'alwaysFails',
           type: 'string'
         };
 
         Sway.create({
-          definition: cSwagger
+          definition: cOAIDoc
         })
-          .then(function (api) {
+          .then(function (apiDef) {
             var req = {
               body: {
                 customFormat: 'shouldFail',
@@ -388,18 +388,18 @@ function runTests (mode) {
                 photoUrls: []
               }
             };
-            var paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue(req);
+            var paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue(req);
 
             assert.ok(_.isUndefined(paramValue.error));
             assert.deepEqual(req.body, paramValue.raw);
             assert.deepEqual(req.body, paramValue.value);
 
             // Register the custom format
-            api.registerFormat('alwaysFails', function () {
+            apiDef.registerFormat('alwaysFails', function () {
               return false;
             });
 
-            paramValue = api.getOperation('/pet', 'post').getParameter('body').getValue(req);
+            paramValue = apiDef.getOperation('/pet', 'post').getParameter('body').getValue(req);
 
             assert.equal(paramValue.error.message, 'Value failed JSON Schema validation');
             assert.equal(paramValue.error.code, 'SCHEMA_VALIDATION_FAILED');
@@ -431,7 +431,7 @@ function runTests (mode) {
 
         _.forEach(scenarios, function (scenario) {
           try {
-            swaggerApi.registerFormatGenerator.apply(swaggerApi, scenario[0]);
+            apiDefinition.registerFormatGenerator.apply(apiDefinition, scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -441,15 +441,15 @@ function runTests (mode) {
       });
 
       it('should add validator to list of format generators', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-        cSwagger.paths['/user/{username}'].get.parameters[0].format = 'sway';
+        cOAIDoc.paths['/user/{username}'].get.parameters[0].format = 'sway';
 
         Sway.create({
-          definition: cSwagger
+          definition: cOAIDoc
         })
-          .then(function (api) {
-            var param = api.getOperation('/user/{username}', 'get').getParameter('username');
+          .then(function (apiDef) {
+            var param = apiDef.getOperation('/user/{username}', 'get').getParameter('username');
 
             try {
               param.getSample();
@@ -460,7 +460,7 @@ function runTests (mode) {
             }
 
             // Register the custom format
-            api.registerFormatGenerator('sway', function () {
+            apiDef.registerFormatGenerator('sway', function () {
               return 'sway';
             });
 
@@ -479,7 +479,7 @@ function runTests (mode) {
 
         _.forEach(scenarios, function (scenario) {
           try {
-            swaggerApi.registerValidator.apply(swaggerApi, scenario[0]);
+            apiDefinition.registerValidator.apply(apiDefinition, scenario[0]);
 
             tHelpers.shouldHadFailed();
           } catch (err) {
@@ -489,7 +489,7 @@ function runTests (mode) {
       });
 
       it('should add validator to list of validators', function () {
-        var results = swaggerApi.validate();
+        var results = apiDefinition.validate();
         var expectedErrors = [
           'error'
         ];
@@ -500,8 +500,8 @@ function runTests (mode) {
         assert.deepEqual(results.errors, []);
         assert.deepEqual(results.warnings, []);
 
-        swaggerApi.registerValidator(function (api) {
-          tHelpers.checkType(api, 'SwaggerApi');
+        apiDefinition.registerValidator(function (apiDef) {
+          tHelpers.checkType(apiDef, 'ApiDefinition');
 
           return {
             errors: expectedErrors,
@@ -509,7 +509,7 @@ function runTests (mode) {
           };
         });
 
-        results = swaggerApi.validate();
+        results = apiDefinition.validate();
 
         assert.deepEqual(results.errors, expectedErrors);
         assert.deepEqual(results.warnings, expectedWarnings);
@@ -518,7 +518,7 @@ function runTests (mode) {
 
     describe('#validate', function () {
       it('should return zero errors/warnings for a valid document', function () {
-        var results = swaggerApi.validate();
+        var results = apiDefinition.validate();
 
         assert.deepEqual(results.errors, []);
         assert.deepEqual(results.warnings, []);
@@ -526,15 +526,15 @@ function runTests (mode) {
 
       describe('should return errors for an invalid document', function () {
         it('does not validate against JSON Schema', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          delete cSwagger.paths;
+          delete cOAIDoc.paths;
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -552,12 +552,12 @@ function runTests (mode) {
         });
 
         describe('array type missing required items property', function () {
-          function validateBrokenArray (cSwagger, path, done) {
+          function validateBrokenArray (cOAIDoc, path, done) {
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 // Validate that all warnings are unused definitions
                 _.forEach(results.warnings, function (warning) {
@@ -578,32 +578,32 @@ function runTests (mode) {
           describe('schema definitions', function () {
             describe('array', function () {
               it('no items', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.definitions.Pet = {
+                cOAIDoc.definitions.Pet = {
                   type: 'array'
                 };
 
-                validateBrokenArray(cSwagger, ['definitions', 'Pet'], done);
+                validateBrokenArray(cOAIDoc, ['definitions', 'Pet'], done);
               });
 
               it('items object', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.definitions.Pet = {
+                cOAIDoc.definitions.Pet = {
                   type: 'array',
                   items: {
                     type: 'array'
                   }
                 };
 
-                validateBrokenArray(cSwagger, ['definitions', 'Pet', 'items'], done);
+                validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'items'], done);
               });
 
               it('items array', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.definitions.Pet = {
+                cOAIDoc.definitions.Pet = {
                   type: 'array',
                   items: [
                     {
@@ -612,29 +612,29 @@ function runTests (mode) {
                   ]
                 };
 
-                validateBrokenArray(cSwagger, ['definitions', 'Pet', 'items', '0'], done);
+                validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'items', '0'], done);
               });
             });
 
             describe('object', function () {
               describe('additionalProperties', function () {
                 it('no items', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     additionalProperties: {
                       type: 'array'
                     }
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'additionalProperties'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'additionalProperties'], done);
                 });
 
                 it('items object', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     additionalProperties: {
                       type: 'array',
@@ -644,13 +644,13 @@ function runTests (mode) {
                     }
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'additionalProperties', 'items'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'additionalProperties', 'items'], done);
                 });
 
                 it('items array', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     additionalProperties: {
                       type: 'array',
@@ -662,7 +662,7 @@ function runTests (mode) {
                     }
                   };
 
-                  validateBrokenArray(cSwagger,
+                  validateBrokenArray(cOAIDoc,
                                       ['definitions', 'Pet', 'additionalProperties', 'items', '0'],
                                       done);
                 });
@@ -670,9 +670,9 @@ function runTests (mode) {
 
               describe('properties', function () {
                 it('no items', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     properties: {
                       aliases: {
@@ -681,13 +681,13 @@ function runTests (mode) {
                     }
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'properties', 'aliases'], done);
                 });
 
                 it('items object', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     properties: {
                       aliases: {
@@ -699,13 +699,13 @@ function runTests (mode) {
                     }
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases', 'items'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'properties', 'aliases', 'items'], done);
                 });
 
                 it('items array', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     properties: {
                       aliases: {
@@ -719,15 +719,15 @@ function runTests (mode) {
                     }
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'properties', 'aliases', 'items', '0'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'properties', 'aliases', 'items', '0'], done);
                 });
               });
 
               describe('allOf', function () {
                 it('no items', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     allOf: [
                       {
@@ -736,13 +736,13 @@ function runTests (mode) {
                     ]
                   };
 
-                  validateBrokenArray(cSwagger, ['definitions', 'Pet', 'allOf', '0'], done);
+                  validateBrokenArray(cOAIDoc, ['definitions', 'Pet', 'allOf', '0'], done);
                 });
 
                 it('items object', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     allOf: [
                       {
@@ -759,15 +759,15 @@ function runTests (mode) {
                     ]
                   };
 
-                  validateBrokenArray(cSwagger,
+                  validateBrokenArray(cOAIDoc,
                                       ['definitions', 'Pet', 'allOf', '0', 'properties', 'aliases', 'items'],
                                       done);
                 });
 
                 it('items array', function (done) {
-                  var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                  var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                  cSwagger.definitions.Pet = {
+                  cOAIDoc.definitions.Pet = {
                     type: 'object',
                     allOf: [
                       {
@@ -786,7 +786,7 @@ function runTests (mode) {
                     ]
                   };
 
-                  validateBrokenArray(cSwagger,
+                  validateBrokenArray(cOAIDoc,
                                       ['definitions', 'Pet', 'allOf', '0', 'properties', 'aliases', 'items', '0'],
                                       done);
                 });
@@ -794,7 +794,7 @@ function runTests (mode) {
             });
 
             it('recursive', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
               var errorSchema = {
                 type: 'object',
                 allOf: [
@@ -812,7 +812,7 @@ function runTests (mode) {
                 }
               };
 
-              cSwagger.definitions.Pet = {
+              cOAIDoc.definitions.Pet = {
                 allOf: [
                   errorSchema
                 ],
@@ -823,10 +823,10 @@ function runTests (mode) {
               };
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   // Validate that all warnings are unused definitions
                   _.forEach(results.warnings, function (warning) {
@@ -888,9 +888,9 @@ function runTests (mode) {
           describe('parameter definitions', function () {
             describe('global', function () {
               it('body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.parameters = {
+                cOAIDoc.parameters = {
                   petInBody: {
                       in: 'body',
                     name: 'body',
@@ -906,27 +906,27 @@ function runTests (mode) {
                   }
                 };
 
-                validateBrokenArray(cSwagger, ['parameters', 'petInBody', 'schema', 'properties', 'aliases'], done);
+                validateBrokenArray(cOAIDoc, ['parameters', 'petInBody', 'schema', 'properties', 'aliases'], done);
               });
 
               it('non-body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.parameters = {
-                  petStatus: _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0])
+                cOAIDoc.parameters = {
+                  petStatus: _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0])
                 };
 
-                delete cSwagger.parameters.petStatus.items;
+                delete cOAIDoc.parameters.petStatus.items;
 
-                validateBrokenArray(cSwagger, ['parameters', 'petStatus'], done);
+                validateBrokenArray(cOAIDoc, ['parameters', 'petStatus'], done);
               });
             });
 
             describe('path-level', function () {
               it('body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet'].parameters = [
+                cOAIDoc.paths['/pet'].parameters = [
                   {
                       in: 'body',
                     name: 'body',
@@ -942,41 +942,41 @@ function runTests (mode) {
                   }
                 ];
 
-                validateBrokenArray(cSwagger,
+                validateBrokenArray(cOAIDoc,
                                     ['paths', '/pet', 'parameters', '0', 'schema', 'properties', 'aliases'],
                                     done);
               });
 
               it('non-body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet'].parameters = [
-                  _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0])
+                cOAIDoc.paths['/pet'].parameters = [
+                  _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0])
                 ];
 
-                delete cSwagger.paths['/pet'].parameters[0].items;
+                delete cOAIDoc.paths['/pet'].parameters[0].items;
 
-                validateBrokenArray(cSwagger, ['paths', '/pet', 'parameters', '0'], done);
+                validateBrokenArray(cOAIDoc, ['paths', '/pet', 'parameters', '0'], done);
               });
             });
 
             describe('operation', function () {
               it('body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                delete cSwagger.paths['/user/createWithArray'].post.parameters[0].schema.items;
+                delete cOAIDoc.paths['/user/createWithArray'].post.parameters[0].schema.items;
 
-                validateBrokenArray(cSwagger,
+                validateBrokenArray(cOAIDoc,
                                     ['paths', '/user/createWithArray', 'post', 'parameters', '0', 'schema'],
                                     done);
               });
 
               it('non-body parameter', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                delete cSwagger.paths['/pet/findByStatus'].get.parameters[0].items;
+                delete cOAIDoc.paths['/pet/findByStatus'].get.parameters[0].items;
 
-                validateBrokenArray(cSwagger, ['paths', '/pet/findByStatus', 'get', 'parameters', '0'], done);
+                validateBrokenArray(cOAIDoc, ['paths', '/pet/findByStatus', 'get', 'parameters', '0'], done);
               });
             });
           });
@@ -984,9 +984,9 @@ function runTests (mode) {
           describe('responses', function () {
             describe('global', function () {
               it('headers', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.responses = {
+                cOAIDoc.responses = {
                   success: {
                     description: 'A response indicative of a successful request',
                     headers: {
@@ -997,13 +997,13 @@ function runTests (mode) {
                   }
                 };
 
-                validateBrokenArray(cSwagger, ['responses', 'success', 'headers', 'X-Broken-Array'], done);
+                validateBrokenArray(cOAIDoc, ['responses', 'success', 'headers', 'X-Broken-Array'], done);
               });
 
               it('schema definition', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.responses = {
+                cOAIDoc.responses = {
                   success: {
                     description: 'A response indicative of a successful request',
                     schema: {
@@ -1012,21 +1012,21 @@ function runTests (mode) {
                   }
                 };
 
-                validateBrokenArray(cSwagger, ['responses', 'success', 'schema'], done);
+                validateBrokenArray(cOAIDoc, ['responses', 'success', 'schema'], done);
               });
             });
 
             describe('operation', function () {
               it('headers', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                cSwagger.paths['/pet/findByStatus'].get.responses['200'].headers = {
+                cOAIDoc.paths['/pet/findByStatus'].get.responses['200'].headers = {
                   'X-Broken-Array': {
                     type: 'array'
                   }
                 };
 
-                validateBrokenArray(cSwagger,
+                validateBrokenArray(cOAIDoc,
                                     [
                                       'paths',
                                       '/pet/findByStatus',
@@ -1040,11 +1040,11 @@ function runTests (mode) {
               });
 
               it('schema definition', function (done) {
-                var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+                var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-                delete cSwagger.paths['/pet/findByStatus'].get.responses['200'].schema.items;
+                delete cOAIDoc.paths['/pet/findByStatus'].get.responses['200'].schema.items;
 
-                validateBrokenArray(cSwagger,
+                validateBrokenArray(cOAIDoc,
                                     ['paths', '/pet/findByStatus', 'get', 'responses', '200', 'schema'],
                                     done);
               });
@@ -1064,16 +1064,16 @@ function runTests (mode) {
           }
 
           it('definition (direct)', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.A = {
+            cOAIDoc.definitions.A = {
               allOf: [
                 {
                   $ref: '#/definitions/B'
                 }
               ]
             };
-            cSwagger.definitions.B = {
+            cOAIDoc.definitions.B = {
               allOf: [
                 {
                   $ref: '#/definitions/A'
@@ -1082,10 +1082,10 @@ function runTests (mode) {
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
 
@@ -1108,23 +1108,23 @@ function runTests (mode) {
           });
 
           it('definition (indirect)', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.A = {
+            cOAIDoc.definitions.A = {
               allOf: [
                 {
                   $ref: '#/definitions/B'
                 }
               ]
             };
-            cSwagger.definitions.B = {
+            cOAIDoc.definitions.B = {
               allOf: [
                 {
                   $ref: '#/definitions/C'
                 }
               ]
             };
-            cSwagger.definitions.C = {
+            cOAIDoc.definitions.C = {
               allOf: [
                 {
                   $ref: '#/definitions/A'
@@ -1133,10 +1133,10 @@ function runTests (mode) {
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 validateErrors(results.errors, [
@@ -1164,9 +1164,9 @@ function runTests (mode) {
           });
 
           it('inline schema', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.A = {
+            cOAIDoc.definitions.A = {
               allOf: [
                 {
                   allOf: [
@@ -1179,10 +1179,10 @@ function runTests (mode) {
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1198,9 +1198,9 @@ function runTests (mode) {
           });
 
           it('not composition/inheritance', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.Pet.properties.friends = {
+            cOAIDoc.definitions.Pet.properties.friends = {
               type: 'array',
               items: {
                 $ref: '#/definitions/Pet'
@@ -1208,10 +1208,10 @@ function runTests (mode) {
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, []);
@@ -1222,9 +1222,9 @@ function runTests (mode) {
 
         describe('default values fail JSON Schema validation', function () {
           it('schema-like object (non-body parameter)', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.paths['/pet'].post.parameters.push({
+            cOAIDoc.paths['/pet'].post.parameters.push({
                 in: 'query',
               name: 'status',
               description: 'The Pet status',
@@ -1234,10 +1234,10 @@ function runTests (mode) {
             });
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1254,15 +1254,15 @@ function runTests (mode) {
           });
 
           it('schema object', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.Pet.properties.name.default = 123;
+            cOAIDoc.definitions.Pet.properties.name.default = 123;
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1280,19 +1280,19 @@ function runTests (mode) {
 
         describe('duplicate operation parameter', function () {
           it('operation-level', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
-            var cParam = _.cloneDeep(cSwagger.paths['/pet/findByStatus'].get.parameters[0]);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            var cParam = _.cloneDeep(cOAIDoc.paths['/pet/findByStatus'].get.parameters[0]);
 
             // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
             cParam.description = 'Duplicate';
 
-            cSwagger.paths['/pet/findByStatus'].get.parameters.push(cParam);
+            cOAIDoc.paths['/pet/findByStatus'].get.parameters.push(cParam);
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1307,19 +1307,19 @@ function runTests (mode) {
           });
 
           it('path-level', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
-            var cParam = _.cloneDeep(cSwagger.paths['/pet/{petId}'].parameters[0]);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+            var cParam = _.cloneDeep(cOAIDoc.paths['/pet/{petId}'].parameters[0]);
 
             // Alter the parameter so that it is not identical as that will create a JSON Schema uniqueness error
             cParam.description = 'Duplicate';
 
-            cSwagger.paths['/pet/{petId}'].parameters.push(cParam);
+            cOAIDoc.paths['/pet/{petId}'].parameters.push(cParam);
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1335,17 +1335,17 @@ function runTests (mode) {
         });
 
         it('invalid JSON Reference', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/something'] = {
+          cOAIDoc.paths['/something'] = {
             $ref: 'http://:8080'
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1360,15 +1360,15 @@ function runTests (mode) {
         });
 
         it('path parameter in pattern is empty', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/invalid/{}'] = {};
+          cOAIDoc.paths['/invalid/{}'] = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1383,9 +1383,9 @@ function runTests (mode) {
         });
 
         it('missing path parameter declaration', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet/{petId}'].get.parameters = [
+          cOAIDoc.paths['/pet/{petId}'].get.parameters = [
             {
               description: 'Superfluous path parameter',
                 in: 'path',
@@ -1396,10 +1396,10 @@ function runTests (mode) {
           ];
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1414,15 +1414,15 @@ function runTests (mode) {
         });
 
         it('missing path parameter definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet/{petId}'].parameters = [];
+          cOAIDoc.paths['/pet/{petId}'].parameters = [];
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1447,15 +1447,15 @@ function runTests (mode) {
         });
 
         it('multiple equivalent paths', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet/{notPetId}'] = {};
+          cOAIDoc.paths['/pet/{notPetId}'] = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1470,16 +1470,16 @@ function runTests (mode) {
         });
 
         it('multiple operations with the same operationId', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
-          var operationId = cSwagger.paths['/pet'].post.operationId;
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          var operationId = cOAIDoc.paths['/pet'].post.operationId;
 
-          cSwagger.paths['/pet'].put.operationId = operationId;
+          cOAIDoc.paths['/pet'].put.operationId = operationId;
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1494,18 +1494,18 @@ function runTests (mode) {
         });
 
         it('operation has multiple body parameters', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
-          var dBodyParam = _.cloneDeep(cSwagger.paths['/pet'].post.parameters[0]);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+          var dBodyParam = _.cloneDeep(cOAIDoc.paths['/pet'].post.parameters[0]);
 
           dBodyParam.name = dBodyParam.name + 'Duplicate';
 
-          cSwagger.paths['/pet'].post.parameters.push(dBodyParam);
+          cOAIDoc.paths['/pet'].post.parameters.push(dBodyParam);
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1520,9 +1520,9 @@ function runTests (mode) {
         });
 
         it('operation can have body or form parameter but not both', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet'].post.parameters.push({
+          cOAIDoc.paths['/pet'].post.parameters.push({
             name: 'name',
               in: 'formData',
             description: 'The Pet name',
@@ -1531,10 +1531,10 @@ function runTests (mode) {
           });
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              var results = api.validate();
+            .then(function (apiDef) {
+              var results = apiDef.validate();
 
               assert.deepEqual(results.warnings, []);
               assert.deepEqual(results.errors, [
@@ -1550,25 +1550,25 @@ function runTests (mode) {
 
         describe('missing required property definition', function () {
           it('allOf', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            delete cSwagger.definitions.Pet.properties.name;
+            delete cOAIDoc.definitions.Pet.properties.name;
 
-            cSwagger.definitions.Pet.allOf = [
+            cOAIDoc.definitions.Pet.allOf = [
               {
                 type: 'object',
-                properties: _.cloneDeep(cSwagger.definitions.Pet.properties)
+                properties: _.cloneDeep(cOAIDoc.definitions.Pet.properties)
 
               }
             ];
 
-            delete cSwagger.definitions.Pet.properties;
+            delete cOAIDoc.definitions.Pet.properties;
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1583,15 +1583,15 @@ function runTests (mode) {
           });
 
           it('properties', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            delete cSwagger.definitions.Pet.properties.name;
+            delete cOAIDoc.definitions.Pet.properties.name;
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.warnings, []);
                 assert.deepEqual(results.errors, [
@@ -1608,15 +1608,15 @@ function runTests (mode) {
 
         describe('unused definitions', function () {
           it('definition', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.definitions.Missing = {};
+            cOAIDoc.definitions.Missing = {};
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1631,9 +1631,9 @@ function runTests (mode) {
           });
 
           it('parameter', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.parameters = {
+            cOAIDoc.parameters = {
               missing: {
                 name: 'missing',
                   in: 'query',
@@ -1642,10 +1642,10 @@ function runTests (mode) {
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1660,19 +1660,19 @@ function runTests (mode) {
           });
 
           it('response', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.responses = {
+            cOAIDoc.responses = {
               Missing: {
                 description: 'I am missing'
               }
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1687,19 +1687,19 @@ function runTests (mode) {
           });
 
           it('securityDefinition', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.securityDefinitions.missing = {
+            cOAIDoc.securityDefinitions.missing = {
               type: 'apiKey',
               name: 'api_key',
                 in: 'header'
             };
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1714,15 +1714,15 @@ function runTests (mode) {
           });
 
           it('security scope', function (done) {
-            var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+            var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-            cSwagger.securityDefinitions.petstore_auth.scopes.missing = 'I am missing';
+            cOAIDoc.securityDefinitions.petstore_auth.scopes.missing = 'I am missing';
 
             Sway.create({
-              definition: cSwagger
+              definition: cOAIDoc
             })
-              .then(function (api) {
-                var results = api.validate();
+              .then(function (apiDef) {
+                var results = apiDef.validate();
 
                 assert.deepEqual(results.errors, []);
                 assert.deepEqual(results.warnings, [
@@ -1740,15 +1740,15 @@ function runTests (mode) {
         describe('unresolvable references', function () {
           describe('json reference', function () {
             it('local', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
+              cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = '#/definitions/Missing';
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1764,15 +1764,15 @@ function runTests (mode) {
             });
 
             it('remote', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/pet'].post.parameters[0].schema.$ref = 'fake.json';
+              cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = 'fake.json';
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
                   var error;
 
                   assert.deepEqual(results.warnings, []);
@@ -1791,17 +1791,17 @@ function runTests (mode) {
 
           describe('security definition', function () {
             it('global', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.security.push({
+              cOAIDoc.security.push({
                 missing: []
               });
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1816,17 +1816,17 @@ function runTests (mode) {
             });
 
             it('operation-level', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/store/inventory'].get.security.push({
+              cOAIDoc.paths['/store/inventory'].get.security.push({
                 missing: []
               });
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1843,15 +1843,15 @@ function runTests (mode) {
 
           describe('security scope definition', function () {
             it('global', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.security[0].petstore_auth.push('missing');
+              cOAIDoc.security[0].petstore_auth.push('missing');
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1866,19 +1866,19 @@ function runTests (mode) {
             });
 
             it('operation-level', function (done) {
-              var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+              var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-              cSwagger.paths['/store/inventory'].get.security.push({
+              cOAIDoc.paths['/store/inventory'].get.security.push({
                 'petstore_auth': [
                   'missing'
                 ]
               });
 
               Sway.create({
-                definition: cSwagger
+                definition: cOAIDoc
               })
-                .then(function (api) {
-                  var results = api.validate();
+                .then(function (apiDef) {
+                  var results = apiDef.validate();
 
                   assert.deepEqual(results.warnings, []);
                   assert.deepEqual(results.errors, [
@@ -1896,15 +1896,15 @@ function runTests (mode) {
       });
 
       it('should return errors for JsonRefs errors', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-        cSwagger.paths['/pet'].post.parameters[0].schema.$ref = '#definitions/Pet';
+        cOAIDoc.paths['/pet'].post.parameters[0].schema.$ref = '#definitions/Pet';
 
         Sway.create({
-          definition: cSwagger
+          definition: cOAIDoc
         })
-          .then(function (api) {
-            assert.deepEqual(api.validate(), {
+          .then(function (apiDef) {
+            assert.deepEqual(apiDef.validate(), {
               errors: [
                 {
                   code: 'INVALID_REFERENCE',
@@ -1919,15 +1919,15 @@ function runTests (mode) {
       });
 
       it('should return warnings for JsonRefs warnings', function (done) {
-        var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-        cSwagger.paths['/pet'].post.parameters[0].schema.extraField = 'This is an extra field';
+        cOAIDoc.paths['/pet'].post.parameters[0].schema.extraField = 'This is an extra field';
 
         Sway.create({
-          definition: cSwagger
+          definition: cOAIDoc
         })
-          .then(function (api) {
-            var results =  api.validate();
+          .then(function (apiDef) {
+            var results =  apiDef.validate();
 
             assert.deepEqual(results, {
               errors: [],
@@ -1944,8 +1944,8 @@ function runTests (mode) {
       });
 
       describe('human readable errors for invalid schema', function () {
-        function validateError (api, defType) {
-          var results = api.validate();
+        function validateError (apiDef, defType) {
+          var results = apiDef.validate();
 
           assert.equal(results.errors.length, 1);
           assert.equal(results.warnings.length, 0);
@@ -1953,87 +1953,87 @@ function runTests (mode) {
         }
 
         it('should handle parameter definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet'].post.parameters[0] = {};
+          cOAIDoc.paths['/pet'].post.parameters[0] = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'parameter');
+            .then(function (apiDef) {
+              validateError(apiDef, 'parameter');
             })
             .then(done, done);
         });
 
         it('should handle global parameter definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.parameters = {
+          cOAIDoc.parameters = {
             broken: {}
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'parameter');
+            .then(function (apiDef) {
+              validateError(apiDef, 'parameter');
             })
             .then(done, done);
         });
 
         it('should handle response definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet'].post.responses.default = {};
+          cOAIDoc.paths['/pet'].post.responses.default = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'response');
+            .then(function (apiDef) {
+              validateError(apiDef, 'response');
             })
             .then(done, done);
         });
 
         it('should handle response schema definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.paths['/pet'].post.responses.default = {
+          cOAIDoc.paths['/pet'].post.responses.default = {
             description: 'A broken response',
             schema: []
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'response');
+            .then(function (apiDef) {
+              validateError(apiDef, 'response');
             })
             .then(done, done);
         });
 
         it('should handle schema additionalProperties definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.definitions.Broken = {
+          cOAIDoc.definitions.Broken = {
             type: 'object',
             additionalProperties: []
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'schema additionalProperties');
+            .then(function (apiDef) {
+              validateError(apiDef, 'schema additionalProperties');
             })
             .then(done, done);
         });
 
         it('should handle schema items definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.definitions.Broken = {
+          cOAIDoc.definitions.Broken = {
             type: 'object',
             properties: {
               urls: {
@@ -2044,32 +2044,32 @@ function runTests (mode) {
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'schema items');
+            .then(function (apiDef) {
+              validateError(apiDef, 'schema items');
             })
             .then(done, done);
         });
 
         it('should handle securityDefinitions definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.securityDefinitions.broken = {};
+          cOAIDoc.securityDefinitions.broken = {};
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'securityDefinitions');
+            .then(function (apiDef) {
+              validateError(apiDef, 'securityDefinitions');
             })
             .then(done, done);
         });
 
         it('should handle schema items definition', function (done) {
-          var cSwagger = _.cloneDeep(tHelpers.swaggerDoc);
+          var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
 
-          cSwagger.definitions.Broken = {
+          cOAIDoc.definitions.Broken = {
             type: 'object',
             properties: {
               urls: {
@@ -2080,10 +2080,10 @@ function runTests (mode) {
           };
 
           Sway.create({
-            definition: cSwagger
+            definition: cOAIDoc
           })
-            .then(function (api) {
-              validateError(api, 'schema items');
+            .then(function (apiDef) {
+              validateError(apiDef, 'schema items');
             })
             .then(done, done);
         });
@@ -2092,9 +2092,9 @@ function runTests (mode) {
   });
 }
 
-describe('SwaggerApi', function () {
-  // Swagger document without references
+describe('ApiDefinition', function () {
+  // OpenAPI document without references
   runTests('no-refs');
-  // Swagger document with references
+  // OpenAPI document with references
   runTests('with-refs');
 });
