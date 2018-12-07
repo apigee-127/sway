@@ -230,13 +230,13 @@ describe('Operation', function () {
         };
 
         describe('operation level consumes - ignore when empty', function () {
-          var operation; 
+          var operation;
 
           before(function () {
             // this path+op doesn't specify 'consumes'
             operation = swaggerApiRelativeRefs.getOperation('/pet/findByStatus', 'get');
           });
-          
+
           it.skip('should not return an unsupported content-type error', function () {
             var request = {
               url: '/pet/findByStatus',
@@ -487,19 +487,34 @@ describe('Operation', function () {
           assert.deepEqual(results.errors, [
             {
               code: 'INVALID_RESPONSE_CODE',
-              message: 'This operation does not have a defined \'201\' or \'default\' response code',
+              message: 'This operation does not have a defined \'201\' response code',
               path: []
             }
           ]);
         });
       });
 
-      it('should return the \'default\' response when validating an undefined response', function () {
+      it('should return the \'default\' response when validating an undefined response from [400..600) range', function () {
+        var results = swaggerApiRelativeRefs.getOperation('/user', 'post').validateResponse({
+          statusCode: 599
+        });
+
+        assert.deepEqual(results.errors, []);
+        assert.deepEqual(results.warnings, []);
+      });
+
+      it('should return an error for an undefined non-error response, even if `default` is present', function () {
         var results = swaggerApiRelativeRefs.getOperation('/user', 'post').validateResponse({
           statusCode: 201
         });
 
-        assert.deepEqual(results.errors, []);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_RESPONSE_CODE',
+            message: 'This operation does not have a defined \'201\' response code',
+            path: []
+          }
+        ]);
         assert.deepEqual(results.warnings, []);
       });
     });
@@ -926,19 +941,34 @@ describe('Operation', function () {
           assert.deepEqual(results.errors, [
             {
               code: 'INVALID_RESPONSE_CODE',
-              message: 'This operation does not have a defined \'201\' or \'default\' response code',
+              message: 'This operation does not have a defined \'201\' response code',
               path: []
             }
           ]);
         });
       });
 
-      it('should return the \'default\' response when validating an undefined response', function () {
+      it('should return the \'default\' response when validating an undefined response from 400-500 range', function () {
+        var results = swaggerApi.getOperation('/user', 'post').validateResponse({
+          statusCode: 404
+        });
+
+        assert.deepEqual(results.errors, []);
+        assert.deepEqual(results.warnings, []);
+      });
+
+      it('should return an error for an undefined non-error response, even if `default` is present', function () {
         var results = swaggerApi.getOperation('/user', 'post').validateResponse({
           statusCode: 201
         });
 
-        assert.deepEqual(results.errors, []);
+        assert.deepEqual(results.errors, [
+          {
+            code: 'INVALID_RESPONSE_CODE',
+            message: 'This operation does not have a defined \'201\' response code',
+            path: []
+          }
+        ]);
         assert.deepEqual(results.warnings, []);
       });
     });
