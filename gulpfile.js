@@ -36,9 +36,11 @@ var exposify = require('exposify');
 var fs = require('fs');
 var glob = require('glob');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var KarmaServer = require('karma').Server;
 var path = require('path');
 var runSequence = require('run-sequence');
+var snyk = require('snyk');
 var source = require('vinyl-source-stream');
 
 var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
@@ -169,10 +171,18 @@ gulp.task('lint', function () {
     .pipe($.eslint.failAfterError());
 });
 
-gulp.task('nsp', function (cb) {
-  $.nsp({
-    package: path.join(__dirname, 'package.json')
-  }, cb);
+gulp.task('snyk', function (done) {
+  snyk.test('.')
+    .then(function (data) {
+      if (data.vulnerabilities.length) { 
+        gutil.log(gutil.colors.red(data.vulnerabilities));
+
+        throw new Error('Snyk found ' + data.vulnerabilities.length + 'vulnernabilities');
+      } else {
+        gutil.log(gutil.colors.green(data.summary));
+      }
+    })
+    .then(done, done);
 });
 
 gulp.task('test-node', function (done) {
@@ -294,5 +304,5 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'nsp', 'test', 'docs', 'docs-ts', done);
+  runSequence('lint', 'snyk', 'test', 'docs', 'docs-ts', done);
 });
