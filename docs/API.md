@@ -128,7 +128,7 @@ there is no operation for that operation id, or path and method combination
 
 | Param | Type | Description |
 | --- | --- | --- |
-| idOrPathOrReq | <code>string</code> &#124; <code>object</code> | The OpenAPI opeartion id, path string or the http client request *(or equivalent)* |
+| idOrPathOrReq | <code>string</code> &#124; <code>object</code> | The OpenAPI operation id, path string or the http client request *(or equivalent)* |
 | [method] | <code>string</code> | The OpenAPI operation method _(not used when providing an operation id)_ |
 
 <a name="module_sway.ApiDefinition+getOperations"></a>
