@@ -216,7 +216,7 @@ declare module 'sway' {
          * * `url`
          * 
          * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
-         * @param idOrPathOrReq - The OpenAPI opeartion id, path string or the http client request *(or
+         * @param idOrPathOrReq - The OpenAPI operation id, path string or the http client request *(or
          *        equivalent)*
          * @param method - The OpenAPI operation method _(not used when providing an operation id)_
          * @returns The `Operation` for the provided operation id, or path and method or `undefined` if
