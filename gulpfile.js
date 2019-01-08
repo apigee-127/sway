@@ -304,5 +304,5 @@ gulp.task('test', function (done) {
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'snyk', 'test', 'docs', 'docs-ts', done);
+  runSequence('lint', 'test', 'docs', 'docs-ts', done);
 });

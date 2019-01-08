@@ -1,9 +1,12 @@
+branches:
+  only:
+    - master
 language: node_js
-sudo: false
 node_js:
   - "node"
   - "8"
   - "6"
-branches:
-  only:
-    - master
+script:
+  - gulp
+  - gulp snyk
+sudo: false
