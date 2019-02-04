@@ -76,7 +76,7 @@
     "lodash": "^4.17.10",
     "native-promise-only": "^0.8.1",
     "path-to-regexp": "^1.7.0",
-    "snyk": "^1.118.2",
+    "snyk": "^1.124.1",
     "swagger-methods": "^1.0.0",
     "swagger-schema-official": "2.0.0-bab6bed",
     "z-schema": "^3.22.0"
