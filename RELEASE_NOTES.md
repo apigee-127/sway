@@ -1,5 +1,9 @@
 ## Release Notes
 
+### v2.0.6 (2019-04-16)
+
+* Upgrade various dependencies to fix security vulnerabilities *(Issue #188)*
+
 ### v2.0.5 (2018-10-04)
 
 * Lock `json-schema-faker` to `0.5.0-rc15` to avoid breaking changes *(Issue #188)*

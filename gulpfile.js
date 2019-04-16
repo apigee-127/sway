@@ -29,21 +29,16 @@ var $ = require('gulp-load-plugins')({
     'gulp-jsdoc-to-markdown': 'jsdoc2MD'
   }
 });
-var browserify = require('browserify');
-var buffer = require('vinyl-buffer');
 var del = require('del');
-var exposify = require('exposify');
-var fs = require('fs');
-var glob = require('glob');
 var gulp = require('gulp');
+var gutil = require('gulp-util');
 var KarmaServer = require('karma').Server;
 var path = require('path');
 var runSequence = require('run-sequence');
-var source = require('vinyl-source-stream');
+var webpack = require('webpack');
+var webpackConfig = require('./webpack.config');
 
 var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
-
-var babelIgnore = /\/node_modules\/underscore\//;
 
 // Load promises polyfill if necessary
 if (typeof Promise === 'undefined') {
@@ -57,66 +52,20 @@ function displayCoverageReport (display) {
   }
 }
 
-gulp.task('browserify', function (cb) {
-  function browserifyBuild (isStandalone, useDebug) {
-    return function () {
-      return new Promise(function (resolve, reject) {
-        var b = browserify('./index.js', {
-          debug: useDebug,
-          standalone: 'Sway'
-        });
-
-        if (!isStandalone) {
-          // Expose Bower modules so they can be required
-          exposify.config = {
-            'graphlib': 'graphlib',
-            'js-base64': 'Base64',
-            'json-refs': 'JsonRefs',
-            'js-yaml': 'jsyaml',
-            'lodash': '_',
-            'path-loader': 'PathLoader',
-            'z-schema': 'ZSchema'
-          };
-
-          b.transform('exposify');
-        }
-
-        b.transform('babelify', {
-          compact: false,
-          global: true,
-          presets: ['es2015'],
-          ignore: babelIgnore
-        });
-
-        b.bundle()
-          .pipe(source('sway' + (isStandalone ? '-standalone' : '') + (!useDebug ? '-min' : '') + '.js'))
-          .pipe($.if(!useDebug, buffer()))
-          .pipe($.if(!useDebug, $.uglify()))
-          .pipe(gulp.dest('browser/'))
-          .on('error', reject)
-          .on('end', resolve);
-      });
-    };
-  }
-
-  Promise.resolve()
-    // Standalone build with source maps and complete source
-    .then(browserifyBuild(true, true))
-    // Standalone build minified and without source maps
-    .then(browserifyBuild(true, false))
-    // Bower build with source maps and complete source
-    .then(browserifyBuild(false, true))
-    // Bower build minified and without source maps
-    .then(browserifyBuild(false, false))
-    .then(cb, cb);
-});
-
 gulp.task('clean', function (done) {
   del([
-    'bower_components',
-    'coverage',
-    'test/browser/sway*.js'
+    'coverage'
   ], done);
+});
+
+gulp.task('dist', function (done) {
+	webpack(webpackConfig, function (err, stats) {
+		if (err) throw new gutil.PluginError('webpack', err);
+		gutil.log('[webpack]', 'Bundles generated:\n' + stats.toString('minimal').split('\n').map(function (line) {
+      return '  ' + line.replace('Child ', 'dist/').replace(':', '.js:');
+    }).join('\n'));
+		done();
+	});
 });
 
 gulp.task('docs', function () {
@@ -130,7 +79,7 @@ gulp.task('docs', function () {
     .pipe(gulp.dest('docs'));
 });
 
-gulp.task('docs-ts-raw', function (cb) {
+gulp.task('docs-ts-raw', function (done) {
   gulp.src([
     './index.js',
     'lib/typedefs.js',
@@ -141,7 +90,7 @@ gulp.task('docs-ts-raw', function (cb) {
         destination: 'index.d.ts',
         template: 'node_modules/@otris/jsdoc-tsd'
       }
-    }, cb));
+    }, done));
 });
 
 // Due to bugs in @otris/jsdoc-tsd, we need to "fix" the generated TSD.
@@ -167,12 +116,6 @@ gulp.task('lint', function () {
     .pipe($.eslint())
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError());
-});
-
-gulp.task('nsp', function (cb) {
-  $.nsp({
-    package: path.join(__dirname, 'package.json')
-  }, cb);
 });
 
 gulp.task('test-node', function (done) {
@@ -205,94 +148,29 @@ gulp.task('test-node', function (done) {
     .then(done, done);
 });
 
-gulp.task('test-browser', ['browserify'], function (done) {
-  var basePath = './test/browser/';
+gulp.task('test-browser', function () {
+  return new Promise(function (resolve, reject) {
+    new KarmaServer({
+      configFile: path.join(__dirname, 'test/browser/karma.conf.js'),
+      singleRun: true
+    }, function (err) {
+      displayCoverageReport(runningAllTests);
 
-  function cleanUp () {
-    // Clean up just in case
-    del.sync([
-      basePath + 'sway.js',
-      basePath + 'sway-standalone.js',
-      basePath + 'test-browser.js'
-    ]);
-  }
-
-  function finisher (err) {
-    cleanUp();
-
-    displayCoverageReport(runningAllTests);
-
-    return err;
-  }
-
-  Promise.resolve()
-    .then(cleanUp)
-    .then(function () {
-      // Copy the browser build of sway to the test directory
-      fs.createReadStream('./browser/sway.js')
-        .pipe(fs.createWriteStream(basePath + 'sway.js'));
-      fs.createReadStream('./browser/sway-standalone.js')
-        .pipe(fs.createWriteStream(basePath + 'sway-standalone.js'));
-
-      return new Promise(function (resolve, reject) {
-        var b = browserify(glob.sync('test/**/test-*.js'), {
-          debug: true
-        });
-
-        b.transform('brfs')
-         .transform('babelify', {
-           compact: false,
-           global: true,
-           presets: ['es2015'],
-           ignore: babelIgnore
-          })
-          .bundle()
-          .pipe(source('test-browser.js'))
-          .pipe(gulp.dest(basePath))
-          .on('error', function (err) {
-            reject(err);
-          })
-          .on('end', function () {
-            resolve();
-          });
-      });
-    })
-    .then(function () {
-      return new Promise(function (resolve, reject) {
-        new KarmaServer({
-          configFile: path.join(__dirname, 'test/browser/karma-bower.conf.js'),
-          singleRun: true
-        }, function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        }).start();
-      });
-    })
-    .then(function () {
-      return new Promise(function (resolve, reject) {
-        new KarmaServer({
-          configFile: path.join(__dirname, 'test/browser/karma-standalone.conf.js'),
-          singleRun: true
-        }, function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        }).start();
-      });
-    })
-    .then(finisher, finisher)
-    .then(done, done);
+      if (err) {
+        reject(err);
+      } else {
+        resolve();
+      }
+    }).start();
+  });
 });
 
 gulp.task('test', function (done) {
+  // Done this way to run in series until we upgrade to Gulp 4.x+
   runSequence('test-node', 'test-browser', done);
 });
 
 gulp.task('default', function (done) {
-  runSequence('lint', 'nsp', 'test', 'docs', 'docs-ts', done);
+  // Done this way to run in series until we upgrade to Gulp 4.x+
+  runSequence('lint', 'test', 'docs', 'docs-ts', 'dist', done);
 });
