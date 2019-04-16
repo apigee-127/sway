@@ -15,24 +15,23 @@ sway is available for both Node.js and the browser.  Installation instructions f
 
 ### Browser
 
-Installation for browser applications can be done via [Bower][bower] or by downloading a standalone binary.
+sway binaries for the browser are available in the `dist/` directory:
 
-#### Using Bower
-
-```
-bower install sway --save
-```
-
-#### Standalone Binaries
-
-The standalone binaries come in two flavors:
-
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone.js): _8,548kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/browser/sway-standalone-min.js): _1,016kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/dist/sway.js): _9,164kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/dist/sway-min.js): _864kb_, minified, compressed and no source map
 
 **Note:** I realize these binaries are big and I'm working on making them smaller.  Unfortunately, some of this is out
 of my control without rewriting some of the core features provided by third-party libraries currently contributing to
 the size issue.
+
+Of course, these links are for the master builds so feel free to download from the release of your choice.  Once you've
+gotten them downloaded, to use the standalone binaries, your HTML include might look like this:
+
+``` html
+<!-- ... -->
+<script src="sway.js"></script>
+<!-- ... -->
+```
 
 ### Node.js
 
@@ -86,7 +85,6 @@ no other validation will occur.  But once the structural validation happens, `Se
 | The `items` property for [Schema Objects][schema-object], or schema-like objects *(non-body parameters)*, is required when `type` is set to `array` _(See [swagger-api/swagger-spec/issues/174](https://github.com/swagger-api/swagger-spec/issues/174))_ | Error |
 | The `required` properties for a [Schema Object][schema-object] must be defined in the object or one of its ancestors | Error |
 
-[bower]: http://bower.io/
 [npm]: https://www.npmjs.org/
 [openapi]: https://www.openapis.org/
 [schema-object]: https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md#schemaObject

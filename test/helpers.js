@@ -30,11 +30,11 @@ var assert = require('assert');
 var fs = require('fs');
 var helpers = require('../lib/helpers');
 var path = require('path');
-var Sway = typeof window === 'undefined' ? require('..') : window.Sway;
+var Sway = require('..');
 var YAML = require('js-yaml');
 
 var documentBase = path.join(__dirname, 'browser', 'documents');
-var relativeBase = typeof window === 'undefined' ? documentBase : 'base/documents';
+var relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
 var oaiDoc = YAML.safeLoad(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
 var oaiDocCircular = YAML.safeLoad(fs.readFileSync(path.join(__dirname,
                                                              './browser/documents/2.0/swagger-circular.yaml'),

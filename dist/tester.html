@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <title>Swagger API Test Page</title>
+  </head>
+  <body>
+    <p>Processing this Swagger Document: <a href="http://petstore.swagger.io/v2/swagger.yaml">http://petstore.swagger.io/v2/swagger.yaml</a></p>
+  </body>
+  <script src="sway-standalone.js" charset="UTF-8"></script>
+  <script>
+    localStorage.debug = 'sway:*';
+
+    Sway
+      .create({definition: 'http://petstore.swagger.io/v2/swagger.yaml'})
+      .then(function (theApi) {
+        var html = '';
+        
+        html += '<div>';
+        html += '<ul>';
+        html += '<li><strong>Swagger Version:</strong>&nbsp;' + theApi.version + '</li>';
+        html += '<li><strong>Specification:</strong>&nbsp;<a href="' + theApi.documentationUrl + '">' + theApi.documentationUrl + '</a></li>';
+        html += '<li><strong>Valid:</strong>&nbsp;' + (theApi.validate().errors.length === 0) + '</li>';
+        html += '</ul>';
+        html += '</div>';
+        html += '<div>';
+        html += '<h3>Identified API Operations</h3>';
+        html += '<ul>';
+        theApi.getPaths().forEach(function (path) {
+          html += '  <li><strong>' + path.path + '</strong>';
+          html += '    <ul>';
+          path.getOperations().forEach(function (operation) {
+            html += '      <li>' + operation.method.toUpperCase() + (operation.description ? ' <em>(' + operation.description + ')</em>' : '') + '</li>';
+          });
+          html += '    </ul>';
+          html += '  </li>';
+        });
+        html += '</ul>';
+        html += '</div>';
+
+        document.body.innerHTML = html;
+      }, function (err) {
+        document.body.innerHTML += '<p><strong>Failed to Process</strong></p><span>' + err.message + '</span>';
+      });
+  </script>
+</html>
