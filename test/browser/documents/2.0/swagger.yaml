@@ -31,6 +31,10 @@ tags:
 schemes:
 - "http"
 paths:
+  x-an-extension-null:
+  x-an-extension-primitive: 1
+  x-an-extension-array: []
+  x-an-extension-object: {}
   /pet:
     post:
       tags:
@@ -52,6 +56,10 @@ paths:
         schema:
           $ref: "#/definitions/Pet"
       responses:
+        x-an-extension-null:
+        x-an-extension-primitive: 1
+        x-an-extension-array: []
+        x-an-extension-object: {}
         405:
           description: "Invalid input"
     put:

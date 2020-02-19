@@ -344,8 +344,12 @@ function runTests (mode) {
     });
 
     describe('#getPaths', function () {
-      it('should return the expected path objects', function () {
-        assert.equal(swaggerApi.getPaths().length, Object.keys(swaggerApi.definitionFullyResolved.paths).length);
+      it('should return the expected path objects without extensions', function () {
+        var paths = Object.keys(swaggerApi.definitionFullyResolved.paths).filter(function (path) {
+          return path.indexOf('x-') !== 0;
+        });
+
+        assert.equal(swaggerApi.getPaths().length, paths.length);
       });
     });
 
