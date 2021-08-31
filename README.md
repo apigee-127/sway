@@ -11,7 +11,6 @@ in their own respective `v{N}.x` branch:
 
 ## Project Badges
 
-* Build status: [![Build Status](https://travis-ci.org/apigee-127/sway.svg)](https://travis-ci.org/apigee-127/sway)
 * Dependencies: [![Dependencies](https://david-dm.org/apigee-127/sway.svg)](https://david-dm.org/apigee-127/sway)
 * Developer dependencies: [![Dev Dependencies](https://david-dm.org/apigee-127/sway/dev-status.svg)](https://david-dm.org/apigee-127/sway#info=devDependencies&view=table)
 * Downloads: [![NPM Downloads Per Month](http://img.shields.io/npm/dm/sway.svg)](https://www.npmjs.org/package/sway)

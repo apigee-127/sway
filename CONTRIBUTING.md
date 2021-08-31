@@ -49,8 +49,7 @@ To submit a new PR, please follow these steps:
 Your PR should meet the following criteria:
 
 1. Should include all generated sources
-2. Should pass lint checking and have all tests passing *(We do have [Travis CI][travis-ci] setup to catch failing lint
-checks and failing tests but this is a safety net only)*
+2. Should pass lint checking and have all tests passing
 3. Should *ideally* be squashed into one commit *(Regardless of how many commits, just make sure the commit messages are
 clear)*
 4. Should include tests *(Bug fixes and features should have tests included with them at all times)*
@@ -60,5 +59,4 @@ clear)*
 [gulp]: http://gulpjs.com/
 [jsdoc]: http://usejsdoc.org/
 [npm]: https://www.npmjs.com/
-[travis-ci]: https://travis-ci.org/apigee-127/sway
 
