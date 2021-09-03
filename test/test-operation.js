@@ -494,6 +494,23 @@ function runTests (mode) {
           ]);
         });
 
+        it('should not return an error for skipped parameters', function () {
+          var operation = swaggerApiRelativeRefs.getOperation('/pet/{petId}/uploadImage', 'post');
+
+          operation.getParameters()[0].definition['x-ignore-validate'] = true;
+          var results = operation.validateRequest({
+            url: '/v2/pet/notANumber/uploadImage',
+            headers: {
+              'content-type': 'multipart/form-data'
+            },
+            body: {},
+            files: {}
+          });
+
+          assert.equal(results.errors.length, 0);
+          assert.equal(results.warnings.length, 0);
+        });
+
         it('should not return an error for valid parameters', function () {
           var operation = apiDefinition.getOperation('/pet/{petId}', 'post');
           var results = operation.validateRequest({
