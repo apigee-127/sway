@@ -101,7 +101,7 @@ function runTests (mode) {
 
       it('should return the proper response example for non-string example (YAML)', function () {
         assert.deepEqual(operation.getResponse('200').getExample('application/x-yaml'),
-                         YAML.safeDump(example, {indent: 2}));
+                         YAML.dump(example, {indent: 2}));
       });
 
       it('should return the proper response example for string example', function () {
