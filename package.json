@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "docs": "jsdoc2md -d output ./index.js lib/typedefs.js lib/types/*.js > docs/API.md",
     "dist": "webpack -c webpack.config.js",
-    "build": "run-s lint test docs dist"
+    "build": "run-s lint test docs dist",
+    "pipeline": "run-s lint test"
   },
   "keywords": [
     "api",
