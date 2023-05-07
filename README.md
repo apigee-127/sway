@@ -1,7 +1,7 @@
 A library that simplifies [OpenAPI][openapi] integrations.  This library handles the minutiae of loading OpenAPI
 documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
 a rich set of APIs for things like OpenAPI document validation, request/response validation, etc.  For more details on
-the available APIs, please view the [API Documentation](https://github.com/apigee-127/sway/blob/master/docs/API.md).
+the available APIs, please view the [API Documentation](https://github.com/danielgolub/sway-fork/blob/master/docs/API.md).
 
 `master` will always be built to support the latest release of OpenAPI, which right now is `3.x`.  Previous versions are
 in their own respective `v{N}.x` branch:
@@ -11,12 +11,7 @@ in their own respective `v{N}.x` branch:
 
 ## Project Badges
 
-* Dependencies: [![Dependencies](https://david-dm.org/apigee-127/sway.svg)](https://david-dm.org/apigee-127/sway)
-* Developer dependencies: [![Dev Dependencies](https://david-dm.org/apigee-127/sway/dev-status.svg)](https://david-dm.org/apigee-127/sway#info=devDependencies&view=table)
-* Downloads: [![NPM Downloads Per Month](http://img.shields.io/npm/dm/sway.svg)](https://www.npmjs.org/package/sway)
-* Gitter: [![Join the chat at https://gitter.im/apigee-127/sway](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/apigee-127/sway?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-* License: [![License](http://img.shields.io/npm/l/sway.svg)](https://github.com/apigee-127/sway/blob/master/LICENSE)
-* Version: [![NPM Version](http://img.shields.io/npm/v/sway.svg)](https://www.npmjs.org/package/sway)
+[![Build Status](https://github.com/danielgolub/sway-fork/actions/workflows/npm-gulp.yml/badge.svg)](https://github.com/danielgolub/sway-fork/actions/workflows/npm-gulp.yml)
 
 ## Installation
 
