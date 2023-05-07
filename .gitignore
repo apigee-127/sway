@@ -2,6 +2,7 @@
 **/npm-debug.log
 
 coverage/
+.nyc_output/
 typings/
 .settings/
 .vscode/
