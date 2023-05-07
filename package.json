@@ -5,8 +5,13 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "gulp": "gulp",
-    "test": "gulp test"
+    "test": "run-s test-node test-browser",
+    "test-node": "nyc mocha test/**/test-*.js",
+    "test-browser": "karma start test/browser/karma.conf.js",
+    "lint": "eslint .",
+    "docs": "jsdoc2md -d output ./index.js lib/typedefs.js lib/types/*.js > docs/API.md",
+    "dist": "webpack -c webpack.config.js",
+    "build": "run-s lint test docs dist"
   },
   "keywords": [
     "api",
@@ -14,18 +19,18 @@
     "swagger"
   ],
   "author": {
-    "name": "Jeremy Whitlock",
-    "email": "jwhitlock@apache.org",
-    "url": "https://github.com/whitlockjc"
+    "name": "Daniel Golub",
+    "email": "danielg6666@gmail.com",
+    "url": "https://github.com/danielgolub"
   },
   "bugs": {
-    "url": "https://github.com/apigee-127/sway/issues"
+    "url": "https://github.com/danielgolub/sway-fork/issues"
   },
-  "homepage": "https://github.com/apigee-127/sway",
+  "homepage": "https://github.com/danielgolub/sway-fork",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/apigee-127/sway.git"
+    "url": "git://github.com/danielgolub/sway-fork.git"
   },
   "files": [
     "dist",
@@ -40,32 +45,28 @@
     "babel-loader": "^8.0.5",
     "brfs": "^1.4.3",
     "connect": "^3.6.5",
+    "cross-env": "^7.0.3",
     "del": "^3.0.0",
+    "eslint": "^8.40.0",
     "glob": "^7.1.2",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-eslint": "^4.0.0",
-    "gulp-istanbul": "^1.1.2",
-    "gulp-jsdoc-to-markdown": "^1.2.2",
-    "gulp-jsdoc3": "^2.0.0",
-    "gulp-load-plugins": "^1.5.0",
-    "gulp-mocha": "~3.0.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-replace": "^1.0.0",
-    "gulp-util": "^3.0.8",
-    "karma": "^3.1.4",
-    "karma-chrome-launcher": "^2.2.0",
-    "karma-mocha": "^1.3.0",
+    "jsdoc-to-markdown": "^8.0.0",
+    "karma": "^6.4.2",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
-    "karma-webpack": "^4.0.0-rc.5",
+    "karma-webpack": "^5.0.0",
     "mocha": "^4.0.1",
-    "run-sequence": "^2.2.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
     "transform-loader": "^0.2.4",
-    "webpack": "^4.28.1"
+    "webpack": "^5.81.0",
+    "webpack-cli": "^5.1.0"
   },
   "dependencies": {
     "debug": "^3.1.0",
     "faker": "^4.1.0",
+    "gulp-shell": "^0.8.0",
     "js-base64": "^2.4.5",
     "js-yaml": "^3.13.1",
     "json-refs": "^3.0.13",

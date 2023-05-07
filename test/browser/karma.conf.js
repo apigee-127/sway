@@ -2,6 +2,8 @@
 
 'use strict';
 
+var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+
 module.exports = function (config) {
   console.log();
   console.log('Browser Tests');
@@ -11,7 +13,7 @@ module.exports = function (config) {
     autoWatch: false,
     basePath: '..',
     browsers: ['ChromeHeadless'],
-    frameworks: ['mocha'],
+    frameworks: ['mocha', 'webpack'],
     reporters: ['mocha'],
     singleRun: true,
     files: [
@@ -36,11 +38,18 @@ module.exports = function (config) {
     },
     webpack: {
       mode: 'development',
+      plugins: [
+        new NodePolyfillPlugin()
+      ],
       module: {
         rules: [
           {
             test: /\.js$/,
-            loader: 'transform-loader?brfs'
+            use: [
+              {
+                loader: 'transform-loader?brfs'
+              }
+            ]
           },
           {
             test: /\.js$/,
@@ -52,9 +61,6 @@ module.exports = function (config) {
             }
           }
         ]
-      },
-      node: {
-        fs: 'empty'
       }
     },
     webpackMiddleware: {

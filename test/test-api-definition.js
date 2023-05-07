@@ -456,7 +456,7 @@ function runTests (mode) {
 
               tHelpers.shouldHadFailed();
             } catch (err) {
-              assert.equal(err.message, 'unknown registry key "sway" in /');
+              assert.ok(new RegExp('unknown registry key "sway"').test(err.message));
             }
 
             // Register the custom format

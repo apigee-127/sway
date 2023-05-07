@@ -1,6 +1,7 @@
 'use strict';
 
 var path = require('path');
+var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = [{
   devtool: 'inline-source-map',
@@ -24,12 +25,12 @@ module.exports = [{
     ]
   },
   name: 'sway',
-  node: {
-    fs: 'empty'
-  },
   optimization: {
     minimize: false
   },
+  plugins: [
+    new NodePolyfillPlugin()
+  ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'sway.js',
@@ -56,9 +57,9 @@ module.exports = [{
     ]
   },
   name: 'sway-min',
-  node: {
-    fs: 'empty'
-  },
+  plugins: [
+    new NodePolyfillPlugin()
+  ],
   optimization: {
     minimize: true
   },
