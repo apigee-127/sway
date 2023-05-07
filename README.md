@@ -1,3 +1,8 @@
+## Fork notes
+This is a fork of the original [apigee-127/sway](https://github.com/apigee-127/sway) repo, mostly for updating dependencies & 
+continue to maintain this package
+
+## Intro
 A library that simplifies [OpenAPI][openapi] integrations.  This library handles the minutiae of loading OpenAPI
 documents *(local and remote)*, resolving references *(local, remote)*, building an object model and providing you with
 a rich set of APIs for things like OpenAPI document validation, request/response validation, etc.  For more details on
@@ -7,7 +12,7 @@ the available APIs, please view the [API Documentation](https://github.com/danie
 in their own respective `v{N}.x` branch:
 
 * _3.x Support (WIP):_ `master`
-* _2.x Support:_ [v2.x](https://github.com/apigee-127/sway/tree/v2.x)
+* _2.x Support:_ [v2.x](https://github.com/danielgolub/sway-fork/tree/v2.x)
 
 ## Project Badges
 
@@ -21,8 +26,8 @@ sway is available for both Node.js and the browser.  Installation instructions f
 
 sway binaries for the browser are available in the `dist/` directory:
 
-* [sway-standalone.js](https://raw.github.com/apigee-127/sway/master/dist/sway.js): _9,160kb_, full source  and source maps
-* [sway-standalone-min.js](https://raw.github.com/apigee-127/sway/master/dist/sway-min.js): _864kb_, minified, compressed and no source map
+* [sway-standalone.js](https://raw.github.com/danielgolub/sway-fork/master/dist/sway.js): _9,160kb_, full source  and source maps
+* [sway-standalone-min.js](https://raw.github.com/danielgolub/sway-fork/master/dist/sway-min.js): _864kb_, minified, compressed and no source map
 
 **Note:** I realize these binaries are big and I'm working on making them smaller.  Unfortunately, some of this is out
 of my control without rewriting some of the core features provided by third-party libraries currently contributing to
