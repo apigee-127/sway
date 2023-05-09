@@ -63,7 +63,6 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "faker": "^6.6.6",
     "js-base64": "^3.7.5",
     "js-yaml": "^4.1.0",
     "json-refs": "^3.0.15",
