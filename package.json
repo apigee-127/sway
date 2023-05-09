@@ -34,7 +34,7 @@
     "lib"
   ],
   "devDependencies": {
-    "@babel/core": "^7.2.2",
+    "@babel/core": "^7.21.8",
     "@babel/preset-env": "^7.2.3",
     "@otris/jsdoc-tsd": "^1.0.4",
     "babel-loader": "^8.0.5",
