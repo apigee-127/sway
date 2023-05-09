@@ -32,54 +32,47 @@ var $ = require('gulp-load-plugins')({
 var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var KarmaServer = require('karma').Server;
-var path = require('path');
-var runSequence = require('run-sequence');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config');
-
-var runningAllTests = process.argv.indexOf('test-browser') === -1 && process.argv.indexOf('test-node') === -1;
+var run = require('gulp-run-command').default;
+var jsdoc2md = require('jsdoc-to-markdown');
+var fs = require('fs');
 
 // Load promises polyfill if necessary
 if (typeof Promise === 'undefined') {
   require('native-promise-only');
 }
 
-function displayCoverageReport (display) {
-  if (display) {
-    gulp.src([])
-      .pipe($.istanbul.writeReports());
-  }
+function clean () {
+  return del([
+    'coverage'
+  ]);
 }
 
-gulp.task('clean', function (done) {
-  del([
-    'coverage'
-  ], done);
-});
-
-gulp.task('dist', function (done) {
-	webpack(webpackConfig, function (err, stats) {
+function dist (done) {
+	return webpack(webpackConfig, function (err, stats) {
 		if (err) throw new gutil.PluginError('webpack', err);
 		gutil.log('[webpack]', 'Bundles generated:\n' + stats.toString('minimal').split('\n').map(function (line) {
       return '  ' + line.replace('Child ', 'dist/').replace(':', '.js:');
     }).join('\n'));
 		done();
 	});
-});
+}
 
-gulp.task('docs', function () {
-  return gulp.src([
-    './index.js',
-    'lib/typedefs.js',
-    'lib/types/*.js'
-  ])
-    .pipe($.concat('API.md'))
-    .pipe($.jsdoc2MD({'sort-by': ['category', 'name']}))
-    .pipe(gulp.dest('docs'));
-});
+function docs (done) {
+  return jsdoc2md.render({
+    files: [
+      './index.js',
+      'lib/typedefs.js',
+      'lib/types/*.js'
+    ],
+  }).then(function (output) {
+    fs.writeFileSync('docs/API.md', output)
+  });
+  done();
+}
 
-gulp.task('docs-ts-raw', function (done) {
+function docsTypescriptRaw (done) {
   gulp.src([
     './index.js',
     'lib/typedefs.js',
@@ -91,21 +84,21 @@ gulp.task('docs-ts-raw', function (done) {
         template: 'node_modules/@otris/jsdoc-tsd'
       }
     }, done));
-});
+}
 
 // Due to bugs in @otris/jsdoc-tsd, we need to "fix" the generated TSD.
 //
 //  * https://github.com/otris/jsdoc-tsd/issues/38
 //  * https://github.com/otris/jsdoc-tsd/issues/39
-gulp.task('docs-ts', ['docs-ts-raw'], function () {
-  gulp.src(['index.d.ts'])
+function docsTypescript () {
+  return gulp.src(['index.d.ts'])
     .pipe($.replace('<*>', '<any>'))
     .pipe($.replace('module:sway.', ''))
     .pipe($.replace('Promise.<', 'Promise<'))
     .pipe(gulp.dest('.'));
-});
+}
 
-gulp.task('lint', function () {
+function lint () {
   return gulp.src([
     'index.js',
     'lib/**/*.js',
@@ -116,61 +109,15 @@ gulp.task('lint', function () {
     .pipe($.eslint())
     .pipe($.eslint.format('stylish'))
     .pipe($.eslint.failAfterError());
-});
+}
 
-gulp.task('test-node', function (done) {
-  Promise.resolve()
-    .then(function () {
-      return new Promise(function (resolve, reject) {
-        gulp.src([
-          'index.js',
-          'lib/**/*.js'
-        ])
-          .pipe($.istanbul({includeUntested: true}))
-          .pipe($.istanbul.hookRequire()) // Force `require` to return covered files
-          .on('finish', function () {
-            gulp.src([
-              'test/**/test-*.js',
-              '!test/browser/test-*.js'
-            ])
-              .pipe($.mocha({reporter: 'spec'}))
-              .on('error', function (err) {
-                reject(err);
-              })
-              .on('end', function () {
-                displayCoverageReport(!runningAllTests);
-
-                resolve();
-              });
-          });
-      });
-    })
-    .then(done, done);
-});
-
-gulp.task('test-browser', function () {
-  return new Promise(function (resolve, reject) {
-    new KarmaServer({
-      configFile: path.join(__dirname, 'test/browser/karma.conf.js'),
-      singleRun: true
-    }, function (err) {
-      displayCoverageReport(runningAllTests);
-
-      if (err) {
-        reject(err);
-      } else {
-        resolve();
-      }
-    }).start();
-  });
-});
-
-gulp.task('test', function (done) {
-  // Done this way to run in series until we upgrade to Gulp 4.x+
-  runSequence('test-node', 'test-browser', done);
-});
-
-gulp.task('default', function (done) {
-  // Done this way to run in series until we upgrade to Gulp 4.x+
-  runSequence('lint', 'test', 'docs', 'docs-ts', 'dist', done);
-});
+exports.lint = lint;
+exports.clean = clean;
+exports['test-node'] = run('nyc mocha test/**/test-*.js');
+exports['test-browser'] = run('karma start test/browser/karma.conf.js');
+exports.test = gulp.series(exports['test-node'], exports['test-browser']);
+exports.docs = docs;
+exports['docs-ts'] = gulp.series(docsTypescriptRaw, docsTypescript);
+exports.dist = dist;
+exports.pipeline = gulp.series(lint, exports.test);
+exports.default = gulp.series(lint, clean, exports.test, exports['docs-ts'], dist);

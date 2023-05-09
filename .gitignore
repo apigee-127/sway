@@ -5,6 +5,8 @@ coverage/
 typings/
 .settings/
 .vscode/
+.idea
+.nyc_output
 
 .projectile
 .tern-project
