@@ -117,7 +117,7 @@ module.exports.create = function (options) {
 
       if (_.isUndefined(cOptions.jsonRefs.loaderOptions.processContent)) {
         cOptions.jsonRefs.loaderOptions.processContent = function (res, cb) {
-          cb(undefined, YAML.safeLoad(res.text));
+          cb(undefined, YAML.load(res.text));
         };
       }
 
