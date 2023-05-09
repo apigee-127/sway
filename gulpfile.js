@@ -24,11 +24,7 @@
 
 'use strict';
 
-var $ = require('gulp-load-plugins')({
-  rename: {
-    'gulp-jsdoc-to-markdown': 'jsdoc2MD'
-  }
-});
+var $ = require('gulp-load-plugins')();
 var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
