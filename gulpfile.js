@@ -119,4 +119,5 @@ exports.test = gulp.series(exports['test-node'], exports['test-browser']);
 exports.docs = docs;
 exports['docs-ts'] = gulp.series(docsTypescriptRaw, docsTypescript);
 exports.dist = dist;
+exports.pipeline = gulp.series(lint, exports.test);
 exports.default = gulp.series(lint, clean, exports.test, exports['docs-ts'], dist);
