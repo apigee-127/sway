@@ -7,7 +7,7 @@ declare module 'sway' {
      * @param options - The options for loading the definition(s)
      * @returns The promise
      */
-    export function create(options: CreateOptions): Promise<ApiDefinition>;
+    function create(options: CreateOptions): Promise<ApiDefinition>;
 
     /**
      * Options used when creating the `ApiDefinition`.
@@ -42,17 +42,15 @@ declare module 'sway' {
      * @param apiDefinition - The `ApiDefinition` object
      * @returns The validation results
      */
-    export type DocumentValidationFunction = (apiDefinition: ApiDefinition)=>ValidationResults;
+    type DocumentValidationFunction = (apiDefinition: ApiDefinition)=>ValidationResults;
 
     /**
      * Request validation function.
      * @param res - The response or response like object
-     * @param def - The `Response` definition _(useful primarily when calling
-     *        `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object
-     *        already.)_
+     * @param def - The `Response` definition _(useful primarily when calling `Operation#validateResponse` as `Response#validateResponse` the caller should have access to the `Response` object already.)_
      * @returns The validation results
      */
-    export type RequestValidationFunction = (res: ServerResponseWrapper, def: Response)=>ValidationResults;
+    type RequestValidationFunction = (res: ServerResponseWrapper, def: Response)=>ValidationResults;
 
     /**
      * Request validation options.
@@ -80,7 +78,7 @@ declare module 'sway' {
      * @param op - The `Operation` object for the request
      * @returns The validation results
      */
-    export type ResponseValidationFunction = (req: object, op: Operation)=>ValidationResults;
+    type ResponseValidationFunction = (req: object, op: Operation)=>ValidationResults;
 
     /**
      * Response validation options.
@@ -103,11 +101,7 @@ declare module 'sway' {
     }
 
     /**
-     * Server response wrapper.
-     * 
-     * Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way
-     * to gather the necessary parts of the response to perform validation, this object encapsulates the required response
-     * information to perform response validation.
+     * Server response wrapper. Since the low level `http.ServerResponse` object is not always guaranteed and even if it is, there is no public way to gather the necessary parts of the response to perform validation, this object encapsulates the required response information to perform response validation.
      */
     interface ServerResponseWrapper {
         /**
@@ -129,11 +123,7 @@ declare module 'sway' {
     }
 
     /**
-     * Validation error/warning object.
-     * 
-     * When this object is created as a result of JSON Schema validation, this object is created by
-     * [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not
-     * documented below.
+     * Validation error/warning object. When this object is created as a result of JSON Schema validation, this object is created by [z-schema](https://github.com/zaggino/z-schema) and it owns the structure so there can be extra properties not documented below.
      */
     interface ValidationEntry {
         /**
@@ -192,12 +182,7 @@ declare module 'sway' {
 
     class ApiDefinition {
         /**
-         * The OpenAPI Definition object.
-         * 
-         * **Note:** Do not use directly.
-         * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * [OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
+         * The OpenAPI Definition object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
          * @param definition - The original OpenAPI definition
          * @param definitionRemotesResolved - The OpenAPI definition with all of its remote references resolved
          * @param definitionFullyResolved - The OpenAPI definition with all of its references resolved
@@ -207,22 +192,12 @@ declare module 'sway' {
         constructor(definition: object, definitionRemotesResolved: object, definitionFullyResolved: object, references: object, options: object);
 
         /**
-         * Returns the operation for the given path and operation.
-         * 
-         * **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
-         * 
-         * * `method`
-         * * `originalUrl`
-         * * `url`
-         * 
-         * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
-         * @param idOrPathOrReq - The OpenAPI operation id, path string or the http client request *(or
-         *        equivalent)*
+         * Returns the operation for the given path and operation. **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*: * `method` * `originalUrl` * `url` *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
+         * @param idOrPathOrReq - The OpenAPI operation id, path string or the http client request *(or equivalent)*
          * @param method - The OpenAPI operation method _(not used when providing an operation id)_
-         * @returns The `Operation` for the provided operation id, or path and method or `undefined` if
-         *          there is no operation for that operation id, or path and method combination
+         * @returns The `Operation` for the provided operation id, or path and method or `undefined` if there is no operation for that operation id, or path and method combination
          */
-        getOperation(idOrPathOrReq: string | object, method?: string): Operation;
+        getOperation(idOrPathOrReq: string | object, method?: string): sway.Operation;
 
         /**
          * Returns all operations for the provided path or all operations in the API.
@@ -239,18 +214,11 @@ declare module 'sway' {
         getOperationsByTag(tag?: string): any[];
 
         /**
-         * Returns the path object for the given path or request.
-         * 
-         * **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*:
-         * 
-         * * `originalUrl`
-         * * `url`
-         * 
-         * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
+         * Returns the path object for the given path or request. **Note:** Below is the list of properties used when `reqOrPath` is an `http.ClientRequest` *(or equivalent)*: * `originalUrl` * `url` *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
          * @param pathOrReq - The OpenAPI path string or the http client request *(or equivalent)*
          * @returns The corresponding `Path` object for the requested path or request
          */
-        getPath(pathOrReq: string | object): Path;
+        getPath(pathOrReq: string | object): sway.Path;
 
         /**
          * Returns all path objects for the OpenAPI definition.
@@ -289,28 +257,22 @@ declare module 'sway' {
          * @param validator - The validator
          * @throws If the validator is not a function
          */
-        registerValidator(validator: DocumentValidationFunction): void;
+        registerValidator(validator: sway.DocumentValidationFunction): void;
 
         /**
          * Performs validation of the OpenAPI definition.
          * @returns The validation results
          */
-        validate(): ValidationResults;
+        validate(): sway.ValidationResults;
 
     }
 
     class Operation {
         /**
-         * The OpenAPI Operation object.
-         * 
-         * **Note:** Do not use directly.
-         * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * [OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
+         * The OpenAPI Operation object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
          * @param pathObject - The Path object
          * @param method - The operation method
-         * @param definition - The operation definition *(The raw operation definition __after__ remote references were
-         *        resolved)*
+         * @param definition - The operation definition *(The raw operation definition __after__ remote references were resolved)*
          * @param definitionFullyResolved - The operation definition with all of its resolvable references resolved
          * @param pathToDefinition - The path segments to the operation definition
          */
@@ -320,10 +282,9 @@ declare module 'sway' {
          * Returns the parameter with the provided name and location when provided.
          * @param name - The name of the parameter
          * @param location - The location *(`in`)* of the parameter *(Used for disambiguation)*
-         * @returns The `Parameter` matching the location and name combination or `undefined` if there
-         *          is no match
+         * @returns The `Parameter` matching the location and name combination or `undefined` if there is no match
          */
-        getParameter(name: string, location?: string): Parameter;
+        getParameter(name: string, location?: string): sway.Parameter;
 
         /**
          * Returns all parameters for the operation.
@@ -336,7 +297,7 @@ declare module 'sway' {
          * @param statusCode - The status code
          * @returns The `Response` or `undefined` if one cannot be found
          */
-        getResponse(statusCode?: number | string): Response;
+        getResponse(statusCode?: number | string): sway.Response;
 
         /**
          * Returns all responses for the operation.
@@ -345,36 +306,18 @@ declare module 'sway' {
         getResponses(): any[];
 
         /**
-         * Returns the composite security definitions for this operation.
-         * 
-         * The difference between this API and `this.security` is that `this.security` is the raw `security` value for the
-         * operation where as this API will return the global `security` value when available and this operation's security
-         * is undefined.
+         * Returns the composite security definitions for this operation. The difference between this API and `this.security` is that `this.security` is the raw `security` value for the operation where as this API will return the global `security` value when available and this operation's security is undefined.
          * @returns The security for this operation
          */
         getSecurity(): object[];
 
         /**
-         * Validates the request.
-         * 
-         * **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
-         * 
-         * * `body`: Used for `body` and `formData` parameters
-         * * `files`: Used for `formData` parameters whose `type` is `file`
-         * * `headers`: Used for `header` parameters and consumes
-         * * `originalUrl`: used for `path` parameters
-         * * `query`: Used for `query` parameters
-         * * `url`: used for `path` parameters
-         * 
-         * For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
-         * `originalUrl` or `url` property.
-         * 
-         * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
+         * Validates the request. **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*: * `body`: Used for `body` and `formData` parameters * `files`: Used for `formData` parameters whose `type` is `file` * `headers`: Used for `header` parameters and consumes * `originalUrl`: used for `path` parameters * `query`: Used for `query` parameters * `url`: used for `path` parameters For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `originalUrl` or `url` property. *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
          * @param req - The http client request *(or equivalent)*
          * @param options - The validation options
          * @returns The validation results
          */
-        validateRequest(req: object, options?: RequestValidationOptions): ValidationResults;
+        validateRequest(req: object, options?: sway.RequestValidationOptions): sway.ValidationResults;
 
         /**
          * Validates the response.
@@ -382,15 +325,13 @@ declare module 'sway' {
          * @param options - The validation options
          * @returns The validation results
          */
-        validateResponse(res: ServerResponseWrapper, options?: ResponseValidationOptions): ValidationResults;
+        validateResponse(res: sway.ServerResponseWrapper, options?: sway.ResponseValidationOptions): sway.ValidationResults;
 
     }
 
     class ParameterValue {
         /**
-         * Object representing a parameter value.
-         * 
-         * **Note:** Do not use directly.
+         * Object representing a parameter value. **Note:** Do not use directly.
          * @param parameterObject - The `Parameter` object
          * @param raw - The original/raw value
          */
@@ -400,15 +341,9 @@ declare module 'sway' {
 
     class Parameter {
         /**
-         * The OpenAPI Parameter object.
-         * 
-         * **Note:** Do not use directly.
-         * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
+         * The OpenAPI Parameter object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
          * @param opOrPathObject - The `Operation` or `Path` object
-         * @param definition - The parameter definition *(The raw parameter definition __after__ remote references were
-         *        resolved)*
+         * @param definition - The parameter definition *(The raw parameter definition __after__ remote references were resolved)*
          * @param definitionFullyResolved - The parameter definition with all of its resolvable references resolved
          * @param pathToDefinition - The path segments to the parameter definition
          */
@@ -421,42 +356,21 @@ declare module 'sway' {
         getSample(): any;
 
         /**
-         * Returns the parameter value from the request.
-         * 
-         * **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*:
-         * 
-         * * `body`: Used for `body` and `formData` parameters
-         * * `files`: Used for `formData` parameters whose `type` is `file`
-         * * `headers`: Used for `header` parameters
-         * * `originalUrl`: used for `path` parameters
-         * * `query`: Used for `query` parameters
-         * * `url`: used for `path` parameters
-         * 
-         * For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the
-         * `originalUrl` or `url` property.
-         * 
-         * *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
+         * Returns the parameter value from the request. **Note:** Below is the list of `req` properties used *(req should be an `http.ClientRequest` or equivalent)*: * `body`: Used for `body` and `formData` parameters * `files`: Used for `formData` parameters whose `type` is `file` * `headers`: Used for `header` parameters * `originalUrl`: used for `path` parameters * `query`: Used for `query` parameters * `url`: used for `path` parameters For `path` parameters, we will use the operation's `regexp` property to parse out path parameters using the `originalUrl` or `url` property. *(See: {@link https://nodejs.org/api/http.html#http_class_http_clientrequest})*
          * @param req - The http client request *(or equivalent)*
          * @returns The parameter value object
-         * @throws If the `in` value of the parameter's schema is not valid or if the `req` property to retrieve the
-         *         parameter is missing
+         * @throws If the `in` value of the parameter's schema is not valid or if the `req` property to retrieve the parameter is missing
          */
-        getValue(req: object): ParameterValue;
+        getValue(req: object): Value;
 
     }
 
     class Path {
         /**
-         * The Path object.
-         * 
-         * **Note:** Do not use directly.
-         * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * [OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
+         * The Path object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
          * @param apiDefinition - The `ApiDefinition` object
          * @param path - The path string
-         * @param definition - The path definition *(The raw path definition __after__ remote references were
-         *        resolved)*
+         * @param definition - The path definition *(The raw path definition __after__ remote references were resolved)*
          * @param definitionFullyResolved - The path definition with all of its resolvable references resolved
          * @param pathToDefinition - The path segments to the path definition
          */
@@ -465,8 +379,7 @@ declare module 'sway' {
         /**
          * Return the operation for this path and operation id or method.
          * @param idOrMethod - The operation id or method
-         * @returns The `Operation` objects for this path and method or `undefined` if there is no
-         *          operation for the provided method
+         * @returns The `Operation` objects for this path and method or `undefined` if there is no operation for the provided method
          */
         getOperation(idOrMethod: string): any[];
 
@@ -493,16 +406,10 @@ declare module 'sway' {
 
     class Response {
         /**
-         * The OpenAPI Response object.
-         * 
-         * **Note:** Do not use directly.
-         * 
-         * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-         * [OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
+         * The OpenAPI Response object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
          * @param operationObject - The `Operation` object
          * @param statusCode - The status code
-         * @param definition - The response definition *(The raw response definition __after__ remote references were
-         *        resolved)*
+         * @param definition - The response definition *(The raw response definition __after__ remote references were resolved)*
          * @param definitionFullyResolved - The response definition with all of its resolvable references resolved
          * @param pathToDefinition - The path segments to the path definition
          */
@@ -527,7 +434,7 @@ declare module 'sway' {
          * @param options - The validation options
          * @returns The validation results
          */
-        validateResponse(res: ServerResponseWrapper, options?: ResponseValidationOptions): ValidationResults;
+        validateResponse(res: sway.ServerResponseWrapper, options?: ValidationOptions): sway.ValidationResults;
 
     }
 
