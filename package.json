@@ -39,7 +39,7 @@
     "@otris/jsdoc-tsd": "^3.0.0",
     "babel-loader": "^9.1.2",
     "brfs": "^2.0.2",
-    "connect": "^3.6.5",
+    "connect": "^3.7.0",
     "del": "^6.1.1",
     "glob": "^7.1.2",
     "gulp": "^4.0.2",
