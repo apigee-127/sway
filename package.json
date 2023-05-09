@@ -38,7 +38,7 @@
     "@babel/preset-env": "^7.21.5",
     "@otris/jsdoc-tsd": "^3.0.0",
     "babel-loader": "^9.1.2",
-    "brfs": "^1.4.3",
+    "brfs": "^2.0.2",
     "connect": "^3.6.5",
     "del": "^6.1.1",
     "glob": "^7.1.2",
