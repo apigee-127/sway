@@ -34,7 +34,7 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var webpack = require('webpack');
 var webpackConfig = require('./webpack.config');
-var run = require('gulp-run-command').default; // or `var run = require('gulp-run-command').default` for ES5
+var run = require('gulp-run-command').default;
 var jsdoc2md = require('jsdoc-to-markdown');
 var fs = require('fs');
 
