@@ -13,6 +13,8 @@ straightforward as possible.
 
 ### Changed
 
+- [docs: updated readme with quick start guide](https://github.com/autodesk-forks/sway/pull/11):
+
 ### Fixed
 
 ## [2.1.0] - 2023-05-11
