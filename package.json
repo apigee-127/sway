@@ -59,7 +59,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nyc": "^15.1.0",
     "transform-loader": "^0.2.4",
-    "webpack": "^5.82.0"
+    "webpack": "^5.82.1"
   },
   "dependencies": {
     "debug": "^4.3.4",
