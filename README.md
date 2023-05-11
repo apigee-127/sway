@@ -5,7 +5,7 @@ The purpose of this fork is to update dependencies and continue to maintain the 
 
 Would you like to contribute? Read [our contribution guidelines](./CONTRIBUTING.md).
 
-[![License](http://img.shields.io/npm/l/sway.svg)](https://github.com/autodesk-forks/sway/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NodeJS with Gulp](https://github.com/autodesk-forks/sway/actions/workflows/npm-gulp.yml/badge.svg)](https://github.com/autodesk-forks/sway/actions/workflows/npm-gulp.yml)
 ![semver](https://img.shields.io/badge/semver-2.0.0-blue)
 [![npm version](https://badgen.net/npm/v/autodesk-forks-sway)](https://www.npmjs.com/package/autodesk-forks-sway)
@@ -26,7 +26,7 @@ npm i autodesk-forks-swagger-node-runner
 
 Sample usage:
 ```javascript
-const Sway = require("./index");
+const Sway = require("autodesk-forks-sway");
 const YAML = require('js-yaml');
 const fs = require("fs");
 const path = require("path");

@@ -13,7 +13,8 @@ straightforward as possible.
 
 ### Changed
 
-- [docs: updated readme with quick start guide](https://github.com/autodesk-forks/sway/pull/11):
+- [docs: updated readme with quick start guide](https://github.com/autodesk-forks/sway/pull/11)
+- [docs: fix typo on readme](https://github.com/autodesk-forks/sway/pull/12)
 
 ### Fixed
 
