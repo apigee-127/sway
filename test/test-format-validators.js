@@ -24,89 +24,88 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
-var Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
-describe('format validators', function () {
-  it('always truthy', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+describe('format validators', () => {
+  it('always truthy', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
-        in: 'query',
+      in: 'query',
       type: 'string',
       format: 'byte',
-      default: 'pretendThisIsABase64EncodedString'
+      default: 'pretendThisIsABase64EncodedString',
     });
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'double',
-        in: 'query',
+      in: 'query',
       type: 'number',
       format: 'double',
-      default: 1.1
+      default: 1.1,
     });
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'float',
-        in: 'query',
+      in: 'query',
       type: 'number',
       format: 'float',
-      default: 1.1
+      default: 1.1,
     });
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'password',
-        in: 'query',
+      in: 'query',
       type: 'string',
       format: 'password',
-      default: 'somepassword'
+      default: 'somepassword',
     });
 
-    Sway.create({definition: cOAIDoc})
-      .then(function (apiDef) {
+    Sway.create({ definition: cOAIDoc })
+      .then((apiDef) => {
         assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
-  describe('int32', function () {
-    var badParamValue;
-    var goodParamValue;
+  describe('int32', () => {
+    let badParamValue;
+    let goodParamValue;
 
-    before(function (done) {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    before((done) => {
+      const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int32',
-          in: 'query',
+        in: 'query',
         type: 'integer',
-        format: 'int32'
+        format: 'int32',
       });
 
       // Test the format validator using parameter validation
-      Sway.create({definition: cOAIDoc})
-        .then(function (apiDef) {
-            badParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
+      Sway.create({ definition: cOAIDoc })
+        .then((apiDef) => {
+          badParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
-              int32: 1.1
-            }
+              int32: 1.1,
+            },
           });
           goodParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int32').getValue({
             query: {
-              int32: 1
-            }
+              int32: 1,
+            },
           });
         })
         .then(done, done);
     });
 
-    it('bad value', function () {
-      var error = badParamValue.error;
+    it('bad value', () => {
+      const { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
@@ -119,58 +118,58 @@ describe('format validators', function () {
           code: 'INVALID_TYPE',
           message: 'Expected type integer but found type number',
           params: ['integer', 'number'],
-          path: []
+          path: [],
         },
         {
           code: 'INVALID_FORMAT',
           message: 'Object didn\'t pass validation for format int32: 1.1',
           params: [
             'int32',
-            1.1
+            1.1,
           ],
-          path: []
-        }
+          path: [],
+        },
       ]);
     });
 
-    it('good value', function () {
+    it('good value', () => {
       assert.ok(goodParamValue.valid);
     });
   });
 
-  describe('int64', function () {
-    var badParamValue;
-    var goodParamValue;
+  describe('int64', () => {
+    let badParamValue;
+    let goodParamValue;
 
-    before(function (done) {
-      var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+    before((done) => {
+      const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
       cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
         name: 'int64',
-          in: 'query',
+        in: 'query',
         type: 'integer',
-        format: 'int64'
+        format: 'int64',
       });
 
       // Test the format validator using parameter validation
-      Sway.create({definition: cOAIDoc})
-        .then(function (apiDef) {
+      Sway.create({ definition: cOAIDoc })
+        .then((apiDef) => {
           badParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
-              int64: 1.1
-            }
+              int64: 1.1,
+            },
           });
           goodParamValue = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('int64').getValue({
             query: {
-              int64: 1
-            }
+              int64: 1,
+            },
           });
         })
         .then(done, done);
     });
 
-    it('bad value', function () {
-      var error = badParamValue.error;
+    it('bad value', () => {
+      const { error } = badParamValue;
 
       assert.ok(!badParamValue.valid);
       assert.ok(!_.isUndefined(badParamValue.value));
@@ -183,21 +182,21 @@ describe('format validators', function () {
           code: 'INVALID_TYPE',
           message: 'Expected type integer but found type number',
           params: ['integer', 'number'],
-          path: []
+          path: [],
         },
         {
           code: 'INVALID_FORMAT',
           message: 'Object didn\'t pass validation for format int64: 1.1',
           params: [
             'int64',
-            1.1
+            1.1,
           ],
-          path: []
-        }
+          path: [],
+        },
       ]);
     });
 
-    it('good value', function () {
+    it('good value', () => {
       assert.ok(goodParamValue.valid);
     });
   });

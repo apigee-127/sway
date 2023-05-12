@@ -22,63 +22,56 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const $ = require('gulp-load-plugins')();
+const del = require('del');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const webpack = require('webpack');
+const run = require('gulp-run-command').default;
+const jsdoc2md = require('jsdoc-to-markdown');
+const fs = require('fs');
+// eslint-disable-next-line import/no-unresolved
+const gulpESLintNew = require('gulp-eslint-new');
+require('native-promise-only'); // Load promises polyfill if necessary
+const webpackConfig = require('./webpack.config');
 
-var $ = require('gulp-load-plugins')();
-var del = require('del');
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var webpack = require('webpack');
-var webpackConfig = require('./webpack.config');
-var run = require('gulp-run-command').default;
-var jsdoc2md = require('jsdoc-to-markdown');
-var fs = require('fs');
-
-// Load promises polyfill if necessary
-if (typeof Promise === 'undefined') {
-  require('native-promise-only');
-}
-
-function clean () {
+function clean() {
   return del([
-    'coverage'
+    'coverage',
   ]);
 }
 
-function dist (done) {
-	return webpack(webpackConfig, function (err, stats) {
-		if (err) throw new gutil.PluginError('webpack', err);
-		gutil.log('[webpack]', 'Bundles generated:\n' + stats.toString('minimal').split('\n').map(function (line) {
-      return '  ' + line.replace('Child ', 'dist/').replace(':', '.js:');
-    }).join('\n'));
-		done();
-	});
+function dist(done) {
+  return webpack(webpackConfig, (err, stats) => {
+    if (err) throw new gutil.PluginError('webpack', err);
+    gutil.log('[webpack]', `Bundles generated:\n${stats.toString('minimal').split('\n').map((line) => `  ${line.replace('Child ', 'dist/').replace(':', '.js:')}`).join('\n')}`);
+    done();
+  });
 }
 
-function docs (done) {
+function docs() {
   return jsdoc2md.render({
     files: [
       './index.js',
       'lib/typedefs.js',
-      'lib/types/*.js'
+      'lib/types/*.js',
     ],
-  }).then(function (output) {
-    fs.writeFileSync('docs/API.md', output)
+  }).then((output) => {
+    fs.writeFileSync('docs/API.md', output);
   });
-  done();
 }
 
-function docsTypescriptRaw (done) {
+function docsTypescriptRaw(done) {
   gulp.src([
     './index.js',
     'lib/typedefs.js',
-    'lib/types/*.js'
+    'lib/types/*.js',
   ])
     .pipe($.jsdoc3({
       opts: {
         destination: 'index.d.ts',
-        template: 'node_modules/@otris/jsdoc-tsd'
-      }
+        template: 'node_modules/@otris/jsdoc-tsd',
+      },
     }, done));
 }
 
@@ -86,7 +79,7 @@ function docsTypescriptRaw (done) {
 //
 //  * https://github.com/otris/jsdoc-tsd/issues/38
 //  * https://github.com/otris/jsdoc-tsd/issues/39
-function docsTypescript () {
+function docsTypescript() {
   return gulp.src(['index.d.ts'])
     .pipe($.replace('<*>', '<any>'))
     .pipe($.replace('module:sway.', ''))
@@ -94,20 +87,35 @@ function docsTypescript () {
     .pipe(gulp.dest('.'));
 }
 
-function lint () {
+function lint() {
   return gulp.src([
     'index.js',
     'lib/**/*.js',
     'test/**/*.js',
     '!test/browser/**/*.js',
-    'gulpfile.js'
+    'gulpfile.js',
   ])
-    .pipe($.eslint())
-    .pipe($.eslint.format('stylish'))
-    .pipe($.eslint.failAfterError());
+    .pipe(gulpESLintNew())
+    .pipe(gulpESLintNew.format('stylish'))
+    .pipe(gulpESLintNew.failAfterError());
+}
+
+function lintFix() {
+  return gulp.src([
+    'index.js',
+    'lib/**/*.js',
+    'test/**/*.js',
+    '!test/browser/**/*.js',
+    'gulpfile.js',
+  ])
+    .pipe(gulpESLintNew({ fix: true }))
+    .pipe(gulpESLintNew.fix())
+    .pipe(gulpESLintNew.format('stylish'))
+    .pipe(gulpESLintNew.failAfterError());
 }
 
 exports.lint = lint;
+exports['lint-fix'] = lintFix;
 exports.clean = clean;
 exports['test-node'] = run('nyc mocha test/**/test-*.js');
 exports['test-browser'] = run('karma start test/browser/karma.conf.js');

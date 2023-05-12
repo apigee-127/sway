@@ -180,6 +180,14 @@ declare module 'sway' {
         warnings: any[];
     }
 
+    /**
+     * The OpenAPI Definition object.
+     * 
+     * **Note:** Do not use directly.
+     * 
+     * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+     * [OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
+     */
     class ApiDefinition {
         /**
          * The OpenAPI Definition object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
@@ -267,6 +275,14 @@ declare module 'sway' {
 
     }
 
+    /**
+     * The OpenAPI Operation object.
+     * 
+     * **Note:** Do not use directly.
+     * 
+     * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+     * [OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
+     */
     class Operation {
         /**
          * The OpenAPI Operation object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
@@ -339,6 +355,14 @@ declare module 'sway' {
 
     }
 
+    /**
+     * The OpenAPI Parameter object.
+     * 
+     * **Note:** Do not use directly.
+     * 
+     * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+     * [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
+     */
     class Parameter {
         /**
          * The OpenAPI Parameter object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
@@ -365,6 +389,14 @@ declare module 'sway' {
 
     }
 
+    /**
+     * The Path object.
+     * 
+     * **Note:** Do not use directly.
+     * 
+     * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+     * [OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
+     */
     class Path {
         /**
          * The Path object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
@@ -404,6 +436,14 @@ declare module 'sway' {
 
     }
 
+    /**
+     * The OpenAPI Response object.
+     * 
+     * **Note:** Do not use directly.
+     * 
+     * **Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+     * [OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
+     */
     class Response {
         /**
          * The OpenAPI Response object. **Note:** Do not use directly. **Extra Properties:** Other than the documented properties, this object also exposes all properties of the [OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).

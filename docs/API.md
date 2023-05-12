@@ -5,59 +5,68 @@ A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.
 
 
 * [sway](#module_sway)
-    * [.ApiDefinition](#module_sway.ApiDefinition)
-        * [new ApiDefinition(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_sway.ApiDefinition_new)
-        * [.getOperation(idOrPathOrReq, [method])](#module_sway.ApiDefinition+getOperation) ⇒ [<code>Operation</code>](#module_sway.Operation)
-        * [.getOperations([path])](#module_sway.ApiDefinition+getOperations) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
-        * [.getOperationsByTag([tag])](#module_sway.ApiDefinition+getOperationsByTag) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
-        * [.getPath(pathOrReq)](#module_sway.ApiDefinition+getPath) ⇒ [<code>Path</code>](#module_sway.Path)
-        * [.getPaths()](#module_sway.ApiDefinition+getPaths) ⇒ [<code>Array.&lt;Path&gt;</code>](#module_sway.Path)
-        * [.registerFormat(name, validator)](#module_sway.ApiDefinition+registerFormat)
-        * [.registerFormatGenerator(name, formatGenerator)](#module_sway.ApiDefinition+registerFormatGenerator)
-        * [.unregisterFormat(name)](#module_sway.ApiDefinition+unregisterFormat)
-        * [.unregisterFormatGenerator(name)](#module_sway.ApiDefinition+unregisterFormatGenerator)
-        * [.registerValidator(validator)](#module_sway.ApiDefinition+registerValidator)
-        * [.validate()](#module_sway.ApiDefinition+validate) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.Operation](#module_sway.Operation)
-        * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
-        * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ [<code>Parameter</code>](#module_sway.Parameter)
-        * [.getParameters()](#module_sway.Operation+getParameters) ⇒ [<code>Array.&lt;Parameter&gt;</code>](#module_sway.Parameter)
-        * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ [<code>Response</code>](#module_sway.Response)
-        * [.getResponses()](#module_sway.Operation+getResponses) ⇒ [<code>Array.&lt;Response&gt;</code>](#module_sway.Response)
-        * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
-        * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-        * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.ParameterValue](#module_sway.ParameterValue)
-        * [new ParameterValue(parameterObject, raw)](#new_module_sway.ParameterValue_new)
-    * [.Parameter](#module_sway.Parameter)
-        * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
-        * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
-        * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ [<code>ParameterValue</code>](#module_sway.ParameterValue)
-    * [.Path](#module_sway.Path)
-        * [new Path(apiDefinition, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Path_new)
-        * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
-        * [.getOperations()](#module_sway.Path+getOperations) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
-        * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
-        * [.getParameters()](#module_sway.Path+getParameters) ⇒ [<code>Array.&lt;Parameter&gt;</code>](#module_sway.Parameter)
-    * [.Response](#module_sway.Response)
-        * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
-        * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
-        * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
-        * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.create(options)](#module_sway.create) ⇒ [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition)
-    * [.CreateOptions](#module_sway.CreateOptions) : <code>object</code>
-    * [.DocumentValidationFunction](#module_sway.DocumentValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.RequestValidationFunction](#module_sway.RequestValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.RequestValidationOptions](#module_sway.RequestValidationOptions) : <code>object</code>
-    * [.ResponseValidationFunction](#module_sway.ResponseValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
-    * [.ResponseValidationOptions](#module_sway.ResponseValidationOptions) : <code>object</code>
-    * [.ServerResponseWrapper](#module_sway.ServerResponseWrapper) : <code>object</code>
-    * [.ValidationEntry](#module_sway.ValidationEntry) : <code>object</code>
-    * [.ValidationResults](#module_sway.ValidationResults) : <code>object</code>
+    * _static_
+        * [.ApiDefinition](#module_sway.ApiDefinition)
+            * [new ApiDefinition(definition, definitionRemotesResolved, definitionFullyResolved, references, options)](#new_module_sway.ApiDefinition_new)
+            * [.getOperation(idOrPathOrReq, [method])](#module_sway.ApiDefinition+getOperation) ⇒ [<code>Operation</code>](#module_sway.Operation)
+            * [.getOperations([path])](#module_sway.ApiDefinition+getOperations) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
+            * [.getOperationsByTag([tag])](#module_sway.ApiDefinition+getOperationsByTag) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
+            * [.getPath(pathOrReq)](#module_sway.ApiDefinition+getPath) ⇒ [<code>Path</code>](#module_sway.Path)
+            * [.getPaths()](#module_sway.ApiDefinition+getPaths) ⇒ [<code>Array.&lt;Path&gt;</code>](#module_sway.Path)
+            * [.registerFormat(name, validator)](#module_sway.ApiDefinition+registerFormat)
+            * [.registerFormatGenerator(name, formatGenerator)](#module_sway.ApiDefinition+registerFormatGenerator)
+            * [.unregisterFormat(name)](#module_sway.ApiDefinition+unregisterFormat)
+            * [.unregisterFormatGenerator(name)](#module_sway.ApiDefinition+unregisterFormatGenerator)
+            * [.registerValidator(validator)](#module_sway.ApiDefinition+registerValidator)
+            * [.validate()](#module_sway.ApiDefinition+validate) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.Operation](#module_sway.Operation)
+            * [new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Operation_new)
+            * [.getParameter(name, [location])](#module_sway.Operation+getParameter) ⇒ [<code>Parameter</code>](#module_sway.Parameter)
+            * [.getParameters()](#module_sway.Operation+getParameters) ⇒ [<code>Array.&lt;Parameter&gt;</code>](#module_sway.Parameter)
+            * [.getResponse([statusCode])](#module_sway.Operation+getResponse) ⇒ [<code>Response</code>](#module_sway.Response)
+            * [.getResponses()](#module_sway.Operation+getResponses) ⇒ [<code>Array.&lt;Response&gt;</code>](#module_sway.Response)
+            * [.getSecurity()](#module_sway.Operation+getSecurity) ⇒ <code>Array.&lt;object&gt;</code>
+            * [.validateRequest(req, [options])](#module_sway.Operation+validateRequest) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+            * [.validateResponse(res, [options])](#module_sway.Operation+validateResponse) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.ParameterValue](#module_sway.ParameterValue)
+            * [new ParameterValue(parameterObject, raw)](#new_module_sway.ParameterValue_new)
+        * [.Parameter](#module_sway.Parameter)
+            * [new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Parameter_new)
+            * [.getSample()](#module_sway.Parameter+getSample) ⇒ <code>\*</code>
+            * [.getValue(req)](#module_sway.Parameter+getValue) ⇒ [<code>ParameterValue</code>](#module_sway.ParameterValue)
+        * [.Path](#module_sway.Path)
+            * [new Path(apiDefinition, path, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Path_new)
+            * [.getOperation(idOrMethod)](#module_sway.Path+getOperation) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
+            * [.getOperations()](#module_sway.Path+getOperations) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
+            * [.getOperationsByTag(tag)](#module_sway.Path+getOperationsByTag) ⇒ [<code>Array.&lt;Operation&gt;</code>](#module_sway.Operation)
+            * [.getParameters()](#module_sway.Path+getParameters) ⇒ [<code>Array.&lt;Parameter&gt;</code>](#module_sway.Parameter)
+        * [.Response](#module_sway.Response)
+            * [new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)](#new_module_sway.Response_new)
+            * [.getExample([mimeType])](#module_sway.Response+getExample) ⇒ <code>string</code>
+            * [.getSample()](#module_sway.Response+getSample) ⇒ <code>\*</code>
+            * [.validateResponse(res, [options])](#module_sway.Response+validateResponse) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.CreateOptions](#module_sway.CreateOptions) : <code>object</code>
+        * [.DocumentValidationFunction](#module_sway.DocumentValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.RequestValidationFunction](#module_sway.RequestValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.RequestValidationOptions](#module_sway.RequestValidationOptions) : <code>object</code>
+        * [.ResponseValidationFunction](#module_sway.ResponseValidationFunction) ⇒ [<code>ValidationResults</code>](#module_sway.ValidationResults)
+        * [.ResponseValidationOptions](#module_sway.ResponseValidationOptions) : <code>object</code>
+        * [.ServerResponseWrapper](#module_sway.ServerResponseWrapper) : <code>object</code>
+        * [.ValidationEntry](#module_sway.ValidationEntry) : <code>object</code>
+        * [.ValidationResults](#module_sway.ValidationResults) : <code>object</code>
+    * _inner_
+        * [~create(options)](#module_sway..create) ⇒ [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition)
 
 <a name="module_sway.ApiDefinition"></a>
 
 ### sway.ApiDefinition
+The OpenAPI Definition object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+[OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
+
 **Kind**: static class of [<code>sway</code>](#module_sway)  
 **Properties**
 
@@ -93,13 +102,6 @@ A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.
 <a name="new_module_sway.ApiDefinition_new"></a>
 
 #### new ApiDefinition(definition, definitionRemotesResolved, definitionFullyResolved, references, options)
-The OpenAPI Definition object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-[OpenAPI Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#openapi-object).
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -252,6 +254,13 @@ Performs validation of the OpenAPI definition.
 <a name="module_sway.Operation"></a>
 
 ### sway.Operation
+The OpenAPI Operation object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+[OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
+
 **Kind**: static class of [<code>sway</code>](#module_sway)  
 **Properties**
 
@@ -280,13 +289,6 @@ Performs validation of the OpenAPI definition.
 <a name="new_module_sway.Operation_new"></a>
 
 #### new Operation(pathObject, method, definition, definitionFullyResolved, pathToDefinition)
-The OpenAPI Operation object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-[OpenAPI Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#operationObject).
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -417,6 +419,13 @@ Object representing a parameter value.
 <a name="module_sway.Parameter"></a>
 
 ### sway.Parameter
+The OpenAPI Parameter object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+[OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
+
 **Kind**: static class of [<code>sway</code>](#module_sway)  
 **Properties**
 
@@ -439,13 +448,6 @@ Object representing a parameter value.
 <a name="new_module_sway.Parameter_new"></a>
 
 #### new Parameter(opOrPathObject, definition, definitionFullyResolved, pathToDefinition)
-The OpenAPI Parameter object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-[OpenAPI Parameter Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#parameterObject).
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -495,6 +497,13 @@ parameter is missing
 <a name="module_sway.Path"></a>
 
 ### sway.Path
+The Path object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+[OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
+
 **Kind**: static class of [<code>sway</code>](#module_sway)  
 **Properties**
 
@@ -521,13 +530,6 @@ parameter is missing
 <a name="new_module_sway.Path_new"></a>
 
 #### new Path(apiDefinition, path, definition, definitionFullyResolved, pathToDefinition)
-The Path object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-[OpenAPI Path Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#pathItemObject).
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -579,6 +581,13 @@ Return the parameters for this path.
 <a name="module_sway.Response"></a>
 
 ### sway.Response
+The OpenAPI Response object.
+
+**Note:** Do not use directly.
+
+**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
+[OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
+
 **Kind**: static class of [<code>sway</code>](#module_sway)  
 **Properties**
 
@@ -601,13 +610,6 @@ Return the parameters for this path.
 <a name="new_module_sway.Response_new"></a>
 
 #### new Response(operationObject, statusCode, definition, definitionFullyResolved, pathToDefinition)
-The OpenAPI Response object.
-
-**Note:** Do not use directly.
-
-**Extra Properties:** Other than the documented properties, this object also exposes all properties of the
-[OpenAPI Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.0.md#responseObject).
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -649,29 +651,6 @@ Validates the response.
 | res | [<code>ServerResponseWrapper</code>](#module_sway.ServerResponseWrapper) | The response or response like object |
 | [options] | [<code>ResponseValidationOptions</code>](#module_sway.ResponseValidationOptions) | The validation options |
 
-<a name="module_sway.create"></a>
-
-### sway.create(options) ⇒ [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition)
-Creates an ApiDefinition object from the provided OpenAPI definition.
-
-**Kind**: static method of [<code>sway</code>](#module_sway)  
-**Returns**: [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition) - The promise  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| options | [<code>CreateOptions</code>](#module_sway.CreateOptions) | The options for loading the definition(s) |
-
-**Example**  
-```js
-Sway.create({
-  definition: 'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml'
-})
-.then(function (apiDefinition) {
-  console.log('Documentation URL: ', apiDefinition.documentationUrl);
-}, function (err) {
-  console.error(err.stack);
-});
-```
 <a name="module_sway.CreateOptions"></a>
 
 ### sway.CreateOptions : <code>object</code>
@@ -808,3 +787,26 @@ Validation results object.
 | errors | [<code>Array.&lt;ValidationEntry&gt;</code>](#module_sway.ValidationEntry) | The validation errors |
 | warnings | [<code>Array.&lt;ValidationEntry&gt;</code>](#module_sway.ValidationEntry) | The validation warnings |
 
+<a name="module_sway..create"></a>
+
+### sway~create(options) ⇒ [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition)
+Creates an ApiDefinition object from the provided OpenAPI definition.
+
+**Kind**: inner method of [<code>sway</code>](#module_sway)  
+**Returns**: [<code>Promise.&lt;ApiDefinition&gt;</code>](#module_sway.ApiDefinition) - The promise  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| options | [<code>CreateOptions</code>](#module_sway.CreateOptions) | The options for loading the definition(s) |
+
+**Example**  
+```js
+Sway.create({
+  definition: 'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml'
+})
+.then(function (apiDefinition) {
+  console.log('Documentation URL: ', apiDefinition.documentationUrl);
+}, function (err) {
+  console.error(err.stack);
+});
+```

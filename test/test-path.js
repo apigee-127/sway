@@ -24,20 +24,19 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const _ = require('lodash');
+const assert = require('assert');
+const JsonRefs = require('json-refs');
+const tHelpers = require('./helpers');
 
-var _ = require('lodash');
-var assert = require('assert');
-var tHelpers = require('./helpers');
-var JsonRefs = require('json-refs');
-var Sway = tHelpers.getSway();
+const Sway = tHelpers.getSway();
 
-function runTests (mode) {
-  var label = mode === 'with-refs' ? 'with' : 'without';
-  var apiDefinition;
+function runTests(mode) {
+  const label = mode === 'with-refs' ? 'with' : 'without';
+  let apiDefinition;
 
-  before(function (done) {
-    function callback (apiDef) {
+  before((done) => {
+    function callback(apiDef) {
       apiDefinition = apiDef;
 
       done();
@@ -50,10 +49,10 @@ function runTests (mode) {
     }
   });
 
-  describe('should handle OpenAPI document ' + label + ' relative references', function () {
-    it('should have proper structure', function () {
-      var path = '/pet/{petId}';
-      var pathObject = apiDefinition.getOperation(path, 'get').pathObject;
+  describe(`should handle OpenAPI document ${label} relative references`, () => {
+    it('should have proper structure', () => {
+      const path = '/pet/{petId}';
+      const { pathObject } = apiDefinition.getOperation(path, 'get');
 
       assert.deepEqual(pathObject.apiDefinition, apiDefinition);
       assert.equal(pathObject.path, path);
@@ -69,68 +68,68 @@ function runTests (mode) {
       assert.equal('petId', pathObject.regexp.keys[0].name);
 
       // Make sure they match the expected URLs
-      assert.ok(_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/pet/1')));
-      assert.ok(!_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/pets/1')));
-      assert.ok(!_.isArray(pathObject.regexp.exec(apiDefinition.definitionFullyResolved.basePath + '/Pet/1')));
+      assert.ok(_.isArray(pathObject.regexp.exec(`${apiDefinition.definitionFullyResolved.basePath}/pet/1`)));
+      assert.ok(!_.isArray(pathObject.regexp.exec(`${apiDefinition.definitionFullyResolved.basePath}/pets/1`)));
+      assert.ok(!_.isArray(pathObject.regexp.exec(`${apiDefinition.definitionFullyResolved.basePath}/Pet/1`)));
     });
 
-    describe('#getOperation', function () {
-      it('should return the expected operation', function () {
+    describe('#getOperation', () => {
+      it('should return the expected operation', () => {
         // By method
         tHelpers.checkType(apiDefinition.getPath('/pet/{petId}').getOperation('get'), 'Operation');
         // By operationId
         tHelpers.checkType(apiDefinition.getPath('/pet').getOperation('addPet'), 'Operation');
       });
 
-      it('should return no operation for the missing method', function () {
+      it('should return no operation for the missing method', () => {
         assert.ok(_.isUndefined(apiDefinition.getPath('/pet/{petId}').getOperation('head')));
       });
     });
 
-    describe('#getOperations', function () {
-      it('should return the expected operations', function () {
+    describe('#getOperations', () => {
+      it('should return the expected operations', () => {
         assert.equal(apiDefinition.getPath('/pet/{petId}').getOperations().length, 3);
       });
 
-      it('should return no operations', function (done) {
-        var cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
-        var path = '/petz';
+      it('should return no operations', (done) => {
+        const cOAIDoc = _.cloneDeep(tHelpers.oaiDoc);
+        const path = '/petz';
 
         cOAIDoc.paths[path] = {};
 
         Sway.create({
-          definition: cOAIDoc
-        }).then(function (apiDef) {
+          definition: cOAIDoc,
+        }).then((apiDef) => {
           assert.equal(apiDef.getPath(path).getOperations().length, 0);
         }).then(done, done);
       });
     });
 
-    describe('#getOperationsByTag', function () {
-      it('should return the expected operations', function () {
+    describe('#getOperationsByTag', () => {
+      it('should return the expected operations', () => {
         assert.equal(apiDefinition.getPath('/pet/{petId}').getOperationsByTag('pet').length, 3);
       });
 
-      it('should return no operations', function () {
+      it('should return no operations', () => {
         assert.equal(apiDefinition.getPath('/pet/{petId}').getOperationsByTag('petz').length, 0);
       });
     });
 
-    describe('#getParameters', function () {
-      it('should return the expected parameters', function () {
-        var parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
+    describe('#getParameters', () => {
+      it('should return the expected parameters', () => {
+        const parameters = apiDefinition.getPath('/pet/{petId}').getParameters();
 
         assert.equal(parameters.length, 1);
       });
 
-      it('should return no parameters', function () {
+      it('should return no parameters', () => {
         assert.equal(apiDefinition.getPath('/pet').getParameters().length, 0);
       });
     });
   });
 }
 
-describe('Path', function () {
+describe('Path', () => {
   // OpenAPI document without references
   runTests('no-refs');
   // OpenAPI document with references

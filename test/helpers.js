@@ -24,36 +24,42 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
+const YAML = require('js-yaml');
+const helpers = require('../lib/helpers');
+const Sway = require('..');
 
-var assert = require('assert');
-var fs = require('fs');
-var helpers = require('../lib/helpers');
-var path = require('path');
-var Sway = require('..');
-var YAML = require('js-yaml');
+const documentBase = path.join(__dirname, 'browser', 'documents');
+const relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
+const oaiDoc = YAML.load(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
+const oaiDocCircular = YAML.load(fs.readFileSync(
+  path.join(
+    __dirname,
+    './browser/documents/2.0/swagger-circular.yaml',
+  ),
+  'utf8',
+));
+const oaiDocRelativeRefs = YAML.load(fs.readFileSync(
+  path.join(
+    __dirname,
+    './browser/documents/2.0/swagger-relative-refs.yaml',
+  ),
+  'utf8',
+));
+const oaiDocValidator = helpers.getJSONSchemaValidator();
+let apiDefinition;
+let apiDefinitionCircular;
+let apiDefinitionRelativeRefs;
 
-var documentBase = path.join(__dirname, 'browser', 'documents');
-var relativeBase = typeof window === 'undefined' ? documentBase : 'base/browser/documents';
-var oaiDoc = YAML.load(fs.readFileSync(path.join(__dirname, './browser/documents/2.0/swagger.yaml'), 'utf8'));
-var oaiDocCircular = YAML.load(fs.readFileSync(path.join(__dirname,
-                                                             './browser/documents/2.0/swagger-circular.yaml'),
-                                                   'utf8'));
-var oaiDocRelativeRefs = YAML.load(fs.readFileSync(path.join(__dirname,
-                                                                 './browser/documents/2.0/swagger-relative-refs.yaml'),
-                                                       'utf8'));
-var oaiDocValidator = helpers.getJSONSchemaValidator();
-var apiDefinition;
-var apiDefinitionCircular;
-var apiDefinitionRelativeRefs;
-
-function fail (msg) {
+function fail(msg) {
   assert.fail(msg);
 }
 
 module.exports.checkType = function (obj, expectedType) {
   assert.equal(obj.constructor.name, expectedType);
-}
+};
 
 module.exports.documentBase = documentBase;
 
@@ -64,13 +70,13 @@ module.exports.getApiDefinition = function (callback) {
     callback(apiDefinition);
   } else {
     Sway.create({
-      definition: oaiDoc
+      definition: oaiDoc,
     })
-      .then(function (obj) {
+      .then((obj) => {
         apiDefinition = obj;
 
         callback(apiDefinition);
-      }, function (err) {
+      }, (err) => {
         callback(err);
       });
   }
@@ -83,14 +89,14 @@ module.exports.getApiDefinitionCircular = function (callback) {
     Sway.create({
       definition: oaiDocCircular,
       jsonRefs: {
-        resolveCirculars: true
-      }
+        resolveCirculars: true,
+      },
     })
-      .then(function (obj) {
+      .then((obj) => {
         apiDefinitionCircular = obj;
 
         callback(apiDefinitionCircular);
-      }, function (err) {
+      }, (err) => {
         callback(err);
       });
   }
@@ -102,13 +108,13 @@ module.exports.getApiDefinitionRelativeRefs = function (callback) {
   } else {
     Sway.create({
       definition: oaiDocRelativeRefs,
-      jsonRefs: {location: path.join(relativeBase, './2.0/swagger-relative-refs.yaml')}
+      jsonRefs: { location: path.join(relativeBase, './2.0/swagger-relative-refs.yaml') },
     })
-      .then(function (obj) {
+      .then((obj) => {
         apiDefinitionRelativeRefs = obj;
 
         callback(apiDefinitionRelativeRefs);
-      }, function (err) {
+      }, (err) => {
         callback(err);
       });
   }

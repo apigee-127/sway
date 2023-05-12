@@ -22,19 +22,12 @@
  * THE SOFTWARE.
  */
 
-'use strict';
-
-var _ = require('lodash');
-var helpers = require('./lib/helpers');
-var JsonRefs = require('json-refs');
-var ApiDefinition = require('./lib/types/api-definition');
-var YAML = require('js-yaml');
-
-// Load promises polyfill if necessary
-/* istanbul ignore if */
-if (typeof Promise === 'undefined') {
-  require('native-promise-only');
-}
+const _ = require('lodash');
+const JsonRefs = require('json-refs');
+const YAML = require('js-yaml');
+const helpers = require('./lib/helpers');
+const ApiDefinition = require('./lib/types/api-definition');
+require('native-promise-only'); // Load promises polyfill if necessary
 
 /**
  * A library that simplifies [OpenAPI](https://www.openapis.org/) integrations.
@@ -59,46 +52,43 @@ if (typeof Promise === 'undefined') {
  *   console.error(err.stack);
  * });
  */
-module.exports.create = function (options) {
-  var allTasks = Promise.resolve();
-  var cOptions;
+function create(options) {
+  let allTasks = Promise.resolve();
 
   // Validate arguments
-  allTasks = allTasks.then(function () {
-    return new Promise(function (resolve) {
-      if (_.isUndefined(options)) {
-        throw new TypeError('options is required');
-      } else if (!_.isPlainObject(options)) {
-        throw new TypeError('options must be an object');
-      } else if (_.isUndefined(options.definition)) {
-        throw new TypeError('options.definition is required');
-      } else if (!_.isPlainObject(options.definition) && !_.isString(options.definition)) {
-        throw new TypeError('options.definition must be either an object or a string');
-      } else if (!_.isUndefined(options.jsonRefs) && !_.isPlainObject(options.jsonRefs)) {
-        throw new TypeError('options.jsonRefs must be an object');
-      } else if (!_.isUndefined(options.customFormats) && !_.isArray(options.customFormats)) {
-        throw new TypeError('options.customFormats must be an array');
-      } else if (!_.isUndefined(options.customFormatGenerators) && !_.isArray(options.customFormatGenerators)) {
-        throw new TypeError('options.customFormatGenerators must be an array');
-      } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
-        throw new TypeError('options.customValidators must be an array');
-      }
+  allTasks = allTasks.then(() => new Promise((resolve) => {
+    if (_.isUndefined(options)) {
+      throw new TypeError('options is required');
+    } else if (!_.isPlainObject(options)) {
+      throw new TypeError('options must be an object');
+    } else if (_.isUndefined(options.definition)) {
+      throw new TypeError('options.definition is required');
+    } else if (!_.isPlainObject(options.definition) && !_.isString(options.definition)) {
+      throw new TypeError('options.definition must be either an object or a string');
+    } else if (!_.isUndefined(options.jsonRefs) && !_.isPlainObject(options.jsonRefs)) {
+      throw new TypeError('options.jsonRefs must be an object');
+    } else if (!_.isUndefined(options.customFormats) && !_.isArray(options.customFormats)) {
+      throw new TypeError('options.customFormats must be an array');
+    } else if (!_.isUndefined(options.customFormatGenerators) && !_.isArray(options.customFormatGenerators)) {
+      throw new TypeError('options.customFormatGenerators must be an array');
+    } else if (!_.isUndefined(options.customValidators) && !_.isArray(options.customValidators)) {
+      throw new TypeError('options.customValidators must be an array');
+    }
 
-      helpers.validateOptionsAllAreFunctions(options.customFormats, 'customFormats');
-      helpers.validateOptionsAllAreFunctions(options.customFormatGenerators, 'customFormatGenerators');
-      helpers.validateOptionsAllAreFunctions(options.customValidators, 'customValidators');
+    helpers.validateOptionsAllAreFunctions(options.customFormats, 'customFormats');
+    helpers.validateOptionsAllAreFunctions(options.customFormatGenerators, 'customFormatGenerators');
+    helpers.validateOptionsAllAreFunctions(options.customValidators, 'customValidators');
 
-      resolve();
-    });
-  });
+    resolve();
+  }));
 
   // Make a copy of the input options so as not to alter them
-  cOptions = _.cloneDeep(options);
+  const cOptions = _.cloneDeep(options);
 
   //
   allTasks = allTasks
     // Resolve relative/remote references
-    .then(function () {
+    .then(() => {
       // Prepare the json-refs options
       if (_.isUndefined(cOptions.jsonRefs)) {
         cOptions.jsonRefs = {};
@@ -116,7 +106,7 @@ module.exports.create = function (options) {
       }
 
       if (_.isUndefined(cOptions.jsonRefs.loaderOptions.processContent)) {
-        cOptions.jsonRefs.loaderOptions.processContent = function (res, cb) {
+        cOptions.jsonRefs.loaderOptions.processContent = (res, cb) => {
           cb(undefined, YAML.load(res.text));
         };
       }
@@ -124,18 +114,17 @@ module.exports.create = function (options) {
       // Call the appropriate json-refs API
       if (_.isString(cOptions.definition)) {
         return JsonRefs.resolveRefsAt(cOptions.definition, cOptions.jsonRefs);
-      } else {
-        return JsonRefs.resolveRefs(cOptions.definition, cOptions.jsonRefs);
       }
+      return JsonRefs.resolveRefs(cOptions.definition, cOptions.jsonRefs);
     })
     // Resolve local references and merge results
-    .then(function (remoteResults) {
+    .then((remoteResults) => {
       // Resolve local references (Remote references should had already been resolved)
       cOptions.jsonRefs.filter = 'local';
 
       return JsonRefs.resolveRefs(remoteResults.resolved || cOptions.definition, cOptions.jsonRefs)
-        .then(function (results) {
-          _.each(remoteResults.refs, function (refDetails, refPtr) {
+        .then((results) => {
+          _.each(remoteResults.refs, (refDetails, refPtr) => {
             results.refs[refPtr] = refDetails;
           });
 
@@ -147,12 +136,12 @@ module.exports.create = function (options) {
             // The original OpenAPI definition with all its references resolved
             definitionFullyResolved: results.resolved,
             // Merge the local reference details with the remote reference details
-            refs: results.refs
-          }
+            refs: results.refs,
+          };
         });
     })
     // Process the OpenAPI document and return an ApiDefinition
-    .then(function (results) {
+    .then((results) => {
       // We need to remove all circular objects as z-schema does not work with them:
       //   https://github.com/zaggino/z-schema/issues/137
       helpers.removeCirculars(results.definition);
@@ -160,12 +149,16 @@ module.exports.create = function (options) {
       helpers.removeCirculars(results.definitionFullyResolved);
 
       // Create object model
-      return new ApiDefinition(results.definition,
-                            results.definitionRemotesResolved,
-                            results.definitionFullyResolved,
-                            results.refs,
-                            options);
+      return new ApiDefinition(
+        results.definition,
+        results.definitionRemotesResolved,
+        results.definitionFullyResolved,
+        results.refs,
+        options,
+      );
     });
 
   return allTasks;
-};
+}
+
+module.exports.create = create;

@@ -24,42 +24,41 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
-var Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
 // TODO: Move these to their respective test-*.js files
 
-describe('issues', function () {
-  var apiDefinition;
+describe('issues', () => {
+  let apiDefinition;
 
-  before(function (done) {
-    helpers.getApiDefinition(function (apiDef) {
+  before((done) => {
+    helpers.getApiDefinition((apiDef) => {
       apiDefinition = apiDef;
 
       done();
     });
   });
 
-  it('should trap document processing errors (Issue 16)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should trap document processing errors (Issue 16)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/{petId}'].get = null;
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function () {
+      .then(() => {
         helpers.shouldHadFailed();
       })
-      .catch(function (err) {
-        var errorMessages = [
+      .catch((err) => {
+        const errorMessages = [
           'Cannot read properties of null (reading \'consumes\')', // Node.js > 14
           'Cannot read property \'consumes\' of null', // Node.js < 14
-          'null is not an object (evaluating \'definitionFullyResolved.consumes\')' // PhantomJS (browser)
+          'null is not an object (evaluating \'definitionFullyResolved.consumes\')', // PhantomJS (browser)
         ];
 
         assert.ok(errorMessages.indexOf(err.message) > -1);
@@ -67,8 +66,8 @@ describe('issues', function () {
       .then(done, done);
   });
 
-  it('should support relative references (and to YAML files) (Issue 17)', function (done) {
-    helpers.getApiDefinitionRelativeRefs(function (apiDefinitionRelativeRefs) {
+  it('should support relative references (and to YAML files) (Issue 17)', (done) => {
+    helpers.getApiDefinitionRelativeRefs((apiDefinitionRelativeRefs) => {
       assert.ok(_.isUndefined(apiDefinitionRelativeRefs.definitionFullyResolved.info.$ref));
       assert.ok(Object.keys(apiDefinitionRelativeRefs.definitionFullyResolved.definitions).length > 1);
       assert.ok(Object.keys(apiDefinitionRelativeRefs.definitionFullyResolved.paths).length > 1);
@@ -76,44 +75,44 @@ describe('issues', function () {
       assert.ok(_.isPlainObject(apiDefinitionRelativeRefs.definitionFullyResolved.definitions.Pet));
       assert.ok(_.isPlainObject(apiDefinitionRelativeRefs.definitionFullyResolved.paths['/pet/{petId}'].get));
 
-      _.each(apiDefinitionRelativeRefs.references, function (entry) {
+      _.each(apiDefinitionRelativeRefs.references, (entry) => {
         assert.ok(typeof entry.missing === 'undefined');
       });
 
       done();
-    })
+    });
   });
 
-  it('should not throw an error for unknown formats (Issue 20)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should not throw an error for unknown formats (Issue 20)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.definitions.Pet.properties.name.format = 'unknown';
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
+      .then((apiDef) => {
         assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
-  it('should handle default and id fields (Issue 29)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should handle default and id fields (Issue 29)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
-    cOAIDoc.definitions.Pet.properties.default = {type: 'string'};
+    cOAIDoc.definitions.Pet.properties.default = { type: 'string' };
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
+      .then((apiDef) => {
         assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
-  it('should handle request objects that are not plain objects (Issue 35)', function () {
-    var mockReq = new Object(); // eslint-disable-line no-new-object
+  it('should handle request objects that are not plain objects (Issue 35)', () => {
+    const mockReq = new Object(); // eslint-disable-line no-new-object
 
     mockReq.url = '/pet/1';
 
@@ -124,16 +123,16 @@ describe('issues', function () {
     }
   });
 
-  it('should validate file parameters based on existence alone (Issue 37)', function () {
-    var mockFile = {
+  it('should validate file parameters based on existence alone (Issue 37)', () => {
+    const mockFile = {
       originalname: 'swagger.yaml',
-      mimetype: 'application/x-yaml'
+      mimetype: 'application/x-yaml',
     };
-    var paramValue = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
+    const paramValue = apiDefinition.getOperation('/pet/{petId}/uploadImage', 'post').getParameter('file').getValue({
       url: '/pet/1/uploadImage',
       files: {
-        file: mockFile
-      }
+        file: mockFile,
+      },
     });
 
     assert.deepEqual(paramValue.raw, mockFile);
@@ -142,72 +141,70 @@ describe('issues', function () {
     assert.ok(paramValue.valid);
   });
 
-  it('should handle allOf $ref to a definition with circular reference (Issue 38)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should handle allOf $ref to a definition with circular reference (Issue 38)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.definitions.A = {
       allOf: [
         {
-          $ref: '#/definitions/B'
-        }
+          $ref: '#/definitions/B',
+        },
       ],
       properties: {
         b: {
-          $ref: '#/definitions/B'
-        }
-      }
+          $ref: '#/definitions/B',
+        },
+      },
     };
 
     cOAIDoc.definitions.B = {
       properties: {
         a: {
-          $ref: '#/definitions/A'
-        }
-      }
+          $ref: '#/definitions/A',
+        },
+      },
     };
 
     cOAIDoc.definitions.C = {
       allOf: [
         {
-          $ref: '#/definitions/A'
-        }
-      ]
+          $ref: '#/definitions/A',
+        },
+      ],
     };
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
+      .then((apiDef) => {
         assert.ok(apiDef.validate());
       })
       .then(done, done);
   });
 
-  it('string value for object type (Issue #46)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('string value for object type (Issue #46)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
         message: {
-          type: 'string'
-        }
+          type: 'string',
+        },
       },
-      type: 'object'
+      type: 'object',
     };
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
-        var results;
-
-        results = apiDef.getOperation('/user/login', 'get').validateResponse({
+      .then((apiDef) => {
+        const results = apiDef.getOperation('/user/login', 'get').validateResponse({
           body: 'If-Match header required',
           encoding: 'utf-8',
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           },
-          statusCode: 200
+          statusCode: 200,
         });
 
         // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
@@ -220,53 +217,45 @@ describe('issues', function () {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type string',
                   params: ['object', 'string'],
-                  path: []
-                }
+                  path: [],
+                },
               ],
               message: 'Invalid body: Expected type object but found type string',
-              path: []
-            }
+              path: [],
+            },
           ],
-          warnings: []
+          warnings: [],
         });
       })
       .then(done, done);
   });
 
-  it('Buffer value for object type (Issue #46)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('Buffer value for object type (Issue #46)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/user/login'].get.responses['200'].schema = {
       properties: {
         message: {
-          type: 'string'
-        }
+          type: 'string',
+        },
       },
-      type: 'object'
+      type: 'object',
     };
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
-        var rawValue = 'If-Match header required';
-        var results;
-        var value;
-
+      .then((apiDef) => {
+        const rawValue = 'If-Match header required';
         // Browsers do not have a 'Buffer' type so we basically skip this test
-        if (typeof window === 'undefined') {
-          value = new Buffer(rawValue);
-        } else {
-          value = rawValue;
-        }
-
-        results = apiDef.getOperation('/user/login', 'get').validateResponse({
+        const value = typeof window === 'undefined' ? Buffer.from(rawValue) : rawValue;
+        const results = apiDef.getOperation('/user/login', 'get').validateResponse({
           body: value,
           encoding: 'utf-8',
           headers: {
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           },
-          statusCode: 200
+          statusCode: 200,
         });
 
         // Prior to this fix, the error would be related to JSON.parse not being able to parse the string
@@ -279,55 +268,55 @@ describe('issues', function () {
                   code: 'INVALID_TYPE',
                   message: 'Expected type object but found type string',
                   params: ['object', 'string'],
-                  path: []
-                }
+                  path: [],
+                },
               ],
               message: 'Invalid body: Expected type object but found type string',
-              path: []
-            }
+              path: [],
+            },
           ],
-          warnings: []
+          warnings: [],
         });
       })
       .then(done, done);
   });
 
-  it('should handle hierchical query parameters (Issue 39)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should handle hierchical query parameters (Issue 39)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'page[limit]',
-        in: 'query',
+      in: 'query',
       description: 'The maximum number of records to return',
-      type: 'integer'
+      type: 'integer',
     });
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'page[nested][offset]',
-        in: 'query',
+      in: 'query',
       description: 'The page',
-      type: 'integer'
+      type: 'integer',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
-        var req = {
+      .then((apiDef) => {
+        const req = {
           query: {
             page: {
               limit: '100',
               nested: {
-                offset: '1'
-              }
-            }
-          }
+                offset: '1',
+              },
+            },
+          },
         };
-        var pageLimitParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
-        var pageLimitParamValue = pageLimitParam.getValue(req);
-        var pageOffsetParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
-        var pageOffsetParamValue = pageOffsetParam.getValue(req);
+        const pageLimitParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[limit]');
+        const pageLimitParamValue = pageLimitParam.getValue(req);
+        const pageOffsetParam = apiDef.getOperation('/pet/findByStatus', 'get').getParameter('page[nested][offset]');
+        const pageOffsetParamValue = pageOffsetParam.getValue(req);
 
-        assert.equal(pageLimitParamValue.raw, req.query.page.limit)
+        assert.equal(pageLimitParamValue.raw, req.query.page.limit);
         assert.equal(pageLimitParamValue.value, 100);
 
         assert.equal(pageOffsetParamValue.raw, req.query.page.nested.offset);
@@ -336,93 +325,93 @@ describe('issues', function () {
       .then(done, done);
   });
 
-  it('should not validate optional parameters that are undefined (Issue 60)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should not validate optional parameters that are undefined (Issue 60)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'alive',
-        in: 'query',
+      in: 'query',
       description: 'Whether the animal is alive or not',
-      type: 'boolean'
+      type: 'boolean',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
+      .then((apiDef) => {
         assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').validateRequest({
-          query: {}
+          query: {},
         }), {
           errors: [],
-          warnings: []
-        })
+          warnings: [],
+        });
       })
       .then(done, done);
   });
 
-  it('should not throw an error for optional strings that are undefined (Issue 60)', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('should not throw an error for optional strings that are undefined (Issue 60)', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'nickname',
-        in: 'query',
+      in: 'query',
       description: 'The pet\' nickname',
-      type: 'string'
+      type: 'string',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-      .then(function (apiDef) {
+      .then((apiDef) => {
         assert.deepEqual(apiDef.getOperation('/pet/findByStatus', 'get').validateRequest({
-          query: {}
+          query: {},
         }), {
           errors: [],
-          warnings: []
-        })
+          warnings: [],
+        });
       })
       .then(done, done);
   });
 
-  describe('should handle mixed-case headers for validation (Issue 67)', function () {
-    it('parameter processing', function () {
-      var parameterValue = apiDefinition.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
+  describe('should handle mixed-case headers for validation (Issue 67)', () => {
+    it('parameter processing', () => {
+      const parameterValue = apiDefinition.getOperation('/pet/{petId}', 'DELETE').getParameter('api_key').getValue({
         headers: {
-          'ApI_KeY': 'Testing'
-        }
+          ApI_KeY: 'Testing',
+        },
       });
 
       assert.equal(parameterValue.value, 'Testing');
     });
 
-    it('request validation', function () {
-      var results = apiDefinition.getOperation('/pet', 'POST').validateRequest({
+    it('request validation', () => {
+      const results = apiDefinition.getOperation('/pet', 'POST').validateRequest({
         url: '/pet',
         body: {
           name: 'Test Pet',
-          photoUrls: []
+          photoUrls: [],
         },
         headers: {
-          'CoNtEnT-TyPe': 'application/json'
-        }
+          'CoNtEnT-TyPe': 'application/json',
+        },
       });
 
       assert.equal(results.warnings.length, 0);
       assert.equal(results.errors.length, 0);
     });
 
-    it('response validation', function () {
-      var results = apiDefinition.getOperation('/pet/findByStatus', 'GET').validateResponse({
+    it('response validation', () => {
+      const results = apiDefinition.getOperation('/pet/findByStatus', 'GET').validateResponse({
         headers: {
-          'CoNtEnT-TyPe': 'application/json'
+          'CoNtEnT-TyPe': 'application/json',
         },
         statusCode: 200,
         body: [
           {
             name: 'Test Pet',
-            photoUrls: []
-          }
-        ]
+            photoUrls: [],
+          },
+        ],
       });
 
       assert.equal(results.warnings.length, 0);
@@ -430,20 +419,20 @@ describe('issues', function () {
     });
   });
 
-  describe('should handle circular documents and inputs', function () {
-    var apiDefinitionCircular;
+  describe('should handle circular documents and inputs', () => {
+    let apiDefinitionCircular;
 
-    before(function (done) {
-      helpers.getApiDefinitionCircular(function (apiDef) {
+    before((done) => {
+      helpers.getApiDefinitionCircular((apiDef) => {
         apiDefinitionCircular = apiDef;
 
         done();
       });
     });
 
-    it('ApiDefinition#validate', function () {
-      var circularDef = apiDefinitionCircular.definitionFullyResolved.definitions.CircularReference;
-      var results = apiDefinitionCircular.validate();
+    it('ApiDefinition#validate', () => {
+      const circularDef = apiDefinitionCircular.definitionFullyResolved.definitions.CircularReference;
+      const results = apiDefinitionCircular.validate();
 
       assert.equal(results.warnings.length, 0);
       assert.equal(results.errors.length, 0);

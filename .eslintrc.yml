@@ -1,0 +1,24 @@
+env:
+  browser: true
+  commonjs: true
+  es2021: true
+  mocha: true
+extends: airbnb-base
+overrides:
+  - files:
+      - "test/*.js"
+    rules:
+      func-names: off
+      no-console: off
+parserOptions:
+  ecmaVersion: latest
+rules:
+  no-underscore-dangle: off # internal package _debug function
+  max-len:
+    - 1
+    - 200
+
+  # TODO: remove after alignment effort with the original package
+  no-param-reassign: off
+  no-loop-func: off
+  # END

@@ -24,49 +24,48 @@
  * THE SOFTWARE.
  */
 
-'use strict';
+const _ = require('lodash');
+const assert = require('assert');
+const helpers = require('./helpers');
 
-var _ = require('lodash');
-var assert = require('assert');
-var helpers = require('./helpers');
-var Sway = helpers.getSway();
+const Sway = helpers.getSway();
 
-describe('format generators', function () {
-  it('byte', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+describe('format generators', () => {
+  it('byte', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
-        in: 'query',
+      in: 'query',
       type: 'string',
-      format: 'byte'
+      format: 'byte',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-    .then(function (apiDef) {
-      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-    })
-    .then(done, done);
+      .then((apiDef) => {
+        assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+      })
+      .then(done, done);
   });
 
-  it('password', function (done) {
-    var cOAIDoc = _.cloneDeep(helpers.oaiDoc);
+  it('password', (done) => {
+    const cOAIDoc = _.cloneDeep(helpers.oaiDoc);
 
     cOAIDoc.paths['/pet/findByStatus'].get.parameters.push({
       name: 'byte',
-        in: 'query',
+      in: 'query',
       type: 'string',
-      format: 'password'
+      format: 'password',
     });
 
     Sway.create({
-      definition: cOAIDoc
+      definition: cOAIDoc,
     })
-    .then(function (apiDef) {
-      assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
-    })
-    .then(done, done);
+      .then((apiDef) => {
+        assert.ok(_.isString(apiDef.getOperation('/pet/findByStatus', 'get').getParameter('byte').getSample()));
+      })
+      .then(done, done);
   });
 });
