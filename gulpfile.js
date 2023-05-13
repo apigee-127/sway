@@ -23,7 +23,6 @@
  */
 
 const $ = require('gulp-load-plugins')();
-const del = require('del');
 const gulp = require('gulp');
 const gutil = require('gulp-util');
 const webpack = require('webpack');
@@ -35,10 +34,9 @@ const gulpESLintNew = require('gulp-eslint-new');
 require('native-promise-only'); // Load promises polyfill if necessary
 const webpackConfig = require('./webpack.config');
 
-function clean() {
-  return del([
-    'coverage',
-  ]);
+function clean(done) {
+  fs.rmSync('./coverage', { recursive: true, force: true });
+  done();
 }
 
 function dist(done) {

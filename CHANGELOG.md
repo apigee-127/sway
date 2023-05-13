@@ -15,6 +15,7 @@ straightforward as possible.
 
 - [docs: updated readme with quick start guide](https://github.com/autodesk-forks/sway/pull/11)
 - [docs: fix typo on readme](https://github.com/autodesk-forks/sway/pull/12)
+- [chore: upgrade outdated deps](https://github.com/autodesk-forks/sway/pull/14)
 
 ### Fixed
 
