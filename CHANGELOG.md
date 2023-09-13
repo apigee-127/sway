@@ -13,11 +13,15 @@ straightforward as possible.
 
 ### Changed
 
+### Fixed
+
+## [2.2.0] - 2023-09-13
+
+### Changed
+
 - [docs: updated readme with quick start guide](https://github.com/autodesk-forks/sway/pull/11)
 - [docs: fix typo on readme](https://github.com/autodesk-forks/sway/pull/12)
 - [chore: upgrade outdated deps](https://github.com/autodesk-forks/sway/pull/14)
-
-### Fixed
 
 ## [2.1.0] - 2023-05-11
 
