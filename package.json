@@ -61,7 +61,7 @@
     "mocha": "^4.0.1",
     "run-sequence": "^2.2.0",
     "transform-loader": "^0.2.4",
-    "webpack": "^4.28.1"
+    "webpack": "^5.105.4"
   },
   "dependencies": {
     "debug": "^3.1.0",
